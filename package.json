@@ -5,10 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
+    "tauri": "tauri",
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/server": "^11.10.0",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.16",
     "@types/node": "18.15.7",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -18,5 +24,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.2.3"
   }
 }
