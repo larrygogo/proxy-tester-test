@@ -66,6 +66,7 @@ mod test {
             "spXw78Zs0coKv".to_string(),
             "https://www.google.com/".to_string(),
             false,
+            None
         )
             .await;
         println!("{:?}", res);
