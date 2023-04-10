@@ -37,7 +37,7 @@ const SettingsDialog = (props: Props) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Setting</DialogTitle>
+      <DialogTitle>SETTING</DialogTitle>
       <DialogContent>
         <Box sx={{display: 'flex', flexDirection: 'column', minWidth: 500, pt: 2}}>
           <TextField label="Concurrency" id="concurrency" value={concurrency} onChange={e => setConcurrency(parseInt(e.target.value))}/>

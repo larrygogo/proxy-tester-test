@@ -1,4 +1,4 @@
-import {Alert, alpha, Box, Button, Container, IconButton, LinearProgress, useTheme} from "@mui/material";
+import {Alert, alpha, Box, Button, Container, IconButton, useTheme} from "@mui/material";
 import TargetInput from "@/components/TargetInput";
 import {Controller, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -6,15 +6,12 @@ import * as yup from "yup";
 import {useEffect, useRef, useState} from "react";
 import ProxyVirtualizedTable from "@/components/ProxyVirtualizedTable";
 import Icon from "@/components/icon";
-import {ProxyDisplayInfo, ProxyInfo} from "@/types/proxy";
+import {ProxyDisplayInfo} from "@/types/proxy";
 import {TaskPool} from "@/utils/task";
 import {invoke} from "@tauri-apps/api/tauri";
-import defaultData from "@/data/proxy";
-import dynamic from "next/dynamic";
 import ImportDialog from "@/components/ImportDialog";
 import SettingsDialog from "@/components/SettingsDialog";
 
-const ImportButton = dynamic(() => import('@/components/ImportButton'), {ssr: false})
 const taskPool = TaskPool.getInstance({
   concurrency: 10,
 })
@@ -26,7 +23,7 @@ export default function Home() {
   const [progress, setProgress] = useState(0)
   const [concurrency, setConcurrency] = useState(10)
   const [socks5, setSocks5] = useState(false)
-  const [proxyData, setProxyData] = useState<ProxyDisplayInfo[]>(defaultData as ProxyDisplayInfo[])
+  const [proxyData, setProxyData] = useState<ProxyDisplayInfo[]>([])
   const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false)
   const schema = yup.object().shape({
@@ -42,6 +39,9 @@ export default function Home() {
   })
 
   const handleStart = async (data: any) => {
+    if (proxyData.length === 0) {
+      return
+    }
     setProgress(0)
     setStarted(true)
     taskPool.clear()
@@ -117,7 +117,6 @@ export default function Home() {
             control={control}
             name="target"
             render={({field}) =>
-
               <TargetInput
                 disabled={started}
                 {...field}
