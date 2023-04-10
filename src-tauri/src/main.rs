@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::time::SystemTime;
+use std::time::{SystemTime, Duration};
 
 use reqwest::Client;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -17,6 +17,7 @@ async fn test_proxy(
     password: String,
     addr: String,
     socks5: bool,
+    timeout: Option<u64>,
 ) -> String {
     println!("receive data {proxy} {username} {password} {addr}");
     let proxy_str = if socks5 {
@@ -25,10 +26,11 @@ async fn test_proxy(
         format!("http://{username}:{password}@{proxy}")
     };
     let proxy = reqwest::Proxy::all(proxy_str.as_str()).unwrap();
-
+    let timeout = timeout.unwrap_or(30);
     let client = Client::builder()
         .trust_dns(true)
         .proxy(proxy)
+        .timeout(Duration::from_secs(timeout))
         .build()
         .unwrap();
 
