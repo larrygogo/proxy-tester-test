@@ -9,7 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {TableVirtuoso, TableComponents} from 'react-virtuoso';
 import React from "react";
-import {alpha, Typography} from "@mui/material";
+import {alpha, Box, Button, Typography} from "@mui/material";
+import ImportDialog from "@/components/ImportDialog";
 
 interface ColumnData<T> {
   dataKey: keyof T;
@@ -56,6 +57,7 @@ const VirtuosoTableComponents: TableComponents<ProxyDisplayInfo> = {
         borderCollapse: 'separate',
         tableLayout: 'fixed',
       }}
+
     />
   ),
   TableHead: (props) => (
@@ -123,32 +125,36 @@ function rowContent(_index: number, row: ProxyDisplayInfo) {
 
 type Props = {
   data: ProxyDisplayInfo[]
+  renderEmpty?: () => JSX.Element
 }
 
 const ProxyVirtualizedTable = (props: Props) => {
+  const [open, setOpen] = React.useState(false);
   const rows = props.data || []
   return (
     <Paper
       sx={(theme) => ({
         height: 300,
         width: '100%',
-        mt: 6,
         overflowX: 'hidden',
         boxShadow: 'none',
-        // border: '1px solid rgba(224, 224, 224, 1)',
+        border: '1px solid rgba(224, 224, 224, 0.1)',
         borderRadius: 1,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
+        flex: 1
       })}
     >
-      <TableVirtuoso
-        data={rows}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-        style={{
-          boxShadow: 'none',
-        }}
-      />
+      {rows.length === 0 && props.renderEmpty ? props.renderEmpty() :
+        <TableVirtuoso
+          data={rows}
+          components={VirtuosoTableComponents}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={rowContent}
+          style={{
+            boxShadow: 'none',
+          }}
+        />
+      }
     </Paper>
   );
 }

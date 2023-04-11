@@ -3,6 +3,7 @@ import 'animate.css';
 import Layout from "@/layouts/Layout";
 import ThemeComponent from "@/theme/ThemeComponent";
 import {LayoutProvider, TemplateConsumer} from "@/context/LayoutContext";
+import '@/styles/globals.css'
 
 function App({Component, pageProps}: AppProps) {
 

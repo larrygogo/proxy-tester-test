@@ -4,7 +4,7 @@ import SettingsDialog from "@/components/SettingsDialog";
 import ImportDialog from "@/components/ImportDialog";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {Controller, useForm} from "react-hook-form";
-import TargetInput from "@/components/TargetInput";
+import TargetInput from "@/components/home/TargetInput";
 import {useEffect, useRef, useState} from "react";
 import {ProxyDisplayInfo} from "@/types/proxy";
 import {invoke} from "@tauri-apps/api/tauri";
@@ -98,8 +98,14 @@ export default function Home() {
 
 
   return (
-    <Box>
-      <Container>
+    <Container sx={{height: '100%'}}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}
+      >
         <Box component="form" ref={formRef} onSubmit={onSubmit} sx={{py: 4}}>
           <Controller
             control={control}
@@ -117,7 +123,7 @@ export default function Home() {
                   }),
                   ...(progress > 0 && {
                     // backgroundColor: alpha(theme.palette.background.paper, 0.2),
-                    backgroundImage: `linear-gradient(90deg, ${theme.palette.primary.light} ${progress/ 2}%, ${theme.palette.primary.light} ${progress}%,  ${alpha(theme.palette.background.paper, 0.2)} ${progress}%, ${alpha(theme.palette.background.paper, 0.2)} 100%)`,
+                    backgroundImage: `linear-gradient(90deg, ${theme.palette.primary.light} ${progress / 2}%, ${theme.palette.primary.light} ${progress}%,  ${alpha(theme.palette.background.paper, 0.2)} ${progress}%, ${alpha(theme.palette.background.paper, 0.2)} 100%)`,
 
                   }),
 
@@ -133,51 +139,41 @@ export default function Home() {
                       alignItems: 'center',
                     }}
                   >
-                    <IconButton type="submit">
+                    <Button variant="contained" type="submit" sx={{borderRadius: 1.5}}>
                       <Icon icon="icon-park-outline:pause-one" color={theme.palette.error.main} fontSize={16}
                             style={{display: started ? 'block' : 'none'}}/>
-                      <Icon icon="icon-park-outline:play" color={theme.palette.text.secondary} fontSize={16}
+                      <Icon icon="mi:play" color={theme.palette.text.primary} fontSize={16}
                             style={{display: started ? 'none' : 'block'}}/>
-                    </IconButton>
+                    </Button>
                   </Box>
                 }
               />
             }
           />
         </Box>
-        {/* 错误提示框 */}
-        {errors.target?.message && (
-          <Alert
-            sx={(theme) => ({
-              mt: 1,
-              backgroundColor: alpha(theme.palette.error.main, 0.1),
-              color: theme.palette.error.main,
-            })}
-            severity="error"
-            variant="filled"
-          >
-            {errors.target?.message}
-          </Alert>
-        )}
-        <ProxyVirtualizedTable data={proxyData}/>
-        <Box sx={{display: 'flex', gap: 2, mt: 1}}>
-          <Button disabled={started} onClick={() => setImportDialogOpen(true)}>Import Proxies</Button>
-          <Button disabled={started} onClick={() => setSettingsDialogOpen(true)}>Settings</Button>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            pb: 4,
+          }}
+        >
+          <ProxyVirtualizedTable
+            data={proxyData}
+            renderEmpty={() =>
+              <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                <Button variant="contained" onClick={() => setImportDialogOpen(true)}>Import</Button>
+              </Box>
+            }
+          />
         </Box>
-        <ImportDialog open={importDialogOpen} onClose={() => setImportDialogOpen(false)} onFinish={(data) => {
-          setProxyData(data)
-          setImportDialogOpen(false)
-        }} />
-        <SettingsDialog
-          settings={{concurrency, socks5}}
-          open={settingsDialogOpen} onClose={() => setSettingsDialogOpen(false)} onFinish={(data) => {
-          if (data) {
-            setConcurrency(data.concurrency)
-            setSocks5(data.socks5)
-          }
-          setSettingsDialogOpen(false)
-        }} />
-      </Container>
-    </Box>
+      </Box>
+      <ImportDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onFinish={(data) => setProxyData(data)}
+      />
+    </Container>
   )
 }

@@ -10,12 +10,12 @@ const Layout = (props: LayoutProps) => {
     <Box
       id="Layout"
       sx={{
-        position: 'fixed',
         width: '100vw',
         height: '100vh',
         display: 'flex',
         alignItems: 'stretch',
         backgroundColor: 'background.paper',
+        backdropFilter: 'blur(10px)',
       }}
     >
       <SideBar/>
@@ -31,7 +31,7 @@ const Layout = (props: LayoutProps) => {
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: '#2c303a',
-            borderTopLeftRadius: theme => theme.spacing(2),
+            borderTopLeftRadius: theme => theme.spacing(3),
             flex: 1,
             alignItems: 'stretch',
           }}

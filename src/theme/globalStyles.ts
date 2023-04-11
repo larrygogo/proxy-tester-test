@@ -6,6 +6,7 @@ import {LayoutConfig} from '@/context/types'
 
 // ** Util Import
 import {hexToRGBA} from '@/utils/hex-to-rgba'
+import {deepmerge} from "@mui/utils";
 
 const GlobalStyles = (theme: Theme, template: LayoutConfig) => {
   // ** Vars
@@ -105,10 +106,7 @@ const GlobalStyles = (theme: Theme, template: LayoutConfig) => {
     font-style: italic;
   }`
 
-  console.log(styleString)
-
-  return {
-    ...styleString,
+  return deepmerge({
     // 旋转
     '@keyframes rotate': {
       '0%': {
@@ -187,7 +185,7 @@ const GlobalStyles = (theme: Theme, template: LayoutConfig) => {
         backgroundColor: theme.palette.primary.main
       }
     }
-  }
+  }, styleString)
 }
 
 export default GlobalStyles
