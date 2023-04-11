@@ -11,6 +11,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {TaskPool} from "@/utils/task";
 import Icon from "@/components/icon";
 import * as yup from "yup";
+import ContentMenu from "@/components/ContentMenu";
 
 const taskPool = TaskPool.getInstance({
   concurrency: 10,
@@ -159,14 +160,25 @@ export default function Home() {
             pb: 4,
           }}
         >
-          <ProxyVirtualizedTable
-            data={proxyData}
-            renderEmpty={() =>
-              <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                <Button variant="contained" onClick={() => setImportDialogOpen(true)}>Import</Button>
-              </Box>
+          <ContentMenu menuItems={[
+            {
+              label: 'Import Proxy',
+              onClick: () => setImportDialogOpen(true)
+            },
+            {
+              label: 'Clear Proxy',
+              onClick: () => setProxyData([])
             }
-          />
+          ]} >
+            <ProxyVirtualizedTable
+              data={proxyData}
+              renderEmpty={() =>
+                <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                  <Button variant="contained" onClick={() => setImportDialogOpen(true)}>Import</Button>
+                </Box>
+              }
+            />
+          </ContentMenu>
         </Box>
       </Box>
       <ImportDialog
