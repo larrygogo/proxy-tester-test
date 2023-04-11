@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {TableVirtuoso, TableComponents} from 'react-virtuoso';
 import React from "react";
-import {Typography} from "@mui/material";
+import {alpha, Typography} from "@mui/material";
 
 interface ColumnData<T> {
   dataKey: keyof T;
@@ -44,13 +44,35 @@ const columns: ColumnData<ProxyDisplayInfo>[] = [
 
 const VirtuosoTableComponents: TableComponents<ProxyDisplayInfo> = {
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref}/>
+    <TableContainer component={Paper} {...props} ref={ref} sx={{
+      backgroundColor: theme => alpha(theme.palette.background.paper, 0.1),
+    }}/>
   )),
   Table: (props) => (
-    <Table {...props} sx={{borderCollapse: 'separate', tableLayout: 'fixed'}} size="small"/>
+    <Table
+      {...props}
+      size="small"
+      sx={{
+        borderCollapse: 'separate',
+        tableLayout: 'fixed',
+      }}
+    />
   ),
-  TableHead,
-  TableRow: ({item: _item, ...props}) => <TableRow {...props} />,
+  TableHead: (props) => (
+    <TableHead {...props} sx={{
+      backgroundColor: alpha('#fff', 0.1),
+      // 背景模糊
+      backdropFilter: 'blur(10px)',
+      // 背景缩放
+      '& > tr > th': {
+        padding: '16px 16px',
+        backgroundColor: 'transparent',
+        color: '#fff',
+      }
+    }}
+    />
+  ),
+  TableRow: ({item: _item, ...props}) => <TableRow {...props} sx={{color: '#fff'}}/>,
   TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
     <TableBody {...props} ref={ref}/>
   )),
@@ -113,7 +135,9 @@ const ProxyVirtualizedTable = (props: Props) => {
         mt: 6,
         overflowX: 'hidden',
         boxShadow: 'none',
-        border: '1px solid rgba(224, 224, 224, 1)',
+        // border: '1px solid rgba(224, 224, 224, 1)',
+        borderRadius: 1,
+        backgroundColor: 'transparent'
       })}
     >
       <TableVirtuoso

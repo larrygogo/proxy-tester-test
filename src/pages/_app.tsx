@@ -1,12 +1,23 @@
-import type { AppProps } from 'next/app'
+import type {AppProps} from 'next/app'
 import 'animate.css';
-import WindowWrapper from "@/components/window-wrapper";
+import Layout from "@/layouts/Layout";
+import ThemeComponent from "@/theme/ThemeComponent";
+import {LayoutProvider, TemplateConsumer} from "@/context/LayoutContext";
 
- function App({ Component, pageProps }: AppProps) {
+function App({Component, pageProps}: AppProps) {
+
   return (
-    <WindowWrapper>
-      <Component {...pageProps} />
-    </WindowWrapper>
+    <LayoutProvider>
+      <TemplateConsumer>
+        {({config}) => (
+          <ThemeComponent config={config}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeComponent>
+        )}
+      </TemplateConsumer>
+    </LayoutProvider>
   )
 }
 
