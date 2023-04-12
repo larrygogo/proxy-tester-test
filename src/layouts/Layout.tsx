@@ -30,7 +30,7 @@ const Layout = (props: LayoutProps) => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: '#2c303a',
+            backgroundColor: '#3d4352',
             borderTopLeftRadius: theme => theme.spacing(3),
             flex: 1,
             alignItems: 'stretch',

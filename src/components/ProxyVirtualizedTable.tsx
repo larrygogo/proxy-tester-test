@@ -9,8 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {TableVirtuoso, TableComponents} from 'react-virtuoso';
 import React from "react";
-import {alpha, Box, Button, Typography} from "@mui/material";
-import ImportDialog from "@/components/ImportDialog";
+import {alpha, Typography} from "@mui/material";
+import ContextMenu from "@/components/context-menu";
 
 interface ColumnData<T> {
   dataKey: keyof T;
@@ -43,42 +43,6 @@ const columns: ColumnData<ProxyDisplayInfo>[] = [
   },
 ]
 
-const VirtuosoTableComponents: TableComponents<ProxyDisplayInfo> = {
-  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} sx={{
-      backgroundColor: theme => alpha(theme.palette.background.paper, 0.1),
-    }}/>
-  )),
-  Table: (props) => (
-    <Table
-      {...props}
-      size="small"
-      sx={{
-        borderCollapse: 'separate',
-        tableLayout: 'fixed',
-      }}
-
-    />
-  ),
-  TableHead: (props) => (
-    <TableHead {...props} sx={{
-      backgroundColor: alpha('#fff', 0.1),
-      // 背景模糊
-      backdropFilter: 'blur(10px)',
-      // 背景缩放
-      '& > tr > th': {
-        padding: '16px 16px',
-        backgroundColor: 'transparent',
-        color: '#fff',
-      }
-    }}
-    />
-  ),
-  TableRow: ({item: _item, ...props}) => <TableRow {...props} sx={{color: '#fff'}}/>,
-  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-    <TableBody {...props} ref={ref}/>
-  )),
-};
 
 function fixedHeaderContent() {
   return (
@@ -125,16 +89,93 @@ function rowContent(_index: number, row: ProxyDisplayInfo) {
 
 type Props = {
   data: ProxyDisplayInfo[]
+  changeData?: (data: ProxyDisplayInfo[]) => void
   renderEmpty?: () => JSX.Element
 }
 
 const ProxyVirtualizedTable = (props: Props) => {
-  const [open, setOpen] = React.useState(false);
+  const change = props.changeData
   const rows = props.data || []
+
+
+  const VirtuosoTableComponents: TableComponents<ProxyDisplayInfo> = {
+    Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+      <TableContainer component={Paper} {...props} ref={ref} sx={{
+        backgroundColor: theme => alpha(theme.palette.background.paper, 0.1),
+      }}/>
+    )),
+    Table: (props) => (
+      <Table
+        {...props}
+        size="small"
+        sx={{
+          borderCollapse: 'separate',
+          tableLayout: 'fixed',
+        }}
+
+      />
+    ),
+    TableHead: (props) => (
+      <TableHead {...props} sx={{
+        backgroundColor: alpha('#fff', 0.1),
+        // 背景模糊
+        backdropFilter: 'blur(10px)',
+        // 背景缩放
+        '& > tr > th': {
+          padding: '16px 16px',
+          backgroundColor: 'transparent',
+          color: '#fff',
+        }
+      }}
+      />
+    ),
+    TableRow: ({item: _item, ...props}) => (
+      <ContextMenu
+        component={TableRow}
+        menuItems={[{
+          label: 'Copy',
+          value: 'copy',
+        }, {
+          label: 'Delete',
+          value: 'delete',
+        }, {
+          label: 'Clear All',
+          value: 'clearAll',
+        }]}
+        onSelect={(value) => {
+          if (value === 'copy') {
+            const host = _item.host;
+            const port = _item.port;
+            const username = _item.username;
+            const password = _item.password;
+            const item = [host, port, username, password].filter(item => item).join(':')
+            window.navigator.clipboard.writeText(item)
+          } else if (value === 'delete') {
+            change?.(rows.filter(item => item.id !== _item.id))
+          } else if (value === 'clearAll') {
+            change?.([])
+          }
+        }}
+        sx={{
+          backgroundColor: theme => alpha(theme.palette.background.paper, 0.1),
+          '&:hover': {
+            backgroundColor: theme => alpha(theme.palette.background.paper, 0.3),
+          }
+        }}
+        {...props}
+      >
+        {props.children}
+      </ContextMenu>
+    ),
+    TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+      <TableBody {...props} ref={ref}/>
+    )),
+  };
+
   return (
     <Paper
-      sx={(theme) => ({
-        height: 300,
+      sx={() => ({
+        height: '100%',
         width: '100%',
         overflowX: 'hidden',
         boxShadow: 'none',

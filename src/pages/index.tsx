@@ -1,6 +1,5 @@
-import {Alert, alpha, Box, Button, Container, IconButton, useTheme} from "@mui/material";
+import {alpha, Box, Button, Container, useTheme} from "@mui/material";
 import ProxyVirtualizedTable from "@/components/ProxyVirtualizedTable";
-import SettingsDialog from "@/components/SettingsDialog";
 import ImportDialog from "@/components/ImportDialog";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {Controller, useForm} from "react-hook-form";
@@ -11,7 +10,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {TaskPool} from "@/utils/task";
 import Icon from "@/components/icon";
 import * as yup from "yup";
-import ContentMenu from "@/components/ContentMenu";
+import ContextMenu from "@/components/context-menu";
 
 const taskPool = TaskPool.getInstance({
   concurrency: 10,
@@ -26,7 +25,6 @@ export default function Home() {
   const [socks5, setSocks5] = useState(false)
   const [proxyData, setProxyData] = useState<ProxyDisplayInfo[]>([])
   const [importDialogOpen, setImportDialogOpen] = useState(false)
-  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false)
   const schema = yup.object().shape({
     target: yup.string().matches(/^(http(s)?:\/\/|socks5:\/\/|)(([a-zA-Z0-9-]+\.)+[a-zA-Z]+)(:\d+)?(\/\S*)?$/, 'Invalid target')
   })
@@ -125,7 +123,6 @@ export default function Home() {
                   ...(progress > 0 && {
                     // backgroundColor: alpha(theme.palette.background.paper, 0.2),
                     backgroundImage: `linear-gradient(90deg, ${theme.palette.primary.light} ${progress / 2}%, ${theme.palette.primary.light} ${progress}%,  ${alpha(theme.palette.background.paper, 0.2)} ${progress}%, ${alpha(theme.palette.background.paper, 0.2)} 100%)`,
-
                   }),
 
                 }}
@@ -160,31 +157,43 @@ export default function Home() {
             pb: 4,
           }}
         >
-          <ContentMenu menuItems={[
-            {
+          <ContextMenu
+            changeData={(data: any) => setProxyData(data)}
+            sx={{height: '100%'}}
+            onSelect={(value) => {
+              console.log(value)
+              if (value === 'import') {
+                setImportDialogOpen(true)
+              } else if (value === 'clear') {
+                setProxyData([])
+              }
+            }}
+            menuItems={[{
               label: 'Import Proxy',
-              onClick: () => setImportDialogOpen(true)
-            },
-            {
+              value: 'import',
+            }, {
               label: 'Clear Proxy',
-              onClick: () => setProxyData([])
-            }
-          ]} >
+              value: 'clear',
+            }]}>
             <ProxyVirtualizedTable
               data={proxyData}
+              changeData={(data) => setProxyData(data)}
               renderEmpty={() =>
                 <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                  <Button variant="contained" onClick={() => setImportDialogOpen(true)}>Import</Button>
+                  Right click to add
                 </Box>
               }
             />
-          </ContentMenu>
+          </ContextMenu>
         </Box>
       </Box>
       <ImportDialog
         open={importDialogOpen}
         onClose={() => setImportDialogOpen(false)}
-        onFinish={(data) => setProxyData(data)}
+        onFinish={(data) => {
+          setProxyData(data)
+          setImportDialogOpen(false)
+        }}
       />
     </Container>
   )
