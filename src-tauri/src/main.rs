@@ -23,16 +23,13 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 async fn test_nike(
     proxy: String,
-    username: String,
-    password: String,
+    username: Option<String>,
+    password: Option<String>,
     socks5: bool,
     timeout: Option<u64>,
 ) -> TestResult {
-    let proxy_str = if socks5 {
-        format!("socks5h://{username}:{password}@{proxy}")
-    } else {
-        format!("http://{username}:{password}@{proxy}")
-    };
+    println!("{proxy} {:?} {:?}", username, password);
+    let proxy_str = get_proxy_url(proxy, username, password, socks5);
     let timeout = timeout.unwrap_or(30);
     nike::query_nike_web(proxy_str.as_str(), timeout).await
 }
@@ -40,18 +37,13 @@ async fn test_nike(
 #[tauri::command]
 async fn test_proxy(
     proxy: String,
-    username: String,
-    password: String,
+    username: Option<String>,
+    password: Option<String>,
     addr: String,
     socks5: bool,
     timeout: Option<u64>,
 ) -> TestResult {
-    println!("receive data {proxy} {username} {password} {addr}");
-    let proxy_str = if socks5 {
-        format!("socks5h://{username}:{password}@{proxy}")
-    } else {
-        format!("http://{username}:{password}@{proxy}")
-    };
+    let proxy_str = get_proxy_url(proxy, username, password, socks5);
     let proxy = reqwest::Proxy::all(proxy_str.as_str()).unwrap();
     let timeout = timeout.unwrap_or(30);
     let client = Client::builder()
@@ -85,6 +77,28 @@ fn main() {
         .expect("error while running tauri application");
 }
 
+fn get_proxy_url(
+    proxy: String,
+    username: Option<String>,
+    password: Option<String>,
+    socks: bool,
+) -> String {
+    match (username, password) {
+        (Some(username), Some(password)) => format!(
+            "{header}://{username}:{password}@{proxy}",
+            username = username,
+            password = password,
+            proxy = proxy,
+            header = if socks { "socks5h" } else { "http" }
+        ),
+        _ => format!(
+            "{header}://{proxy}",
+            proxy = proxy,
+            header = if socks { "socks5h" } else { "http" }
+        ),
+    }
+}
+
 mod test {
     #[tokio::test]
     async fn test_run_proxy_test() {
@@ -93,8 +107,8 @@ mod test {
 
         let res = test_proxy(
             "192.168.0.111:7000".to_string(),
-            "customer-VJF5fRktTKjy8_22585-cc-BZ-session-905370".to_string(),
-            "spXw78Zs0coKv".to_string(),
+            Some("customer-VJF5fRktTKjy8_22585-cc-BZ-session-905370".to_string()),
+            Some("spXw78Zs0coKv".to_string()),
             "https://www.google.com/".to_string(),
             false,
             None,
@@ -108,13 +122,19 @@ mod test {
         use super::test_nike;
         let res = test_nike(
             "192.168.0.111:7000".to_string(),
-            "customer-VJF5fRktTKjy8_22585-cc-BZ-session-905370".to_string(),
-            "spXw78Zs0coKv".to_string(),
+            Some("customer-VJF5fRktTKjy8_22585-cc-BZ-session-905370".to_string()),
+            Some("spXw78Zs0coKv".to_string()),
             false,
             None,
         )
         .await;
+        println!("{:?}", res);
+    }
 
+    #[tokio::test]
+    async fn test_run_test_nike1() {
+        use super::test_nike;
+        let res = test_nike("192.168.0.111:7000".to_string(), None, None, false, None).await;
         println!("{:?}", res);
     }
 }
