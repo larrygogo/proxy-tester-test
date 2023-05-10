@@ -10,6 +10,6 @@ export type ProxyInfo = {
 
 // 合并
 export type ProxyDisplayInfo = ProxyInfo & {
-  speed?: string;
+  speed?: number;
   status?: string;
 }

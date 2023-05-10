@@ -3,21 +3,24 @@ import 'animate.css';
 import Layout from "@/layouts/Layout";
 import ThemeComponent from "@/theme/ThemeComponent";
 import {LayoutProvider, TemplateConsumer} from "@/context/LayoutContext";
+import {SettingsProvider} from "@/context/SettingsContext";
 import '@/styles/globals.css'
 
 function App({Component, pageProps}: AppProps) {
 
   return (
     <LayoutProvider>
-      <TemplateConsumer>
-        {({config}) => (
-          <ThemeComponent config={config}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeComponent>
-        )}
-      </TemplateConsumer>
+      <SettingsProvider>
+        <TemplateConsumer>
+          {({config}) => (
+            <ThemeComponent config={config}>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeComponent>
+          )}
+        </TemplateConsumer>
+      </SettingsProvider>
     </LayoutProvider>
   )
 }

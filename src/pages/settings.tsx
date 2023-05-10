@@ -1,37 +1,28 @@
-import {Container} from "@mui/material";
-import ContextMenu from "@/components/context-menu";
+import {Box, Container, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {useSettings} from "@/hooks/useSettings";
 
 const Settings = () => {
+  const {settings, saveSettings} = useSettings()
   return (
     <Container>
-      <ContextMenu
-        menuItems={[{
-          label: 'Settings',
-          value: 'settings'
-        }]} onSelect={(value) => {
-        console.log(value)
-      }}>
-        <div
-          style={{
-            width: 400,
-            height: 400,
-            backgroundColor: 'red'
-          }}>Settings
-          <ContextMenu menuItems={[{
-            label: 'settings1',
-            value: 'settings1'
-          }]} onSelect={(value) => {
-            console.log(value)
-
+      <Box sx={{mt: 10}}>
+        <FormControl>
+          <InputLabel htmlFor="my-input">Concurrency</InputLabel>
+          <Select
+            defaultValue={1}
+            value={settings.concurrency}
+            onChange={(e) => {
+              console.log(typeof e.target.value)
+              saveSettings({concurrency: e.target.value as number})
           }}>
-            <div style={{
-              height: 200,
-              backgroundColor: 'blue'
-            }}>settings1
-            </div>
-          </ContextMenu>
-        </div>
-      </ContextMenu>
+            <MenuItem value={1}>1</MenuItem>
+            <MenuItem value={2}>2</MenuItem>
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
     </Container>
   )
 }

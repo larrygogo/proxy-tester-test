@@ -31,15 +31,15 @@ const columns: ColumnData<ProxyDisplayInfo>[] = [
     dataKey: 'status',
     label: 'Status',
     width: 80,
-    render: (value) => value ? value !== 'fail' ? <Typography color="green">OK</Typography> :
-      <Typography color="red">Fail</Typography> : ''
+    render: (value) => value ? value === 'OK' ? <Typography color="green">OK</Typography> :
+      <Typography color="red">{value}</Typography> : ''
   },
   {
     dataKey: 'speed',
     label: 'Speed',
     width: 100,
-    render: (value) => value !== 'fail' ? <Typography color="green">{value}</Typography> :
-      <Typography color="red">Fail</Typography>
+    render: (value) => value ? <Typography color="green">{value}ms</Typography> :
+      <Typography color="red">{value}</Typography>
   },
 ]
 

@@ -7,7 +7,7 @@ const TargetInput = styled(InputBase)(({theme}) => ({
   transaction: theme.transitions.create(['box-shadow'], {
     easing: theme.transitions.easing.easeInOut,
   }),
-  color: '#fff',
+  color: '#97a8ba',
   background: theme.palette.background.default,
   fontFamily: 'Nunito, Roboto, Helvetica, Arial, sans-serif',
   fontWeight: 800,

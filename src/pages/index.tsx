@@ -13,7 +13,7 @@ import * as yup from "yup";
 import ContextMenu from "@/components/context-menu";
 
 const taskPool = TaskPool.getInstance({
-  concurrency: 10,
+  concurrency: 50,
 })
 
 export default function Home() {
@@ -45,11 +45,11 @@ export default function Home() {
     setProgress(0)
     setStarted(true)
     taskPool.clear()
-    setProxyData((prev) => prev.map(p => ({...p, status: undefined, speed: ''})))
+    setProxyData((prev) => prev.map(p => ({...p, status: undefined, speed: undefined})))
     proxyData.forEach((proxy) => {
 
       const task = async () => {
-        const result: string = await invoke('test_proxy', {
+        const result: { status: string, delay: number } = await invoke('test_nike', {
           socks5,
           proxy: proxy.host + ':' + proxy.port,
           addr: data.target,
@@ -58,8 +58,8 @@ export default function Home() {
         })
         setProxyData((prev) => prev.map(p => p.id === proxy.id ? {
           ...p,
-          status: result,
-          speed: result
+          status: result.status,
+          speed: result?.delay
         } : p))
         return result as any
       }
