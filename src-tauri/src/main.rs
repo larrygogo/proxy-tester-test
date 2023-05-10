@@ -4,9 +4,16 @@
 use std::time::{Duration, SystemTime};
 
 use reqwest::Client;
+use serde::{Deserialize, Serialize};
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 mod nike;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TestResult {
+    pub status: String,
+    pub delay: Option<u64>,
+}
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -20,7 +27,7 @@ async fn test_nike(
     password: String,
     socks5: bool,
     timeout: Option<u64>,
-) -> String {
+) -> TestResult {
     let proxy_str = if socks5 {
         format!("socks5h://{username}:{password}@{proxy}")
     } else {
@@ -38,7 +45,7 @@ async fn test_proxy(
     addr: String,
     socks5: bool,
     timeout: Option<u64>,
-) -> String {
+) -> TestResult {
     println!("receive data {proxy} {username} {password} {addr}");
     let proxy_str = if socks5 {
         format!("socks5h://{username}:{password}@{proxy}")
@@ -59,8 +66,14 @@ async fn test_proxy(
     println!("{:?}", start);
     let res = command.send().await;
     match res {
-        Ok(_) => format!("{}ms", start.elapsed().unwrap().as_millis()),
-        Err(_) => "fail".to_string(),
+        Ok(_) => TestResult {
+            status: "OK".to_string(),
+            delay: Some(start.elapsed().unwrap().as_millis() as u64),
+        },
+        Err(_) => TestResult {
+            status: "fail".to_string(),
+            delay: None,
+        },
     }
 }
 

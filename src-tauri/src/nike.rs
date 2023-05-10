@@ -1,6 +1,8 @@
 use reqwest::{header::HeaderMap, Client, StatusCode};
 use std::time::Duration;
 
+use crate::TestResult;
+
 fn default_nike_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
     headers.insert("authority", "api.nike.com".parse().unwrap());
@@ -28,7 +30,7 @@ fn default_nike_headers() -> HeaderMap {
     headers
 }
 
-pub async fn query_nike_web(proxy: &str, timeout: u64) -> String {
+pub async fn query_nike_web(proxy: &str, timeout: u64) -> TestResult {
     let url = "https://api.nike.com/product_feed/threads/v2?filter=marketplace(US)&filter=language(en)&filter=channelId(d9a5bc42-4b9c-4976-858a-f159cf99c647)&anchor=0&count=60&filter=productInfo.merchProduct.styleColor(FD2596-600)";
     let proxy = reqwest::Proxy::all(proxy).unwrap();
     let headers = default_nike_headers();
@@ -42,12 +44,24 @@ pub async fn query_nike_web(proxy: &str, timeout: u64) -> String {
     let start = std::time::SystemTime::now();
     let t = client.get(url).send().await;
     if t.is_err() {
-        return "request error".to_string();
+        return TestResult {
+            status: "TIMEOUT".to_string(),
+            delay: None,
+        };
     }
     let resp = t.unwrap();
     match resp.status() {
-        StatusCode::OK => format!("{}ms", start.elapsed().unwrap().as_millis()),
-        StatusCode::FORBIDDEN => "Banned".to_string(),
-        _ => "Timeout".to_string(),
+        StatusCode::OK => TestResult {
+            status: "OK".to_string(),
+            delay: Some(start.elapsed().unwrap().as_millis() as u64),
+        },
+        StatusCode::FORBIDDEN => TestResult {
+            status: "BAN".to_string(),
+            delay: None,
+        },
+        _ => TestResult {
+            status: "TIMEOUT".to_string(),
+            delay: None,
+        },
     }
 }
