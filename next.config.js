@@ -1,12 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  output: 'export',
   reactStrictMode: true,
-  images: {
-    unoptimized: true,
-  }
+  transpilePackages: ['ahooks', '@tauri-apps/api']
 }
-
 module.exports = nextConfig

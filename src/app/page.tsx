@@ -3,7 +3,6 @@ import TargetInput from "@/components/target-input";
 import {useEffect, useRef, useState} from "react";
 import {useScroll} from "ahooks";
 import clsx from "clsx";
-import {globalShortcut, invoke} from "@tauri-apps/api";
 import ProxyListEditDialog from "@/components/proxy-list-edit-dialog";
 import {ProxyDisplayInfo} from "@/types/proxy";
 import {v4 as randomUUID} from "uuid";
@@ -32,16 +31,18 @@ export default function Page() {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    globalShortcut?.register('CmdOrCtrl+E', () => setImportOpen(v => !v))
-    return () => {
-      globalShortcut?.unregister('CmdOrCtrl+E')
-    }
+    import('@tauri-apps/api/globalShortcut').then(async ({register, isRegistered}) => {
+      if (!(await isRegistered('CmdOrCtrl+E'))) {
+        await register('CmdOrCtrl+E', () => setImportOpen(v => !v))
+      }
+    })
   }, []);
 
   const handleListChange = (proxyList: string[]) => {
     setProxyList(proxyList)
     setFinishedCount(0)
     setTaskStatus(TaskStatus.WAITING)
+    setImportOpen(false)
   }
 
   const handleCopy = async () => {
@@ -60,6 +61,7 @@ export default function Page() {
     for (let proxy of proxyStates) {
 
       const task = async () => {
+        const invoke  = (await import("@tauri-apps/api/tauri")).invoke
         const result: { status: string, delay: number } = await invoke('test_nike', {
           socks5: protocol === 'socks5',
           proxy: proxy.host + ':' + proxy.port,
@@ -77,7 +79,6 @@ export default function Page() {
       await taskPool.addTask(task)
     }
     taskPool.on('progress', (({completed, total}) => {
-      console.log(completed / total * 100, completed, total)
       setFinishedCount(completed)
       if (completed === total) {
         setTaskStatus(TaskStatus.FINISH)
@@ -89,8 +90,12 @@ export default function Page() {
 
   useEffect(() => {
     const storageValue = localStorage.getItem('proxyList')
-    const value = JSON.parse(storageValue || '').filter(Boolean)
-    setProxyList(value)
+    try {
+      const value = JSON.parse(storageValue ?? '').filter(Boolean)
+      setProxyList(value)
+    } catch (e) {
+      localStorage.removeItem('proxyList')
+    }
   }, []);
 
   useEffect(() => {
@@ -110,7 +115,7 @@ export default function Page() {
   }, [proxyList]);
 
   useEffect(() => {
-    if(copied) {
+    if (copied) {
       setTimeout(() => {
         setCopied(false)
       }, 3000)
@@ -118,6 +123,7 @@ export default function Page() {
   }, [copied]);
 
   return (
+
     <div className="h-full flex flex-col gap-4 px-2 text-gray-400 font-mono">
       {/*<div className="flex gap-6 z-50 border-b border-dashed border-gray-600 text-sm" data-tauri-drag-region="true">*/}
       {/*  <ProxyMenu />*/}

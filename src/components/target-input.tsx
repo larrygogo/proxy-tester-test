@@ -1,8 +1,5 @@
-'use client'
-
 import {Listbox, Transition} from "@headlessui/react";
 import {useEffect, useRef, useState} from "react";
-import {appWindow} from "@tauri-apps/api/window";
 import {useClickAway} from "ahooks";
 import Tooltip from "@/components/tooltip";
 import clsx from "clsx";
@@ -34,8 +31,10 @@ export default function TargetInput(props: Props) {
   }, ref)
 
   useEffect(() => {
-    appWindow.listen('tauri://blur', () => {
-      setOpen(false)
+    import('@tauri-apps/api/window').then(({appWindow}) => {
+      appWindow.listen('tauri://blur', () => {
+        setOpen(false)
+      })
     })
   }, []);
 

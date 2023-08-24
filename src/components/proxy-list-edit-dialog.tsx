@@ -1,6 +1,5 @@
 import {Fragment, useCallback, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
-import {globalShortcut} from "@tauri-apps/api";
 
 type Props = {
   onSave?: (proxyList: string[]) => void
@@ -16,17 +15,18 @@ const ProxyListEditDialog = (props: Props) => {
     const proxyList = proxyText?.split('\n').filter(Boolean)
     localStorage.setItem('proxyList', JSON.stringify(proxyList))
     onSave?.(proxyList)
-    onClose?.()
-  }, [onClose, onSave, proxyText])
+  }, [onSave, proxyText])
 
   // 快捷键
   useEffect(() => {
     // CmdOrCtrl + S
-    globalShortcut?.register('CmdOrCtrl+S', handleSave)
-    return () => {
-      globalShortcut?.unregister('CmdOrCtrl+S')
-    }
-  }, [handleSave])
+    import('@tauri-apps/api/globalShortcut').then(async ({register, isRegistered}) => {
+      if (!(await isRegistered('CmdOrCtrl+S'))) {
+        await register('CmdOrCtrl+S', handleSave)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 监听 localStorage 变化
   useEffect(() => {
@@ -70,7 +70,7 @@ const ProxyListEditDialog = (props: Props) => {
             leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel className="flex flex-col gap-4 mx-auto w-4/5 h-4/6 rounded-xl shadow-2xl text-black p-8 bg-white border">
-              <Dialog.Description className="flex flex-1">
+              <Dialog.Description as="div" className="flex flex-1">
                 <div className="flex flex-col flex-1">
                   <div className="flex-1 relative pb-8 border text-sm rounded-xl overflow-hidden">
                     <textarea

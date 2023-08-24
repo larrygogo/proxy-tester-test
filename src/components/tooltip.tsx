@@ -1,4 +1,3 @@
-'use client';
 import React, {useRef, useState} from "react";
 import {useFloating, autoUpdate, arrow, offset, flip, shift, useHover, useClick, useInteractions, FloatingArrow} from '@floating-ui/react';
 import {Transition} from "@headlessui/react";

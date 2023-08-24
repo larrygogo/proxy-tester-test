@@ -1,16 +1,13 @@
-import "@/styles/globals.css";
 import RootLayoutWrapper from "@/components/root-layout-wrapper";
+import '@/styles/globals.css';
 
-type Props = {
+export default function RootLayout(props: {
   children: React.ReactNode
-}
-
-export default function RootLayout(props: Props) {
-  const {children} = props
-
+}) {
+  const { children } = props
   return (
     <html lang="en">
-    <body data-tauri-drag-region="true">
+    <body>
       <RootLayoutWrapper>
         {children}
       </RootLayoutWrapper>
