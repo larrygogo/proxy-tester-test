@@ -3,9 +3,10 @@ export type ProxyString = string;
 export type ProxyInfo = {
   id: string;
   host: string;
-  port: string;
+  port: number;
   username?: string;
   password?: string;
+  value: string;
 }
 
 // 合并

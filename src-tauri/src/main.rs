@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 mod nike;
+mod setup;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestResult {
@@ -72,7 +73,9 @@ async fn test_proxy(
 fn main() {
     env_logger::init();
     tauri::Builder::default()
+        //titleBarStyle
         .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike])
+        .setup(setup::init)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

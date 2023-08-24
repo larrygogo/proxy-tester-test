@@ -19,6 +19,7 @@ export class TaskPool {
   private completedCount: number;
   private allCount: number;
 
+  // 使用单例模式
   private constructor(options: TaskPoolOptions = {}) {
     this.concurrency = options.concurrency ?? 20;
     this.activeCount = 0;
