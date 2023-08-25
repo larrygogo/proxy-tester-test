@@ -36,9 +36,14 @@ const ProxyListEditDialog = (props: Props) => {
   // 监听 localStorage 变化
   useEffect(() => {
     if (open) {
-      const storageValue = localStorage.getItem('proxyList')
-      const value = JSON.parse(storageValue || '').filter(Boolean).join('\n')
-      setProxyText(value)
+      try {
+        const storageValue = localStorage.getItem('proxyList')
+        const value = JSON.parse(storageValue || '').filter(Boolean).join('\n')
+        setProxyText(value)
+      } catch {
+        localStorage.setItem('proxyList', '')
+        setProxyText('')
+      }
     }
   }, [open])
 

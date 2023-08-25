@@ -1,6 +1,6 @@
 {
   "build": {
-    "beforeBuildCommand": "yarn build && yarn export",
+    "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn dev",
     "devPath": "http://localhost:3666",
     "distDir": "../out",
@@ -10,7 +10,6 @@
     "productName": "Proxy Tester",
     "version": "0.0.0"
   },
-
   "tauri": {
     "allowlist": {
       "all": true,
@@ -43,8 +42,11 @@
     "updater": {
       "active": false
     },
+
     "windows": [
       {
+        "decorations": false,
+        "title": "Proxy Tester",
         "fullscreen": false,
         "resizable": true,
         "width": 800,

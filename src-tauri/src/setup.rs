@@ -15,5 +15,6 @@ pub fn init(app: &mut App) -> std::result::Result<(), Box<dyn std::error::Error>
     window_vibrancy::apply_blur(&window, Some((18, 18, 18, 125)))
         .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
+
     Ok(())
 }
