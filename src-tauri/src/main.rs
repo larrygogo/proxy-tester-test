@@ -75,7 +75,7 @@ fn main() {
     tauri::Builder::default()
         //titleBarStyle
         .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike])
-        .setup(setup::init)
+        // .setup(setup::init)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
