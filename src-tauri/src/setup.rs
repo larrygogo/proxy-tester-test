@@ -11,8 +11,6 @@ pub fn init(app: &mut App) -> std::result::Result<(), Box<dyn std::error::Error>
     apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
         .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
     // 设置 titleBarStyle
-    #[cfg(target_os = "macos")]
-
 
     // 仅在 windows 下执行
     #[cfg(target_os = "windows")]

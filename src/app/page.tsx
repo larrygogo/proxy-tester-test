@@ -33,7 +33,7 @@ export default function Page() {
   useEffect(() => {
     import('@tauri-apps/api/globalShortcut').then(async ({register, isRegistered}) => {
       if (!(await isRegistered('CmdOrCtrl+E'))) {
-        await register('CmdOrCtrl+E', () => setImportOpen(v => !v))
+        await register('CmdOrCtrl+E', () => setImportOpen(true))
       }
     })
   }, []);

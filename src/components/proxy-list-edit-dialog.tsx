@@ -11,7 +11,7 @@ const ProxyListEditDialog = (props: Props) => {
   const {onClose, onSave, open} = props
   const [proxyText, setProxyText] = useState<string>('')
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     const proxyList = proxyText?.split('\n').filter(Boolean)
     localStorage.setItem('proxyList', JSON.stringify(proxyList))
     onSave?.(proxyList)
@@ -20,13 +20,18 @@ const ProxyListEditDialog = (props: Props) => {
   // 快捷键
   useEffect(() => {
     // CmdOrCtrl + S
-    import('@tauri-apps/api/globalShortcut').then(async ({register, isRegistered}) => {
-      if (!(await isRegistered('CmdOrCtrl+S'))) {
-        await register('CmdOrCtrl+S', handleSave)
-      }
+    import('@tauri-apps/api/globalShortcut').then(({register, unregister, isRegistered}) => {
+      isRegistered('CmdOrCtrl+S').then((registered) => {
+        if (!registered) {
+          return register('CmdOrCtrl+S', handleSave)
+        } else {
+          unregister('CmdOrCtrl+S').then(() => {
+            return register('CmdOrCtrl+S', handleSave)
+          })
+        }
+      })
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [handleSave])
 
   // 监听 localStorage 变化
   useEffect(() => {
