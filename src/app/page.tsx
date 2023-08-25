@@ -33,7 +33,7 @@ export default function Page() {
   useEffect(() => {
     import('@tauri-apps/api/globalShortcut').then(async ({register, isRegistered}) => {
       if (!(await isRegistered('CmdOrCtrl+E'))) {
-        await register('CmdOrCtrl+E', () => setImportOpen(true))
+        await register('CmdOrCtrl+E', () => setImportOpen(v => !v))
       }
     })
   }, []);
@@ -204,6 +204,7 @@ export default function Page() {
                 className="flex gap-2 items-center py-1 px-4 rounded-md bg-indigo-100 text-indigo-500 hover:bg-indigo-200 focus:outline-none">
                 Edit Proxy
               </button>
+              <span className="text-xs">Ctrl/Cmd + E</span>
             </div>
           )}
           {proxyStates?.map((_) => (

@@ -42,10 +42,8 @@
     "updater": {
       "active": false
     },
-
     "windows": [
       {
-        "decorations": false,
         "title": "Proxy Tester",
         "fullscreen": false,
         "resizable": true,

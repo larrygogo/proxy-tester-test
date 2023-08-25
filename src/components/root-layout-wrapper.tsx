@@ -25,7 +25,7 @@ const RootLayoutWrapper = (props: {children: React.ReactNode}) => {
     <div
       data-tauri-drag-region="true"
       className={clsx(
-        "px-2 pt-8 h-screen",
+        "px-2 pt-8 h-screen rounded-lg",
         isActive ? "bg-blue-950/80" : "bg-gray-700"
       )}>
       {isLoaded ? children : null}
