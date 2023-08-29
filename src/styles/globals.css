@@ -7,3 +7,18 @@
     @apply fixed w-full h-full overflow-hidden overscroll-none text-gray-100 rounded-lg bg-transparent;
   }
 }
+
+@layer components {
+  .title-bar {
+    @apply select-none flex justify-end fixed top-0 left-0 right-0;
+  }
+  .title-bar-button {
+    @apply inline-flex justify-center items-center w-9 h-7;
+    @apply hover:bg-slate-700;
+  }
+
+  .title-bar-button.close {
+    @apply rounded-tr-lg;
+    @apply hover:bg-red-800;
+  }
+}

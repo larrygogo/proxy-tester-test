@@ -12,17 +12,19 @@ const RootLayoutWrapper = (props: {children: React.ReactNode}) => {
         return os.platform()
       }).then(p => {
         setPlatform(p)
-        if (p === 'win32') {
-          import("@tauri-apps/api/window").then(({appWindow}) => {
-            document.getElementById('titlebar-minimize')?.addEventListener('click', () => appWindow.minimize())
-            document.getElementById('titlebar-maximize')?.addEventListener('click', () => appWindow.toggleMaximize())
-            document.getElementById('titlebar-close')?.addEventListener('click', () => appWindow.close())
-          })
-        }
       })
     }
-
   }, []);
+
+  useEffect(() => {
+    if (platform === 'win32') {
+      import("@tauri-apps/api/window").then(({appWindow}) => {
+        document.getElementById('titlebar-minimize')?.addEventListener('click', () => appWindow.minimize())
+        document.getElementById('titlebar-maximize')?.addEventListener('click', () => appWindow.toggleMaximize())
+        document.getElementById('titlebar-close')?.addEventListener('click', () => appWindow.close())
+      })
+    }
+  }, [platform]);
 
   return (
     <div
@@ -33,21 +35,15 @@ const RootLayoutWrapper = (props: {children: React.ReactNode}) => {
         platform === "darwin" && "pt-8"
       )}>
       {platform === "win32" && (
-        <div data-tauri-drag-region="true" className="absolute top-2 right-4 flex gap-4 titlebar text-white">
-          <div className="titlebar-button" id="titlebar-minimize">
-            <img
-              src="https://api.iconify.design/mdi:window-minimize.svg"
-              alt="minimize"
-            />
+        <div data-tauri-drag-region="true" className="title-bar">
+          <div className="title-bar-button minimize" id="titlebar-minimize">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13H5v-2h14v2Z"/></svg>
           </div>
-          <div className="titlebar-button" id="titlebar-maximize">
-            <img
-              src="https://api.iconify.design/mdi:window-maximize.svg"
-              alt="maximize"
-            />
+          <div className="title-bar-button maximize" id="titlebar-maximize">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 2v14H5V5h14Z"/></svg>
           </div>
-          <div className="titlebar-button" id="titlebar-close">
-            <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
+          <div className="title-bar-button close" id="titlebar-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/></svg>
           </div>
         </div>
       )}
