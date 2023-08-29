@@ -4,6 +4,15 @@ use tauri::{App, Manager};
 pub fn init(app: &mut App) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let window = app.get_window("main").unwrap();
 
+    // window.on_window_event(|event| {
+    //     match event {
+    //         WindowEvent::ContextMenuRequested { .. } => {
+    //             event.
+    //         }
+    //         // 其他事件
+    //     }
+    // });
+
     // 仅在 macOS 下执行
     #[cfg(target_os = "macos")]
     window_vibrancy::apply_vibrancy(

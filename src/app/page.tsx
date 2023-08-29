@@ -62,10 +62,19 @@ export default function Page() {
 
       const task = async () => {
         const invoke  = (await import("@tauri-apps/api/tauri")).invoke
-        const result: { status: string, delay: number } = await invoke('test_nike', {
+
+        // 判断 target 是否以 http(s):// 开头
+        const formatTarget = (target: string) => {
+          if (target.startsWith('http://') || target.startsWith('https://')) {
+            return target
+          }
+          return 'https://' + target
+        }
+
+        const result: { status: string, delay: number } = await invoke('test_proxy', {
           socks5: protocol === 'socks5',
           proxy: proxy.host + ':' + proxy.port,
-          addr: target,
+          addr: formatTarget(target),
           username: proxy.username,
           password: proxy.password
         })
@@ -218,6 +227,7 @@ export default function Page() {
               <div className={clsx(
                 "w-1/5 text-right",
                 _.status !== 'OK' && _.speed !== undefined && 'text-red-400',
+                _.status === 'OK' && _.speed !== undefined && 'text-green-500',
               )}>
                 {_.speed !== undefined && _.speed !== null && `${_.speed}ms`}
                 {_.speed !== undefined && _.speed === null && _.status}
