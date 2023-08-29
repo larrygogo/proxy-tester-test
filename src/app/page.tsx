@@ -226,8 +226,8 @@ export default function Page() {
               </div>
               <div className={clsx(
                 "w-1/5 text-right",
-                _.status !== 'OK' && _.speed !== undefined && 'text-red-400',
-                _.status === 'OK' && _.speed !== undefined && 'text-green-500',
+                _.status !== 'OK' && _.speed !== undefined && 'text-red-700',
+                _.status === 'OK' && _.speed !== undefined && 'text-green-700',
               )}>
                 {_.speed !== undefined && _.speed !== null && `${_.speed}ms`}
                 {_.speed !== undefined && _.speed === null && _.status}
