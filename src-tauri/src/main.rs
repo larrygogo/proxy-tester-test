@@ -72,6 +72,7 @@ async fn test_proxy(
 
 fn main() {
     env_logger::init();
+
     tauri::Builder::default()
         //titleBarStyle
         .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike])

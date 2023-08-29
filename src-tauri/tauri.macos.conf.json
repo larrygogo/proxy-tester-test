@@ -1,0 +1,12 @@
+{
+  "tauri": {
+    "windows": [
+      {
+        "transparent": true,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay"
+      }
+    ],
+    "macOSPrivateApi": true
+  }
+}

@@ -50,12 +50,8 @@
         "width": 800,
         "height": 600,
         "minWidth": 800,
-        "minHeight": 600,
-        "transparent": true,
-        "hiddenTitle": true,
-        "titleBarStyle": "Overlay"
+        "minHeight": 600
       }
-    ],
-    "macOSPrivateApi": true
+    ]
   }
 }
