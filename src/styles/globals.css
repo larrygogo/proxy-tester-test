@@ -4,6 +4,6 @@
 
 @layer base {
   body {
-    @apply fixed w-full h-full overflow-hidden overscroll-none text-gray-100;
+    @apply fixed w-full h-full overflow-hidden overscroll-none text-gray-100 rounded-lg bg-transparent;
   }
 }

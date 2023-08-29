@@ -45,6 +45,8 @@
     "windows": [
       {
         "title": "Proxy Tester",
+        "decorations": false,
+        "transparent": true,
         "fullscreen": false,
         "resizable": true,
         "width": 800,

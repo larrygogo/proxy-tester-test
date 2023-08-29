@@ -16,7 +16,7 @@ pub fn init(app: &mut App) -> std::result::Result<(), Box<dyn std::error::Error>
 
     // 仅在 windows 下执行
     #[cfg(target_os = "windows")]
-    window_vibrancy::apply_blur(&window, Some((18, 18, 18, 125)))
-        .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+    // window_vibrancy::apply_blur(&window, Some((18, 18, 18, 125)))
+    //     .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
     Ok(())
 }

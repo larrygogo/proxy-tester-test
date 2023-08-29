@@ -2,6 +2,7 @@
   "tauri": {
     "windows": [
       {
+        "decorations": true,
         "transparent": true,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
