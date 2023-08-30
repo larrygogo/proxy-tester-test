@@ -69,6 +69,8 @@ export default function Page() {
     setFinishedCount(0)
     setTaskStatus(TaskStatus.WAITING)
     setImportOpen(false)
+    taskPool.stop()
+    setShowShadow(false)
   }
 
   const handleCopy = async () => {
