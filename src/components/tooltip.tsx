@@ -36,7 +36,7 @@ export default function Tooltip(props: TooltipProps) {
   const {getReferenceProps, getFloatingProps} = useInteractions(propsList)
 
   return (
-    <div className="flex font-sans cursor-pointer">
+    <div className="flex font-sans cursor-pointer z-50">
       <div
         className="tooltip-button"
         ref={refs.setReference}

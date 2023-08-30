@@ -2,10 +2,18 @@
   "tauri": {
     "windows": [
       {
+        "label": "splashscreen",
+        "decorations": true,
+        "hiddenTitle": true,
+        "url": "/"
+      },
+      {
         "decorations": true,
         "transparent": true,
         "hiddenTitle": true,
-        "titleBarStyle": "Overlay"
+        "titleBarStyle": "Overlay",
+        "visible": false,
+        "url": "/dashboard"
       }
     ],
     "macOSPrivateApi": true

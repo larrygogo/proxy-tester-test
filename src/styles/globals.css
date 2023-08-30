@@ -4,14 +4,19 @@
 
 @layer base {
   body {
-    @apply fixed w-full h-full overflow-hidden overscroll-none text-gray-100 rounded-lg bg-transparent select-none;
+    @apply fixed w-full h-full overflow-hidden overscroll-none rounded-lg bg-transparent select-none;
   }
 }
 
 @layer components {
   .title-bar {
-    @apply select-none flex justify-end fixed top-0 left-0 right-0;
+    @apply select-none flex justify-end fixed top-0 left-0 right-0 z-50;
   }
+
+  .title-bar.macos {
+    @apply py-1 px-4;
+  }
+
   .title-bar-button {
     @apply inline-flex justify-center items-center w-9 h-7;
     @apply hover:bg-slate-700;
