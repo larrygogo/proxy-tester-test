@@ -1,8 +1,13 @@
+'use client';
 import {Listbox, Transition} from "@headlessui/react";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useMemo, useRef, useState} from "react";
 import {useClickAway} from "ahooks";
 import Tooltip from "@/components/tooltip";
 import clsx from "clsx";
+import {LayoutContext} from "@/context/LayoutContext";
+import {appWindow} from "@tauri-apps/api/window";
+import {Store} from "tauri-plugin-store-api";
+import {emit} from "@tauri-apps/api/event";
 
 const protocols = [{
   name: 'HTTP(S)',
@@ -14,29 +19,57 @@ const protocols = [{
 
 type Props = {
   protocol?: string
-  onProtocolChange?: (protocol: string) => void
-  target?: string
-  onTargetChange?: (target: string) => void
   onEdit?: () => void
+  onProtocolChange?: (protocol: string) => void
+  onTargetChange?: (target: string) => void
   onStart?: () => void
 }
 
 export default function TargetInput(props: Props) {
-  const {protocol, target, onProtocolChange, onTargetChange, onEdit, onStart} = props
+  const [target, setTarget] = useState<string>()
+  const {protocol, onProtocolChange, onEdit, onStart} = props
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
+  const {platform} = useContext(LayoutContext)
+
+  const editButtonLabel = useMemo(() => {
+    if ('darwin' === platform) {
+      // Cmd 符号
+      return 'Edit Proxy (⌘ + E)'
+    }
+    return 'Edit Proxy(Ctrl+E)'
+  }, [platform])
 
   useClickAway(() => {
     setOpen(false)
   }, ref)
 
   useEffect(() => {
-    import('@tauri-apps/api/window').then(({appWindow}) => {
-      appWindow.listen('tauri://blur', () => {
+    (async () => {
+      // 监听窗口失去焦点事件
+      await appWindow.listen('tauri://blur', () => {
         setOpen(false)
       })
-    })
+
+      // 获取缓存的 target
+      const store = new Store(".setting.dat")
+      const targetStoreData = await store.get('proxy.target')
+      if (typeof targetStoreData === 'string') {
+        setTarget(targetStoreData)
+      }
+    })()
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (typeof target === 'string') {
+        const store = new Store(".setting.dat")
+        await store.set('proxy.target', target)
+        await store.save()
+        await emit('proxy_target_change', target)
+      }
+    })()
+  }, [target]);
 
   return (
     <div className="border rounded-lg flex font-mono text-gray-400">
@@ -85,9 +118,9 @@ export default function TargetInput(props: Props) {
         value={target}
         className="relative flex-1 h-12 text-black bg-transparent vim-cursor focus:outline-none"
         placeholder="Target URL/IP"
-        onChange={(e) => onTargetChange?.(e.target.value)}/>
+        onChange={(e) => setTarget(e.target.value)}/>
       <div className="flex gap-1 items-center pr-2">
-        <Tooltip placement="bottom" label="Proxy List">
+        <Tooltip enterDelay placement="bottom" label={editButtonLabel}>
           <button
             onClick={onEdit}
             className="py-1 px-2 rounded-lg text-gray-500 hover:bg-gray-200 focus:outline-none">
@@ -98,13 +131,13 @@ export default function TargetInput(props: Props) {
             </svg>
           </button>
         </Tooltip>
-        <Tooltip placement="bottom" label="Test Proxy">
+        <Tooltip enterDelay placement="bottom" label="Test Proxy">
           <button
             disabled={!target}
             onClick={onStart}
             className={clsx(
-            "py-1 px-2 rounded-lg focus:outline-none text-indigo-500 bg-indigo-600/10 hover:bg-indigo-600/20 disabled:bg-transparent disabled:text-gray-400 disabled:hover:bg-gray-200",
-          )}>
+              "py-1 px-2 rounded-lg focus:outline-none text-indigo-500 bg-indigo-600/10 hover:bg-indigo-600/20 disabled:bg-transparent disabled:text-gray-400 disabled:hover:bg-gray-200",
+            )}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
               <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                     d="m15 14l2.045-1.533C19.469 10.648 20.542 6.98 20 4c-2.981-.542-6.649.531-8.467 2.955L10 9m5 5l-3.5 2.5l-4-4L10 9m5 5v2.667a4 4 0 0 1-.8 2.4l-.7.933l-1-1M10 9H7.333a4 4 0 0 0-2.4.8L4 10.5l1 1M8.5 18L5 19l1.166-3.5m9.334-6a1 1 0 1 0 0-2a1 1 0 0 0 0 2Z"/>

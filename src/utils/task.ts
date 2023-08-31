@@ -7,6 +7,12 @@ interface ProgressEventData {
   total: number;
 }
 
+
+export enum TaskStatus {
+  PENDING = 'pending',
+  STOP = 'stop',
+}
+
 type EventHandler<T> = (data: T) => void;
 
 export class TaskPool {

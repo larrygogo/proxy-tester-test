@@ -4,9 +4,13 @@ import {Transition} from "@headlessui/react";
 
 type TooltipProps = {
   children: React.ReactNode
-  label: React.ReactNode
+  // label can be a function that returns a ReactNode
+  label: React.ReactNode | (() => React.ReactNode)
   placement?: 'top' | 'bottom' | 'left' | 'right'
   trigger?: ('hover' | 'click')[]
+  enterDelay?: boolean
+  width?: number
+  breakContent?: boolean
 }
 
 export default function Tooltip(props: TooltipProps) {
@@ -36,9 +40,9 @@ export default function Tooltip(props: TooltipProps) {
   const {getReferenceProps, getFloatingProps} = useInteractions(propsList)
 
   return (
-    <div className="flex font-sans cursor-pointer z-50">
+    <div className="inline-flex font-sans cursor-pointer">
       <div
-        className="tooltip-button"
+        className="inline tooltip-button"
         ref={refs.setReference}
         {...getReferenceProps()}
         onClick={() => setOpen(!open)}
@@ -47,7 +51,7 @@ export default function Tooltip(props: TooltipProps) {
       </div>
       <Transition
         show={open}
-        enter="transition duration-200 ease-out delay-300"
+        enter={"transition duration-200 ease-out" + (props.enterDelay ? " delay-300" : "")}
         enterFrom="transform scale-50 opacity-0"
         enterTo="transform scale-95 opacity-100"
         leave="transition duration-200 ease-out"
@@ -56,12 +60,15 @@ export default function Tooltip(props: TooltipProps) {
       >
         <div
           // 不换行
-          className="bg-black rounded px-4 py-2 text-xs text-white/90 shadow tooltip-content whitespace-nowrap"
+          className={"absolute z-1000 bg-gray-900/90 text-white font-normal text-xs rounded-lg px-4 py-2.5 whitespace-nowrap" + (props.breakContent ? "whitespace-nowrap" : "")}
           ref={refs.setFloating}
-          style={floatingStyles}
+          style={{
+            ...floatingStyles,
+            width: props.width || 'auto'
+          }}
           {...getFloatingProps()}>
           <FloatingArrow ref={arrowRef} context={context} width={6} height={3}/>
-          {props.label}
+          {typeof props.label === 'function' ? props.label() : props.label}
         </div>
       </Transition>
     </div>

@@ -1,4 +1,6 @@
 import '@/styles/globals.css';
+import {LayoutProvider} from "@/context/LayoutContext";
+import NoSsrWrapper from "@/components/no-ssr-wrapper";
 
 export default function RootLayout(props: {
   children: React.ReactNode
@@ -7,7 +9,11 @@ export default function RootLayout(props: {
   return (
     <html lang="en">
     <body>
-      {children}
+      <NoSsrWrapper>
+        <LayoutProvider>
+          {children}
+        </LayoutProvider>
+      </NoSsrWrapper>
     </body>
     </html>
   )

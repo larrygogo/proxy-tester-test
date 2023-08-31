@@ -6,9 +6,13 @@
   body {
     @apply fixed w-full h-full overflow-hidden overscroll-none rounded-lg bg-transparent select-none;
   }
+  img {
+    -webkit-user-drag: none;
+  }
 }
 
 @layer components {
+
   .title-bar {
     @apply select-none flex justify-end fixed top-0 left-0 right-0 z-50;
   }

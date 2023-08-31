@@ -4,7 +4,11 @@ module.exports = {
     './src/**/*.{js,ts,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      zIndex: {
+        'z-1000': 1000,
+      }
+    },
   },
   plugins: [],
 }

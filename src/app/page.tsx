@@ -1,19 +1,20 @@
 'use client'
 import {useEffect} from "react";
+import {getAll} from "@tauri-apps/api/window";
 
 export default function Page() {
   useEffect(() => {
-    import("@tauri-apps/api/window").then(({getAll}) => {
+    (async () => {
       const all = getAll()
       const splashscreen = all.find(w => w.label === 'splashscreen')
-      if (splashscreen) {
-          splashscreen.close().then()
-      }
       const main = all.find(w => w.label === 'main')
       if (main) {
-        main.show().then()
+        await main.show()
       }
-    })
+      if (splashscreen) {
+        await splashscreen.close()
+      }
+    })()
   }, []);
 
   return (

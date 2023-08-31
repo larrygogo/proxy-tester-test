@@ -13,7 +13,9 @@
         "hiddenTitle": true,
         "titleBarStyle": "Overlay",
         "visible": false,
-        "url": "/dashboard"
+        "url": "/dashboard",
+        "minWidth": 800,
+        "minHeight": 600
       }
     ],
     "macOSPrivateApi": true

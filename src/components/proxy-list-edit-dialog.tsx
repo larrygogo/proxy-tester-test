@@ -1,21 +1,25 @@
 import {Fragment, useCallback, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
+import { Store } from "tauri-plugin-store-api";
+import {emit} from "@tauri-apps/api/event";
 
 type Props = {
-  onSave?: (proxyList: string[]) => void
   onClose?: () => void
   open: boolean
 }
 
 const ProxyListEditDialog = (props: Props) => {
-  const {onClose, onSave, open} = props
+  const {onClose, open} = props
   const [proxyText, setProxyText] = useState<string>('')
 
   const handleSave = useCallback(async () => {
+    const store = new Store(".settings.dat")
     const proxyList = proxyText?.split('\n').filter(Boolean)
-    localStorage.setItem('proxyList', JSON.stringify(proxyList))
-    onSave?.(proxyList)
-  }, [onSave, proxyText])
+    await store.set("proxy.list", proxyList)
+    await store.save()
+    await emit("proxy_list_change", proxyList)
+    onClose?.()
+  }, [onClose, proxyText])
 
   // 快捷键
   useEffect(() => {
@@ -36,20 +40,18 @@ const ProxyListEditDialog = (props: Props) => {
   // 监听 localStorage 变化
   useEffect(() => {
     if (open) {
-      try {
-        const storageValue = localStorage.getItem('proxyList')
-        const value = JSON.parse(storageValue || '').filter(Boolean).join('\n')
-        setProxyText(value)
-      } catch {
-        localStorage.setItem('proxyList', '')
-        setProxyText('')
-      }
+      const store = new Store(".settings.dat")
+      store.get("proxy.list").then((value) => {
+        if (value instanceof Array) {
+          setProxyText(value.join('\n'))
+        }
+      })
     }
   }, [open])
 
   return (
     <Transition show={open} as="div" className="absolute">
-      <Dialog className="relative z-50" onClose={() => onClose?.()} >
+      <Dialog className="relative z-50 font-mono" onClose={() => onClose?.()} >
           {/*
           Use one Transition.Child to apply one transition to the backdrop...
         */}
@@ -64,11 +66,6 @@ const ProxyListEditDialog = (props: Props) => {
           >
             <div className="fixed inset-0 bg-black/30"/>
           </Transition.Child>
-
-          {/*
-          ...and another Transition.Child to apply a separate transition
-          to the contents.
-        */}
           <Transition.Child
             as="div"
             className="fixed inset-0 flex items-center justify-center"
@@ -84,14 +81,15 @@ const ProxyListEditDialog = (props: Props) => {
                 <div className="flex flex-col flex-1">
                   <div className="flex-1 relative pb-8 border text-sm rounded-xl overflow-hidden">
                     <textarea
+                      placeholder="host:port(:username:password)"
                       className="p-2 w-full h-full resize-none focus:outline-none"
                       value={proxyText} onChange={(e) => setProxyText(e.target.value)}/>
-                    <div className="absolute w-full bottom-0 select-none text-sm bg-stone-50 text-gray-400">
+                    <div className="absolute w-full bottom-0 select-none bg-stone-50 text-gray-400 text-xs">
                       <div className="flex items-center justify-between px-2 py-1">
                         <div>
                           Ctrl/Cmd + S: Save
                         </div>
-                        <div className="pr-2 text-sm">
+                        <div className="pr-2">
                           line: {proxyText?.split('\n').filter(Boolean).length}
                         </div>
                       </div>
