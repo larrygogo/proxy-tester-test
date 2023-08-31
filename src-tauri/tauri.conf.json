@@ -44,14 +44,6 @@
     },
     "windows": [
       {
-        "title": "Proxy Tester",
-        "label": "splashscreen",
-        "decorations": true,
-        "url": "/loading.html"
-      },
-      {
-        "title": "Proxy Tester",
-        "label": "main",
         "decorations": false,
         "transparent": true,
         "fullscreen": false,
@@ -62,6 +54,12 @@
         "height": 600,
         "minWidth": 800,
         "minHeight": 600
+      },
+      {
+        "title": "Proxy Tester",
+        "label": "splashscreen",
+        "decorations": true,
+        "url": "/loading.html"
       }
     ]
   }
