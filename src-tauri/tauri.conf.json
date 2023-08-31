@@ -45,10 +45,20 @@
     "windows": [
       {
         "title": "Proxy Tester",
+        "label": "splashscreen",
+        "decorations": true,
+        "hiddenTitle": true,
+        "url": "/"
+      },
+      {
+        "title": "Proxy Tester",
+        "label": "main",
         "decorations": false,
         "transparent": true,
         "fullscreen": false,
         "resizable": true,
+        "url": "/dashboard",
+        "visible": false,
         "width": 800,
         "height": 600,
         "minWidth": 800,

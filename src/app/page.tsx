@@ -9,6 +9,7 @@ export default function Page() {
       const splashscreen = all.find(w => w.label === 'splashscreen')
       const main = all.find(w => w.label === 'main')
       if (main) {
+        console.log(main)
         await main.show()
       }
       if (splashscreen) {

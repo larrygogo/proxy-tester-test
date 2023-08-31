@@ -17,6 +17,13 @@ export const LayoutProvider = (props: { children: React.ReactNode }) => {
     }).then(p => {
       setPlatform(p)
     })
+
+    if (process.env.NODE_ENV !== 'development') {
+      window.addEventListener("contextmenu", (e) => {
+        e.preventDefault()
+      })
+    }
+
   }, []);
 
   return (

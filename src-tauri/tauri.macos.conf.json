@@ -12,8 +12,8 @@
         "transparent": true,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay",
-        "visible": false,
         "url": "/dashboard",
+        "visible": false,
         "minWidth": 800,
         "minHeight": 600
       }

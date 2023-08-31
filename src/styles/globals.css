@@ -9,12 +9,15 @@
   img {
     -webkit-user-drag: none;
   }
+
+  button {
+    @apply focus:outline-none;
+  }
 }
 
 @layer components {
-
   .title-bar {
-    @apply select-none flex justify-end fixed top-0 left-0 right-0 z-50;
+    @apply select-none flex justify-end items-center fixed top-0 left-0 right-0 z-50 h-8;
   }
 
   .title-bar.macos {
@@ -22,7 +25,7 @@
   }
 
   .title-bar-button {
-    @apply inline-flex justify-center items-center w-9 h-7;
+    @apply inline-flex h-full justify-center items-center text-white px-3;
     @apply hover:bg-slate-700;
   }
 
