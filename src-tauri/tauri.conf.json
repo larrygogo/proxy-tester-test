@@ -47,8 +47,7 @@
         "title": "Proxy Tester",
         "label": "splashscreen",
         "decorations": true,
-        "hiddenTitle": true,
-        "url": "/"
+        "url": "/loading.html"
       },
       {
         "title": "Proxy Tester",
