@@ -5,9 +5,10 @@
         "label": "splashscreen",
         "decorations": true,
         "hiddenTitle": true,
-        "url": "/"
+        "url": "/loading.html"
       },
       {
+        "label": "main",
         "decorations": true,
         "transparent": true,
         "hiddenTitle": true,

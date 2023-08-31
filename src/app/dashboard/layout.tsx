@@ -1,8 +1,9 @@
 'use client';
-import {useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import clsx from "clsx";
 import Tooltip from "@/components/tooltip";
 import Link from "next/link";
+import {LayoutContext} from "@/context/LayoutContext";
 
 type Props = {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ type Props = {
 
 export default function Layout(props: Props) {
   const {children} = props
-  const [platform, setPlatform] = useState<string>()
+  const {platform} = useContext(LayoutContext)
 
   const handleHelp = () => {
     import("@tauri-apps/api/window").then(({WebviewWindow}) => {
@@ -22,13 +23,19 @@ export default function Layout(props: Props) {
   }
 
   useEffect(() => {
-    if (window && document) {
-      import("@tauri-apps/api").then(({os}) => {
-        return os.platform()
-      }).then(p => {
-        setPlatform(p)
-      })
-    }
+    import('@tauri-apps/api/window').then(({getAll}) => {
+      const all = getAll()
+      const splashscreen = all.find(w => w.label === 'splashscreen')
+      const main = all.find(w => w.label === 'main')
+      if (main) {
+        console.log(main)
+        main.show().then()
+      }
+      if (splashscreen) {
+        splashscreen.close().then()
+      }
+    })
+
   }, []);
 
   useEffect(() => {
