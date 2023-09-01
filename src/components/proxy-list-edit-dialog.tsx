@@ -1,7 +1,6 @@
-import {Fragment, useCallback, useEffect, useState} from "react";
+import {Fragment, useCallback, useContext, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
-import { Store } from "tauri-plugin-store-api";
-import {emit} from "@tauri-apps/api/event";
+import {ProxyTaskContext} from "@/context/ProxyTaskContext";
 
 type Props = {
   onClose?: () => void
@@ -11,15 +10,18 @@ type Props = {
 const ProxyListEditDialog = (props: Props) => {
   const {onClose, open} = props
   const [proxyText, setProxyText] = useState<string>('')
+  const {proxyList, setProxyList} = useContext(ProxyTaskContext)
 
   const handleSave = useCallback(async () => {
-    const store = new Store(".settings.dat")
-    const proxyList = proxyText?.split('\n').filter(Boolean)
-    await store.set("proxy.list", proxyList)
-    await store.save()
-    await emit("proxy_list_change", proxyList)
+    setProxyList?.(proxyText.split('\n').filter(Boolean))
     onClose?.()
-  }, [onClose, proxyText])
+  }, [onClose, proxyText, setProxyList])
+
+  useEffect(() => {
+    (async () => {
+      setProxyText(proxyList?.join('\n') || '')
+    })()
+  }, [proxyList]);
 
   // 快捷键
   useEffect(() => {
@@ -36,18 +38,6 @@ const ProxyListEditDialog = (props: Props) => {
       })
     })
   }, [handleSave])
-
-  // 监听 localStorage 变化
-  useEffect(() => {
-    if (open) {
-      const store = new Store(".settings.dat")
-      store.get("proxy.list").then((value) => {
-        if (value instanceof Array) {
-          setProxyText(value.join('\n'))
-        }
-      })
-    }
-  }, [open])
 
   return (
     <Transition show={open} as="div" className="absolute">
@@ -102,7 +92,7 @@ const ProxyListEditDialog = (props: Props) => {
                   className="hover:bg-gray-100 border text-black/9 text-sm py-1.5 px-4 rounded-md"
                   onClick={() => onClose?.()}>Cancel</button>
                 <button
-                  className="bg-indigo-500 hover:bg-indigo-700 text-white text-sm py-1.5 px-4 rounded-md"
+                  className="bg-blue-500 hover:bg-blue-400 text-white text-sm py-1.5 px-4 rounded-md"
                   onClick={handleSave}>Save</button>
               </div>
             </Dialog.Panel>

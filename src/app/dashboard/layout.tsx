@@ -28,7 +28,6 @@ export default function Layout(props: Props) {
       const splashscreen = all.find(w => w.label === 'splashscreen')
       const main = all.find(w => w.label === 'main')
       if (main) {
-        console.log(main)
         main.show().then()
       }
       if (splashscreen) {

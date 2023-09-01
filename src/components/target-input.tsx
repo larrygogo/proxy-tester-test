@@ -6,8 +6,7 @@ import Tooltip from "@/components/tooltip";
 import clsx from "clsx";
 import {LayoutContext} from "@/context/LayoutContext";
 import {appWindow} from "@tauri-apps/api/window";
-import {Store} from "tauri-plugin-store-api";
-import {emit} from "@tauri-apps/api/event";
+import {ProxyTaskContext} from "@/context/ProxyTaskContext";
 
 const protocols = [{
   name: 'HTTP(S)',
@@ -18,19 +17,21 @@ const protocols = [{
 }]
 
 type Props = {
-  protocol?: string
   onEdit?: () => void
-  onProtocolChange?: (protocol: string) => void
-  onTargetChange?: (target: string) => void
-  onStart?: () => void
 }
 
 export default function TargetInput(props: Props) {
-  const [target, setTarget] = useState<string>()
-  const {protocol, onProtocolChange, onEdit, onStart} = props
-  const [open, setOpen] = useState(false)
   const ref = useRef(null)
+  const {onEdit} = props
+  const [open, setOpen] = useState(false)
   const {platform} = useContext(LayoutContext)
+  const {
+    protocol,
+    setProtocol,
+    target,
+    setTarget,
+    startTask
+  } = useContext(ProxyTaskContext)
 
   const editButtonLabel = useMemo(() => {
     if ('darwin' === platform) {
@@ -39,6 +40,10 @@ export default function TargetInput(props: Props) {
     }
     return 'Edit Proxy(Ctrl+E)'
   }, [platform])
+
+  const handleStart = async () => {
+    startTask?.()
+  }
 
   useClickAway(() => {
     setOpen(false)
@@ -50,31 +55,13 @@ export default function TargetInput(props: Props) {
       await appWindow.listen('tauri://blur', () => {
         setOpen(false)
       })
-
-      // 获取缓存的 target
-      const store = new Store(".setting.dat")
-      const targetStoreData = await store.get('proxy.target')
-      if (typeof targetStoreData === 'string') {
-        setTarget(targetStoreData)
-      }
     })()
   }, []);
-
-  useEffect(() => {
-    (async () => {
-      if (typeof target === 'string') {
-        const store = new Store(".setting.dat")
-        await store.set('proxy.target', target)
-        await store.save()
-        await emit('proxy_target_change', target)
-      }
-    })()
-  }, [target]);
 
   return (
     <div className="border rounded-lg flex font-mono text-gray-400">
       <Listbox as="div" className="" value={protocol} onChange={(v) => {
-        onProtocolChange?.(v)
+        setProtocol?.(v)
         setOpen(false)
       }}>
         <div className="relative">
@@ -118,7 +105,7 @@ export default function TargetInput(props: Props) {
         value={target}
         className="relative flex-1 h-12 text-black bg-transparent vim-cursor focus:outline-none"
         placeholder="Target URL/IP"
-        onChange={(e) => setTarget(e.target.value)}/>
+        onChange={(e) => setTarget?.(e.target.value)}/>
       <div className="flex gap-1 items-center pr-2">
         <Tooltip enterDelay placement="bottom" label={editButtonLabel}>
           <button
@@ -134,9 +121,9 @@ export default function TargetInput(props: Props) {
         <Tooltip enterDelay placement="bottom" label="Test Proxy">
           <button
             disabled={!target}
-            onClick={onStart}
+            onClick={handleStart}
             className={clsx(
-              "py-1 px-2 rounded-lg focus:outline-none text-indigo-500 bg-indigo-600/10 hover:bg-indigo-600/20 disabled:bg-transparent disabled:text-gray-400 disabled:hover:bg-gray-200",
+              "py-1 px-2 rounded-lg focus:outline-none text-blue-600 bg-blue-600/10 hover:bg-blue-600/20 disabled:bg-transparent disabled:text-gray-400 disabled:hover:bg-gray-200",
             )}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
               <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"

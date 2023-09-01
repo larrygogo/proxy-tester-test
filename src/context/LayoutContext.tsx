@@ -1,6 +1,7 @@
 'use client';
 import {Platform} from "@tauri-apps/api/os";
 import React, {useEffect} from "react";
+import {os} from "@tauri-apps/api";
 
 type LayoutContextType = {
   platform?: Platform
@@ -12,17 +13,15 @@ export const LayoutProvider = (props: { children: React.ReactNode }) => {
   const [platform, setPlatform] = React.useState<Platform>();
 
   useEffect(() => {
-    import("@tauri-apps/api").then(({os}) => {
-      return os.platform()
-    }).then(p => {
+    (async () => {
+      const p = await os.platform()
       setPlatform(p)
-    })
-
-    if (process.env.NODE_ENV !== 'development') {
-      window.addEventListener("contextmenu", (e) => {
-        e.preventDefault()
-      })
-    }
+      if (process.env.NODE_ENV !== 'development') {
+        window.addEventListener("contextmenu", (e) => {
+          e.preventDefault()
+        })
+      }
+    })()
 
   }, []);
 

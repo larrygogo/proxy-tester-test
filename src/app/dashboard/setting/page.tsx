@@ -1,32 +1,11 @@
 'use client'
 import Link from "next/link";
-import {useEffect, useState} from "react";
-import {Store} from "tauri-plugin-store-api";
-import {emit} from "@tauri-apps/api/event";
+import {useContext} from "react";
 import Tooltip from "@/components/tooltip";
+import {ProxyTaskContext} from "@/context/ProxyTaskContext";
 
 export default function Page() {
-  const [concurrentNumber, setConcurrentNumber] = useState<number>()
-
-  useEffect(() => {
-    (async () => {
-      const store = new Store(".settings.dat")
-      const taskConcurrency = await store.get("task.concurrency")
-      if (typeof taskConcurrency === 'number') {
-        setConcurrentNumber(taskConcurrency)
-      }
-    })()
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      if (concurrentNumber) {
-        const store = new Store(".settings.dat")
-        await store.set("task.concurrency", concurrentNumber)
-        await emit("task_concurrency_change", concurrentNumber)
-      }
-    })();
-  }, [concurrentNumber])
+  const {concurrency, setConcurrency} = useContext(ProxyTaskContext)
 
   return (
     <div>
@@ -67,9 +46,9 @@ export default function Page() {
             <input
               type="range" min="1" max="100" step="1"
               className="w-52 appearance-none bg-transparent [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/10 [&::-webkit-slider-runnable-track]:h-[6px] [&::-webkit-slider-thumb]:-mt-[4px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[14px] [&::-webkit-slider-thumb]:w-[8px] [&::-webkit-slider-thumb]:rounded [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:bg-blue-600/80"
-              value={concurrentNumber} onChange={(e) => setConcurrentNumber(Number(e.target.value))}/>{/*  slider*/}
+              value={concurrency} onChange={(e) => setConcurrency?.(Number(e.target.value))}/>{/*  slider*/}
             <div className="w-12 text-center text-sm">
-              {concurrentNumber}
+              {concurrency}
             </div>
           </div>
         </div>
