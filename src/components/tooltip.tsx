@@ -2,7 +2,7 @@ import React, {useRef, useState} from "react";
 import {useFloating, autoUpdate, arrow, offset, flip, shift, useHover, useClick, useInteractions, FloatingArrow} from '@floating-ui/react';
 import {Transition} from "@headlessui/react";
 
-type TooltipProps = {
+type TooltipProps<T> = {
   children: React.ReactNode
   // label can be a function that returns a ReactNode
   label: React.ReactNode | (() => React.ReactNode)
@@ -11,9 +11,10 @@ type TooltipProps = {
   enterDelay?: boolean
   width?: number
   breakContent?: boolean
+  // 组件的 element type
 }
 
-export default function Tooltip(props: TooltipProps) {
+export default function Tooltip<T>(props: TooltipProps<T>)  {
   const [open, setOpen] = useState<boolean>(false)
   const arrowRef = useRef(null);
   const {refs, floatingStyles, context} = useFloating({
@@ -42,7 +43,7 @@ export default function Tooltip(props: TooltipProps) {
   return (
     <div className="inline-flex font-sans cursor-pointer">
       <div
-        className="inline tooltip-button"
+        className="tooltip-button"
         ref={refs.setReference}
         {...getReferenceProps()}
         onClick={() => setOpen(!open)}

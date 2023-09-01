@@ -21,7 +21,7 @@
   }
 
   .title-bar.macos {
-    @apply py-1 px-4;
+    @apply py-1 px-2 gap-1;
   }
 
   .title-bar-button {
