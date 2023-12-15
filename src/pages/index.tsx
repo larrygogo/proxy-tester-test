@@ -49,7 +49,7 @@ export default function Home() {
     proxyData.forEach((proxy) => {
 
       const task = async () => {
-        const result: { status: string, delay: number } = await invoke('test_nike', {
+        const result: { status: string, delay: number } = await invoke('test_proxy', {
           socks5,
           proxy: proxy.host + ':' + proxy.port,
           addr: data.target,
