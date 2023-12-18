@@ -1,16 +1,15 @@
 'use client';
-import {Platform} from "@tauri-apps/api/os";
 import React, {useEffect} from "react";
 import {os} from "@tauri-apps/api";
 
 type LayoutContextType = {
-  platform?: Platform
+  platform?: os.Platform
 }
 
 export const LayoutContext = React.createContext<LayoutContextType>({});
 
 export const LayoutProvider = (props: { children: React.ReactNode }) => {
-  const [platform, setPlatform] = React.useState<Platform>();
+  const [platform, setPlatform] = React.useState<os.Platform>();
 
   useEffect(() => {
     (async () => {

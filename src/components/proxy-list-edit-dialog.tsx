@@ -26,77 +26,78 @@ const ProxyListEditDialog = (props: Props) => {
   // 快捷键
   useEffect(() => {
     // CmdOrCtrl + S
-    import('@tauri-apps/api/globalShortcut').then(({register, unregister, isRegistered}) => {
-      isRegistered('CmdOrCtrl+S').then((registered) => {
-        if (!registered) {
-          return register('CmdOrCtrl+S', handleSave)
+    import('@tauri-apps/api').then(({globalShortcut}) => {
+      globalShortcut.isRegistered('CmdOrCtrl+S').then((registered) => {
+        if (!registered && open) {
+          return globalShortcut.register('CmdOrCtrl+S', handleSave)
         } else {
-          unregister('CmdOrCtrl+S').then(() => {
-            return register('CmdOrCtrl+S', handleSave)
-          })
+          return globalShortcut.unregister('CmdOrCtrl+S')
         }
       })
     })
-  }, [handleSave])
+  }, [open, handleSave])
 
   return (
     <Transition show={open} as="div" className="absolute">
-      <Dialog className="relative z-50 font-mono" onClose={() => onClose?.()} >
-          {/*
+      <Dialog className="relative z-50 font-mono" onClose={() => onClose?.()}>
+        {/*
           Use one Transition.Child to apply one transition to the backdrop...
         */}
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black/30"/>
-          </Transition.Child>
-          <Transition.Child
-            as="div"
-            className="fixed inset-0 flex items-center justify-center"
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-          >
-            <Dialog.Panel className="flex flex-col gap-4 mx-auto w-4/5 h-4/6 rounded-xl shadow-2xl text-black p-8 bg-white border">
-              <Dialog.Description as="div" className="flex flex-1">
-                <div className="flex flex-col flex-1">
-                  <div className="flex-1 relative pb-8 border text-sm rounded-xl overflow-hidden">
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black/30"/>
+        </Transition.Child>
+        <Transition.Child
+          as="div"
+          className="fixed inset-0 flex items-center justify-center"
+          enter="ease-out duration-300"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
+        >
+          <Dialog.Panel
+            className="flex flex-col gap-4 mx-auto w-4/5 h-4/6 rounded-xl shadow-2xl text-black p-8 bg-white border">
+            <Dialog.Description as="div" className="flex flex-1">
+              <div className="flex flex-col flex-1">
+                <div className="flex-1 relative pb-8 border text-sm rounded-xl overflow-hidden">
                     <textarea
                       placeholder="host:port(:username:password)"
                       className="p-2 w-full h-full resize-none focus:outline-none"
                       value={proxyText} onChange={(e) => setProxyText(e.target.value)}/>
-                    <div className="absolute w-full bottom-0 select-none bg-stone-50 text-gray-400 text-xs">
-                      <div className="flex items-center justify-between px-2 py-1">
-                        <div>
-                          Ctrl/Cmd + S: Save
-                        </div>
-                        <div className="pr-2">
-                          line: {proxyText?.split('\n').filter(Boolean).length}
-                        </div>
+                  <div className="absolute w-full bottom-0 select-none bg-stone-50 text-gray-400 text-xs">
+                    <div className="flex items-center justify-between px-2 py-1">
+                      <div>
+                        Ctrl/Cmd + S: Save
+                      </div>
+                      <div className="pr-2">
+                        line: {proxyText?.split('\n').filter(Boolean).length}
                       </div>
                     </div>
                   </div>
                 </div>
-              </Dialog.Description>
-              <div className="flex gap-3 justify-end">
-                <button
-                  className="hover:bg-gray-100 border text-black/9 text-sm py-1.5 px-4 rounded-md"
-                  onClick={() => onClose?.()}>Cancel</button>
-                <button
-                  className="bg-blue-500 hover:bg-blue-400 text-white text-sm py-1.5 px-4 rounded-md"
-                  onClick={handleSave}>Save</button>
               </div>
-            </Dialog.Panel>
-          </Transition.Child>
+            </Dialog.Description>
+            <div className="flex gap-3 justify-end">
+              <button
+                className="hover:bg-gray-100 border text-black/9 text-sm py-1.5 px-4 rounded-md"
+                onClick={() => onClose?.()}>Cancel
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-400 text-white text-sm py-1.5 px-4 rounded-md"
+                onClick={handleSave}>Save
+              </button>
+            </div>
+          </Dialog.Panel>
+        </Transition.Child>
       </Dialog>
     </Transition>
   )

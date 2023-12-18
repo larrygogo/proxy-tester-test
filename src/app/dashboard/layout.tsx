@@ -14,8 +14,8 @@ export default function Layout(props: Props) {
   const {platform} = useContext(LayoutContext)
 
   const handleHelp = () => {
-    import("@tauri-apps/api/window").then(({WebviewWindow}) => {
-      new WebviewWindow("help", {
+    import("@tauri-apps/api").then(({window}) => {
+      new window.WebviewWindow("help", {
         title: 'Help',
         url: '/help',
       })
@@ -23,8 +23,8 @@ export default function Layout(props: Props) {
   }
 
   useEffect(() => {
-    import('@tauri-apps/api/window').then(({getAll}) => {
-      const all = getAll()
+    import('@tauri-apps/api').then(({window}) => {
+      const all = window.getAll()
       const splashscreen = all.find(w => w.label === 'splashscreen')
       const main = all.find(w => w.label === 'main')
       if (main) {
@@ -39,10 +39,10 @@ export default function Layout(props: Props) {
 
   useEffect(() => {
     if (platform === 'win32') {
-      import("@tauri-apps/api/window").then(({appWindow}) => {
-        document.getElementById('titlebar-minimize')?.addEventListener('click', () => appWindow.minimize())
-        document.getElementById('titlebar-maximize')?.addEventListener('click', () => appWindow.toggleMaximize())
-        document.getElementById('titlebar-close')?.addEventListener('click', () => appWindow.close())
+      import("@tauri-apps/api").then(({window}) => {
+        document.getElementById('titlebar-minimize')?.addEventListener('click', () => window.appWindow.minimize())
+        document.getElementById('titlebar-maximize')?.addEventListener('click', () => window.appWindow.toggleMaximize())
+        document.getElementById('titlebar-close')?.addEventListener('click', () => window.appWindow.close())
       })
     }
   }, [platform]);

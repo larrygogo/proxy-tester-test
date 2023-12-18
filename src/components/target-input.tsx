@@ -5,7 +5,7 @@ import {useClickAway} from "ahooks";
 import Tooltip from "@/components/tooltip";
 import clsx from "clsx";
 import {LayoutContext} from "@/context/LayoutContext";
-import {appWindow} from "@tauri-apps/api/window";
+import {window} from "@tauri-apps/api";
 import {ProxyTaskContext} from "@/context/ProxyTaskContext";
 
 const protocols = [{
@@ -52,7 +52,7 @@ export default function TargetInput(props: Props) {
   useEffect(() => {
     (async () => {
       // 监听窗口失去焦点事件
-      await appWindow.listen('tauri://blur', () => {
+      await window.appWindow.listen('tauri://blur', () => {
         setOpen(false)
       })
     })()

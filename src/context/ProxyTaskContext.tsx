@@ -138,7 +138,6 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
 
   useEffect(() => {
     (async () => {
-
       // 加载 Proxy List 缓存
       const proxyListStoreData = await store.get("proxy.list")
       if (proxyListStoreData instanceof Array) {
