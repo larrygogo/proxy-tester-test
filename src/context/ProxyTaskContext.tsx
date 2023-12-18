@@ -12,13 +12,13 @@ type LayoutContextType = {
   stopTask?: () => void
   concurrency?: number
   proxyList?: string[]
-  protocol?: ProxyProtocol
+  protocol?: string
   target?: string
   proxyStates?: ProxyDisplayInfo[]
   finishedCount?: number
   taskStatus?: TaskStatus
   setProxyList?: (proxyList: string[]) => void
-  setProtocol?: (protocol: ProxyProtocol) => void
+  setProtocol?: (protocol: string) => void
   setTarget?: (target: string) => void
   setProxyStates?: (proxyStates: ProxyDisplayInfo[]) => void
   setFinishedCount?: (finishedCount: number) => void
@@ -39,7 +39,7 @@ export enum ProxyProtocol {
 export const ProxyTaskContext = React.createContext<LayoutContextType>({});
 
 export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
-  const [protocol, setProtocol] = useState<ProxyProtocol>(ProxyProtocol.HTTP)
+  const [protocol, setProtocol] = useState<string>(ProxyProtocol.HTTP)
   const [proxyList, setProxyList] = useState<string[]>([])
   const [target, setTarget] = useState<string>('')
   const [proxyStates, setProxyStates] = useState<ProxyDisplayInfo[]>([])
@@ -123,7 +123,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
     setTarget(target)
   }, [store])
 
-  const changeProtocol = useCallback(async (protocol: ProxyProtocol) => {
+  const changeProtocol = useCallback(async (protocol: string) => {
     await store.set("proxy.protocol", protocol)
     await store.save()
     setProtocol(protocol)

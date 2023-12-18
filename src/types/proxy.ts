@@ -14,3 +14,8 @@ export type ProxyDisplayInfo = ProxyInfo & {
   speed?: number;
   status?: string;
 }
+
+export interface ProxyType {
+  name: string;
+  value: string;
+}

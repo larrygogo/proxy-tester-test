@@ -9,14 +9,12 @@ export default function RootLayout(props: {
   const {children} = props
   return (
     <html lang="en">
-    <body>
-      <NoSsrWrapper>
-        <LayoutProvider>
-          <ProxyTaskProvider>
-            {children}
-          </ProxyTaskProvider>
-        </LayoutProvider>
-      </NoSsrWrapper>
+    <body className="overflow-hidden">
+    <LayoutProvider>
+      <ProxyTaskProvider>
+        {children}
+      </ProxyTaskProvider>
+    </LayoutProvider>
     </body>
     </html>
   )

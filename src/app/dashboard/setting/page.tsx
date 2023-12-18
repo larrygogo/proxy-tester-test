@@ -1,33 +1,34 @@
 'use client'
 import Link from "next/link";
 import {useContext} from "react";
-import Tooltip from "@/components/tooltip";
 import {ProxyTaskContext} from "@/context/ProxyTaskContext";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
+import {X} from "lucide-react";
+import {PageContainer, PageContainerHeader, PageContainerTitle} from "@/components/page-container";
 
 export default function Page() {
   const {concurrency, setConcurrency} = useContext(ProxyTaskContext)
 
   return (
-    <div>
-      <div className="flex items-center justify-between bg-gray-100 border-b p-2">
-        <div className="text-stone-800 font-bold p-2">
-          Settings
-        </div>
-        <Link href={'/dashboard'}>
-          <button className="p-1 text-gray-600 rounded hover:bg-gray-200 hover:text-gray-800">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                    d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
-            </svg>
-          </button>
-        </Link>
-      </div>
+    <PageContainer className="h-full">
+      <PageContainerHeader className="flex justify-between">
+        <PageContainerTitle>
+          设置
+        </PageContainerTitle>
+        <Button asChild size="icon" variant="ghost">
+          <Link href={'/dashboard'}>
+            <X className="w-4 h-4"/>
+          </Link>
+        </Button>
+      </PageContainerHeader>
       <div className="p-4">
         <div>
           <h4 className="text-gray-800 text-sm font-bold">
             <span>Concurrent Number</span>
             <span className="inline text-gray-400 pl-2">
-              <Tooltip enterDelay breakContent width={320} label="The number of concurrent speed test tasks. If it is too large, it may affect the results.">
+              <Tooltip>
+                <TooltipTrigger>
                 <svg className="inline" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                   <g transform="rotate(180 12 12)">
                     <g fill="none">
@@ -38,10 +39,15 @@ export default function Page() {
                     </g>
                   </g>
                 </svg>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="w-80">
+                  The number of concurrent speed test tasks. If it is too large, it may affect the results.
+                  </div>
+                </TooltipContent>
               </Tooltip>
             </span>
           </h4>
-          {/*  slider*/}
           <div className="flex items-center gap-2">
             <input
               type="range" min="1" max="100" step="1"
@@ -53,6 +59,6 @@ export default function Page() {
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }

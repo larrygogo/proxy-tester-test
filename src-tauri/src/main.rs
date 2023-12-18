@@ -85,10 +85,7 @@ fn main() {
     env_logger::init();
 
     tauri::Builder::default()
-        //titleBarStyle
-        .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike, close_splashscreen])
-        .setup(setup::init)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
