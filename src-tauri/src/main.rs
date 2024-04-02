@@ -5,9 +5,11 @@ use std::time::{Duration, SystemTime};
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use tauri::Manager;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 mod nike;
+mod setup;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestResult {
@@ -69,10 +71,21 @@ async fn test_proxy(
     }
 }
 
+#[tauri::command]
+fn close_splashscreen(window: tauri::Window) {
+    // Close splashscreen
+    if let Some(splashscreen) = window.get_window("splashscreen") {
+        splashscreen.close().unwrap();
+    }
+    // Show main window
+    window.get_window("main").unwrap().show().unwrap();
+}
+
 fn main() {
     env_logger::init();
+
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike])
+        .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike, close_splashscreen])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -98,6 +111,8 @@ fn get_proxy_url(
         ),
     }
 }
+
+
 
 mod test {
     #[tokio::test]
@@ -138,3 +153,4 @@ mod test {
         println!("{:?}", res);
     }
 }
+

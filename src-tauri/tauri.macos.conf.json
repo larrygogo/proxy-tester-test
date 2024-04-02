@@ -1,0 +1,23 @@
+{
+  "tauri": {
+    "windows": [
+      {
+        "decorations": true,
+        "transparent": true,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
+        "url": "/dashboard",
+        "visible": false,
+        "minWidth": 800,
+        "minHeight": 600
+      },
+      {
+        "label": "splashscreen",
+        "decorations": true,
+        "hiddenTitle": true,
+        "url": "/loading.html"
+      }
+    ],
+    "macOSPrivateApi": true
+  }
+}

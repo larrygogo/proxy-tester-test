@@ -1,56 +1,33 @@
-import {LayoutConfig, LayoutContextValue, TemplateProviderProps} from "./types";
-import {createContext, useEffect, useState} from "react";
-import initialConfig from '@/configs/layout'
-// 缓存设置
-const storeConfig = (theme: LayoutConfig) => {
-  const initTheme = Object.assign({}, theme)
-  window.localStorage.setItem('layoutConfig', JSON.stringify(initTheme))
+"use client"
+import React, {useEffect} from "react";
+import {Platform} from "@tauri-apps/api/os";
+
+
+type LayoutContextType = {
+  platform?: Platform
 }
 
+export const LayoutContext = React.createContext<LayoutContextType>({});
 
-// 恢复设置
-const restoreConfig = (): LayoutConfig | null => {
-  let template = null
-  try {
-    const storedData: string | null = window.localStorage.getItem('layoutConfig')
-    if (storedData) {
-      template = { ...JSON.parse(storedData) }
-    } else {
-      template = initialConfig
-    }
-  } catch (err) {
-    console.error(err)
-  }
-  return template
-}
-
-export const LayoutContext = createContext<LayoutContextValue>({
-  saveConfig: () => null,
-  config: initialConfig
-})
-
-export const LayoutProvider = ({children, initConfig}: TemplateProviderProps) => {
-  const [config, setConfig] = useState<LayoutConfig>({...initialConfig,...initConfig})
+export const LayoutProvider = (props: { children: React.ReactNode }) => {
+  const [platform, setPlatform] = React.useState<Platform>();
 
   useEffect(() => {
-    let restoredLayoutConfig = restoreConfig()
-    if (restoredLayoutConfig) {
-      setConfig({ ...restoredLayoutConfig })
-    }
-  }, [])
+    (async () => {
+      const p = await (await import("@tauri-apps/api")).os.platform()
+      setPlatform(p)
+      if (process.env.NODE_ENV !== 'development') {
+        window.addEventListener("contextmenu", (e) => {
+          e.preventDefault()
+        })
+      }
+    })()
 
-  // ** Save Settings
-  const saveConfig = (data: LayoutConfig) => {
-    setConfig(data)
-    storeConfig(data)
-  }
+  }, []);
 
-  // ** Render Provider
   return (
-    <LayoutContext.Provider value={{config, saveConfig}}>
-      {children}
+    <LayoutContext.Provider value={{platform}}>
+      {typeof window !== 'undefined' ? props.children : null}
     </LayoutContext.Provider>
   )
 }
-
-export const TemplateConsumer = LayoutContext.Consumer
