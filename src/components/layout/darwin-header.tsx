@@ -1,7 +1,8 @@
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import Link from "next/link";
 import {cn} from "@/lib/utils";
 import {HelpCircle, Settings} from "lucide-react";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
 
 export default function DarwinHeader() {
   return (
@@ -11,33 +12,36 @@ export default function DarwinHeader() {
       <div
         data-tauri-drag-region="true"
         className={cn(
-        "py-1 text-center text-zinc-700 font-semibold font-sans text-sm",
-        "select-none cursor-default",
-      )}>
+          "py-1 text-center text-zinc-700 font-semibold font-sans text-sm",
+          "select-none cursor-default",
+        )}>
         Proxy Tester
       </div>
       <div className="ml-auto flex gap-1 ">
+        <TooltipProvider>
+        {/*<Tooltip>*/}
+        {/*  <TooltipTrigger asChild>*/}
+        {/*    <Button variant="ghost" asChild size="icon" className="h-6 w-6 bg-opacity-80" >*/}
+        {/*      <Link href="/dashboard/setting">*/}
+        {/*      <Settings size={16} className="w-4 h-4"/>*/}
+        {/*      </Link>*/}
+        {/*    </Button>*/}
+        {/*  </TooltipTrigger>*/}
+        {/*  <TooltipContent>*/}
+        {/*    Settings*/}
+        {/*  </TooltipContent>*/}
+        {/*</Tooltip>*/}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link
-              href={'/dashboard/setting'}
-              className={cn("text-gray-600 p-1 hover:bg-white/50 rounded")}
-            >
-              <Settings className="w-4 h-4" />
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent>
-            Setting
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger className={cn("text-gray-600 p-1 hover:bg-white/50 rounded")}>
-            <HelpCircle className="w-4 h-4" />
+            <Button variant="ghost" size="icon" className="h-6 w-6 bg-opacity-80" >
+              <HelpCircle size={16} className="w-4 h-4"/>
+            </Button>
           </TooltipTrigger>
           <TooltipContent>
             Help
           </TooltipContent>
         </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   )

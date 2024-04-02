@@ -15,7 +15,5 @@ export type ProxyDisplayInfo = ProxyInfo & {
   status?: string;
 }
 
-export interface ProxyType {
-  name: string;
-  value: string;
-}
+
+export type ProxyType = 'http' | 'socks5';

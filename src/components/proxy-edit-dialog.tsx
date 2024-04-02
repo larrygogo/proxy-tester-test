@@ -4,6 +4,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormField, FormItem} from "@/components/ui/form";
+import {useEffect} from "react";
 
 
 const proxyStringEditSchema = z.object({
@@ -13,8 +14,8 @@ const proxyStringEditSchema = z.object({
 interface ProxyEditDialogProps<T> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  proxyList?: string[];
-  onFinish?: (res: T) => Promise<boolean>;
+  value?: string;
+  onFinish?: (value: string) => boolean | void;
 }
 
 
@@ -23,18 +24,21 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps<z.infer<type
 
   const form = useForm({
     defaultValues: {
-      proxyListString: "",
+      proxyListString: props.value,
     },
     resolver: zodResolver(proxyStringEditSchema),
   })
 
-  const onSubmit = (data: z.infer<typeof proxyStringEditSchema>) => {
-    console.log(data);
-    const close = onFinish?.(data);
-    if (close) {
-      onOpenChange(false);
-    }
-  }
+  useEffect(() => {
+    form.reset({proxyListString: props.value});
+  }, [form, props.value])
+
+  const onSubmit = form.handleSubmit((values) => {
+      const close = onFinish?.(values.proxyListString ?? "");
+      if (close) {
+        onOpenChange(false);
+      }
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,12 +47,12 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps<z.infer<type
           <DialogTitle>编辑代理</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className="flex flex-col gap-2" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="flex flex-col gap-2" onSubmit={onSubmit}>
             <FormField name="proxyListString" render={({field}) => (
               <FormItem>
                 <textarea
                   {...field}
-                  className="w-full border h-32 p-2 rounded-lg focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-background"
+                  className="text-xs resize-none w-full border h-32 p-2 outline-none rounded-lg focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-background"
                   placeholder="host:port[:username:password]"
                 />
               </FormItem>

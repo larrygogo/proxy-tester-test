@@ -1,8 +1,6 @@
-'use client';
+"use client"
 import {useContext, useEffect} from "react";
 import {LayoutContext} from "@/context/LayoutContext";
-import {cn} from "@/lib/utils";
-import {TooltipProvider} from "@/components/ui/tooltip";
 import DarwinHeader from "@/components/layout/darwin-header";
 
 type Props = {
@@ -48,21 +46,17 @@ export default function Layout(props: Props) {
   }, [platform]);
 
   return (
-    <TooltipProvider>
-      <div
-        data-tauri-drag-region="true"
-        className={cn(
-          "flex flex-col h-screen px-2 pb-2",
-          "bg-gradient-to-br from-[#d1e0f7] from-10% via-[#d7e0ff] via-50% to-[#d1e0f7] to-90%",
-          platform === "win32" && "bg-slate-600/100",
-        )}>
-        {platform === "darwin" && (
+    <div
+      data-tauri-drag-region="true"
+      className="h-screen flex flex-col bg-gradient-to-br from-[#d1e0f7] from-10% via-[#d7e0ff] via-50% to-[#d1e0f7] to-90%">
+      {platform === "darwin" && (
+        <div className=" px-2">
           <DarwinHeader/>
-        )}
-        <div className="grow overflow-auto">
-          {children}
         </div>
+      )}
+      <div className="flex-1 overflow-auto px-2 pb-2">
+        {children}
       </div>
-    </TooltipProvider>
+    </div>
   )
 }

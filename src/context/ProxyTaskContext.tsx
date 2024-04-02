@@ -1,10 +1,8 @@
-'use client';
+"use client"
 import React, {useCallback, useEffect, useMemo, useState} from "react";
-import {TaskPool} from "@/utils/task";
+import {TaskPool} from "@/lib/task";
 import {ProxyDisplayInfo} from "@/types/proxy";
-import {Store} from "tauri-plugin-store-api";
 import {v4 as randomUUID} from "uuid";
-import {invoke} from "@tauri-apps/api";
 
 type LayoutContextType = {
   taskPool?: TaskPool
@@ -12,13 +10,13 @@ type LayoutContextType = {
   stopTask?: () => void
   concurrency?: number
   proxyList?: string[]
-  protocol?: string
+  protocol?: ProxyProtocol
   target?: string
   proxyStates?: ProxyDisplayInfo[]
   finishedCount?: number
   taskStatus?: TaskStatus
   setProxyList?: (proxyList: string[]) => void
-  setProtocol?: (protocol: string) => void
+  setProtocol?: (protocol: ProxyProtocol) => void
   setTarget?: (target: string) => void
   setProxyStates?: (proxyStates: ProxyDisplayInfo[]) => void
   setFinishedCount?: (finishedCount: number) => void
@@ -31,22 +29,28 @@ export enum TaskStatus {
   FINISH = 'stop',
 }
 
-export enum ProxyProtocol {
-  HTTP = 'http',
-  SOCKS5 = 'socks5',
+export enum ProxyProtocolEnum {
+  http = "HTTP(s)",
+  socks5 = "SOCKS5",
 }
+
+export type ProxyProtocol = keyof typeof ProxyProtocolEnum
 
 export const ProxyTaskContext = React.createContext<LayoutContextType>({});
 
 export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
-  const [protocol, setProtocol] = useState<string>(ProxyProtocol.HTTP)
+  const [protocol, setProtocol] = useState<ProxyProtocol>('http')
   const [proxyList, setProxyList] = useState<string[]>([])
   const [target, setTarget] = useState<string>('')
   const [proxyStates, setProxyStates] = useState<ProxyDisplayInfo[]>([])
   const [finishedCount, setFinishedCount] = useState(0)
   const [concurrency, setConcurrency] = useState(20)
   const [taskStatus, setTaskStatus] = useState<TaskStatus>(TaskStatus.WAITING)
-  const store = useMemo(() => new Store(".settings.task"), [])
+  const store = useMemo(() => ({
+    set: localStorage.setItem.bind(localStorage),
+    get: localStorage.getItem.bind(localStorage),
+
+  }), [])
 
   const taskPool = TaskPool.getInstance()
 
@@ -56,6 +60,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
     setFinishedCount(0)
     setTaskStatus(TaskStatus.RUNNING)
     taskPool.clear()
+
     setProxyStates((prev) => prev.map(p => ({...p, status: undefined, speed: undefined})))
 
     for (let proxy of proxyStates) {
@@ -65,10 +70,11 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           if (target.startsWith('http://') || target.startsWith('https://')) {
             return target
           }
-          return 'https://' + target
+          return 'http://' + target
         }
+        const {invoke} = await import("@tauri-apps/api/tauri")
 
-        const result: { status: string, delay: number } = await invoke('test_proxy', {
+        const result: { status: string, delay: number } = await invoke("test_proxy",{
           socks5: protocol === 'socks5',
           proxy: proxy.host + ':' + proxy.port,
           addr: formatTarget(target),
@@ -95,12 +101,13 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
   }
 
   const stopTask = () => {
-    console.log('handleStop')
+    taskPool.stop()
+    setTaskStatus(TaskStatus.FINISH)
   }
 
   const changeProxyList = useCallback(async (list: string[]) => {
-    await store.set("proxy.list", list)
-    await store.save()
+    if (!store) return
+    store.set("proxy.list", JSON.stringify(list))
 
     const statesList = list?.map((p) => {
       const [host, port, username, password] = p.split(':')
@@ -113,25 +120,26 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
         value: p,
       } as ProxyDisplayInfo
     }) || []
+    console.log("1111", statesList)
     setProxyStates(statesList)
     setProxyList(list)
   }, [store])
 
   const changeTarget = useCallback(async (target: string) => {
-    await store.set("proxy.target", target)
-    await store.save()
+    if (!store) return
+    store.set("proxy.target", JSON.stringify(target))
     setTarget(target)
   }, [store])
 
-  const changeProtocol = useCallback(async (protocol: string) => {
-    await store.set("proxy.protocol", protocol)
-    await store.save()
+  const changeProtocol = useCallback(async (protocol: ProxyProtocol) => {
+    if (!store) return
+    store.set("proxy.protocol", JSON.stringify(protocol))
     setProtocol(protocol)
   }, [store])
 
   const changeConcurrency = useCallback(async (concurrency: number) => {
-    await store.set("task.concurrency", concurrency)
-    await store.save()
+    if (!store) return
+    store.set("task.concurrency", concurrency.toString())
     setConcurrency(concurrency)
     taskPool.setConcurrency(concurrency)
   }, [store, taskPool])
@@ -139,7 +147,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
   useEffect(() => {
     (async () => {
       // 加载 Proxy List 缓存
-      const proxyListStoreData = await store.get("proxy.list")
+      const proxyListStoreData = JSON.parse(store.get('proxy.list') || '[]')
       if (proxyListStoreData instanceof Array) {
         await changeProxyList(proxyListStoreData)
       } else {
@@ -147,15 +155,12 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       }
 
       // 加载 Task 并发数缓存
-      const taskConcurrency = await store.get("task.concurrency")
-      if (typeof taskConcurrency === 'number') {
-        await changeConcurrency(taskConcurrency)
-      } else {
-        await changeConcurrency(20)
-      }
+      const taskConcurrency = Number(store.get('task.concurrency') || 20)
+      await changeConcurrency(taskConcurrency)
+
 
       // 加载 Target 缓存
-      const targetStoreData = await store.get('proxy.target')
+      const targetStoreData = JSON.parse(store.get('proxy.target') || '""')
       if (typeof targetStoreData === 'string') {
         await changeTarget(targetStoreData)
       } else {
@@ -163,11 +168,11 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       }
 
       // 加载 Protocol 缓存
-      const protocolStoreData = await store.get('proxy.protocol')
+      const protocolStoreData =  JSON.parse(store.get('proxy.protocol') || '"http"')
       if (typeof protocolStoreData === 'string') {
         await changeProtocol(protocolStoreData as ProxyProtocol)
       } else {
-        await changeProtocol(ProxyProtocol.HTTP)
+        await changeProtocol('http')
       }
 
     })()
