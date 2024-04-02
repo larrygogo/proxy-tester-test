@@ -2,6 +2,7 @@
 import {useContext, useEffect} from "react";
 import {LayoutContext} from "@/context/LayoutContext";
 import DarwinHeader from "@/components/layout/darwin-header";
+import WinHeader from "@/components/layout/win-header";
 
 type Props = {
   children: React.ReactNode;
@@ -53,6 +54,11 @@ export default function Layout(props: Props) {
         <div className=" px-2">
           <DarwinHeader/>
         </div>
+      )}
+      {platform === "win32" && (
+          <div className="w-full">
+            <WinHeader />
+          </div>
       )}
       <div className="flex-1 overflow-auto px-2 pb-2">
         {children}
