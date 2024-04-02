@@ -5,6 +5,16 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import {Button} from "@/components/ui/button";
 
 export default function DarwinHeader() {
+
+  const handleHelp = () => {
+    import("@tauri-apps/api").then(({window}) => {
+      new window.WebviewWindow("help", {
+        title: 'Help',
+        url: '/help',
+      })
+    })
+  }
+
   return (
     <div
       data-tauri-drag-region="true"
@@ -33,7 +43,7 @@ export default function DarwinHeader() {
         {/*</Tooltip>*/}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6 bg-opacity-80" >
+            <Button variant="ghost" size="icon" className="h-6 w-6 bg-opacity-80" onClick={handleHelp} >
               <HelpCircle size={16} className="w-4 h-4"/>
             </Button>
           </TooltipTrigger>

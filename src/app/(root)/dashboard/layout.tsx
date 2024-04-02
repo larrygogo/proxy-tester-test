@@ -12,15 +12,6 @@ export default function Layout(props: Props) {
   const {children} = props
   const {platform} = useContext(LayoutContext)
 
-  const handleHelp = () => {
-    import("@tauri-apps/api").then(({window}) => {
-      new window.WebviewWindow("help", {
-        title: 'Help',
-        url: '/help',
-      })
-    })
-  }
-
   useEffect(() => {
     import('@tauri-apps/api').then(({window}) => {
       const all = window.getAll()
@@ -33,18 +24,7 @@ export default function Layout(props: Props) {
         splashscreen.close().then()
       }
     })
-
   }, []);
-
-  useEffect(() => {
-    if (platform === 'win32') {
-      import("@tauri-apps/api").then(({window}) => {
-        document.getElementById('titlebar-minimize')?.addEventListener('click', () => window.appWindow.minimize())
-        document.getElementById('titlebar-maximize')?.addEventListener('click', () => window.appWindow.toggleMaximize())
-        document.getElementById('titlebar-close')?.addEventListener('click', () => window.appWindow.close())
-      })
-    }
-  }, [platform]);
 
   return (
     <div
