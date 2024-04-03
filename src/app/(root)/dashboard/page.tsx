@@ -1,6 +1,6 @@
 "use client"
-import {useContext, useEffect, useState} from "react";
-import {Loader, Plus, Rocket, Settings} from "lucide-react";
+import {useContext, useEffect, useRef, useState} from "react";
+import {ChevronDown, HelpCircle, Loader, Plus, Rocket, Settings} from "lucide-react";
 
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -9,25 +9,35 @@ import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
-import {ScrollArea} from "@/components/ui/scroll-area";
+import {ColumnDef, flexRender, getCoreRowModel, Row, useReactTable} from "@tanstack/react-table";
 import {ProxyProtocol, ProxyProtocolEnum, ProxyTaskContext, TaskStatus} from "@/context/ProxyTaskContext";
 import ProxyEditDialog from "@/components/proxy-edit-dialog";
 import {cn} from "@/lib/utils";
 import {ProxyDisplayInfo} from "@/types/proxy";
+import {useVirtualizer} from "@tanstack/react-virtual";
+import {
+  DropdownMenu,
+  DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpark-queue-task-dialog";
+
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
   {
     id: 'host',
     accessorKey: 'host',
     header: '服务器地址',
-    minSize: 200
+    maxSize: 200,
   },
   {
     id: 'port',
     accessorKey: 'port',
     header: '端口',
-    size: 50
+    size: 50,
+    maxSize: 100,
   },
   {
     accessorKey: 'username',
@@ -43,6 +53,7 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
     accessorKey: 'status',
     header: '状态',
     size: 60,
+    maxSize: 100,
     cell: ({getValue}) => {
       const value = getValue?.() as string | undefined
       if (!value) return <span>-</span>
@@ -57,11 +68,11 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
     accessorKey: 'speed',
     header: () => <div className="text-right">延迟</div>,
     size: 100,
+    maxSize: 100,
     cell: ({getValue}) => {
       const value = getValue?.() as number | undefined
       return <div className="text-right">{value ? `${value} ms` : '-'}</div>
     }
-
   }
 ]
 
@@ -73,6 +84,7 @@ const protocolOptions = Object.entries(ProxyProtocolEnum).map(([value, label]) =
 export default function Page() {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [shouldStartTask, setShouldStartTask] = useState(false)
+  const [interparkQueueDialogOpen, setInterparkQueueDialogOpen] = useState(false)
   const {
     taskStatus,
     startTask,
@@ -83,14 +95,31 @@ export default function Page() {
     protocol,
     setProtocol,
     target,
-    setTarget
+    setTarget,
+    startTaskWithMode,
   } = useContext(ProxyTaskContext)
+
 
   const table = useReactTable({
     data: proxyStates ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
 
+  })
+  const {rows} = table.getRowModel()
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    estimateSize: () => 50, //estimate row height for accurate scrollbar dragging
+    getScrollElement: () => tableContainerRef.current,
+    //measure dynamic row height, except in firefox because it measures table border height incorrectly
+    measureElement:
+      typeof window !== 'undefined' &&
+      navigator.userAgent.indexOf('Firefox') === -1
+        ? element => element?.getBoundingClientRect().height
+        : undefined,
+    overscan: 100,
   })
 
   const handleClick = async () => {
@@ -102,6 +131,14 @@ export default function Page() {
       stopTask?.()
     } else {
       setShouldStartTask(true)
+    }
+  }
+
+  const handleTestInterpark = async () => {
+    if (taskStatus === TaskStatus.RUNNING) {
+      stopTask?.()
+    } else {
+      startTaskWithMode?.('test_interpark_global_index')
     }
   }
 
@@ -130,15 +167,13 @@ export default function Page() {
           </Select>
           <div
             className="font-mono flex items-center w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-            <span className="text-muted-foreground mr-1 pointer-events-none">
-              http://
-            </span>
             <input value={target} className="w-full outline-none bg-transparent" placeholder="www.google.com"
                    onChange={e => setTarget?.(e.target.value ?? "")}/>
           </div>
+          <div className="flex divide-x divide-gray-700">
           <Button
             color="primary"
-            className="items-center gap-1"
+            className="items-center gap-1 rounded-r-none"
             onClick={handleClick}>
             {taskStatus === TaskStatus.RUNNING ?
               <Loader className="w-4 h-4 animate-spin"/> :
@@ -148,8 +183,29 @@ export default function Page() {
               <span>停止</span> :
               <span>测试</span>
             }
-
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="rounded-l-none px-1 outline-none focus-visible:ring-0">
+                <ChevronDown size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="flex items-center gap-1">
+                <span>专业模式</span>
+                <Tooltip>
+                  <TooltipTrigger><HelpCircle size={16} /></TooltipTrigger>
+                  <TooltipContent side="bottom">对专门网站的特殊场景进行测试</TooltipContent>
+                </Tooltip>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={handleTestInterpark}>Interpark</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => {
+                setInterparkQueueDialogOpen(true)
+              }}>Interpark 排队</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          </div>
           <Separator orientation="vertical"/>
           <div className="flex gap-1">
             <Tooltip>
@@ -185,60 +241,79 @@ export default function Page() {
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
         <div className="flex flex-col h-full">
-          <ScrollArea className="flex-1 w-full h-full">
-            <table className="w-full caption-bottom text-sm">
-              <TableHeader className="sticky top-0 rounded bg-gray-50/50 backdrop-blur">
+          <div className="flex-1 flex-col w-full h-full relative overflow-auto" ref={tableContainerRef}>
+            <table className="grid w-full caption-bottom text-sm">
+              <TableHeader className="grid sticky top-0 z-10 bg-gray-50/50 backdrop-blur ">
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow
+                    className="flex w-full"
+                    key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead
+                          className="flex flex-1 items-center"
                           key={header.id}
                           style={{
-                            minWidth: header.column.columnDef.minSize,
-                            maxWidth: header.column.columnDef.maxSize,
                             width: header.column.columnDef.size,
-                          }}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            maxWidth: header.column.columnDef.maxSize,
+                            minWidth: header.column.columnDef.minSize
+                          }}
+                          onClick={() => {
+                            header.column.getToggleSortingHandler()
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                         </TableHead>
                       )
                     })}
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody className="font-mono">
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="truncate" style={{
-                          minWidth: cell.column.columnDef.size,
-                          maxWidth: cell.column.columnDef.size,
-                          width: cell.column.columnDef.size,
-                        }}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No results.
-                    </TableCell>
-                  </TableRow>
+              <TableBody
+                className="font-mono relative grid"
+                style={{
+                  height: `${rowVirtualizer.getTotalSize()}px`, //tells scrollbar how big the table is
+                }}>
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const row = rows[virtualRow.index] as Row<ProxyDisplayInfo>
+                    return (
+                      <TableRow
+                        className="flex absolute w-full"
+                        data-index={virtualRow.index} //needed for dynamic row height measurement
+                        ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
+                        key={row.id}
+                        style={{
+                          transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
+                        }}
+                      >
+                        {row.getVisibleCells().map(cell => {
+                          return (
+                            <TableCell
+                              className="truncate flex-1"
+                              key={cell.id}
+                              style={{
+                                width: cell.column.columnDef.size,
+                                maxWidth: cell.column.columnDef.maxSize,
+                                minWidth: cell.column.columnDef.minSize
+                              }}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          )
+                        })}
+                      </TableRow>
+                    )
+                  }
                 )}
               </TableBody>
             </table>
-          </ScrollArea>
+          </div>
           <div className="flex bg-gray-50 text-xs p-2">
             <div className="flex justify-between w-full">
               <div className="flex gap-2 items-center">
@@ -290,9 +365,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-
         </div>
-
       </CardContent>
       <ProxyEditDialog
         value={proxyList?.join('\n')}
@@ -303,6 +376,7 @@ export default function Page() {
           return true
         }}
       />
+      <InterparkQueueTaskDialog open={interparkQueueDialogOpen} onOpenChange={setInterparkQueueDialogOpen} />
     </Card>
   )
 }

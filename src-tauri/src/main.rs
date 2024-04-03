@@ -47,7 +47,7 @@ async fn test_interpark_global_queue(
     timeout: Option<u64>,
     sku: String,
 ) -> TestResult {
-    println!("{proxy} {:?} {:?}", username, password);
+    println!("test_interpark_global_queue:{proxy} {:?} {:?}", username, password);
     let proxy_str = get_proxy_url(proxy, username, password, socks5);
     let timeout = timeout.unwrap_or(30);
     global_interpark::to_create_session(&sku, proxy_str.as_str(), timeout).await
@@ -116,7 +116,7 @@ fn main() {
     env_logger::init();
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test_proxy, test_nike, close_splashscreen])
+        .invoke_handler(tauri::generate_handler![greet, test_proxy, test_interpark_global_index, test_interpark_global_queue, test_nike, close_splashscreen])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

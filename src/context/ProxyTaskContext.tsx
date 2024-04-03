@@ -21,6 +21,7 @@ type LayoutContextType = {
   setProxyStates?: (proxyStates: ProxyDisplayInfo[]) => void
   setFinishedCount?: (finishedCount: number) => void
   setConcurrency?: (concurrency: number) => void
+  startTaskWithMode?: (mode: string, data?: Record<string, any>) => void
 }
 
 export enum TaskStatus {
@@ -54,15 +55,43 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
 
   const taskPool = TaskPool.getInstance()
 
-
   const startTask = async () => {
+    await startTaskWithMode('normal')
+  }
+
+  const startTaskWithMode = async (mode: string = 'normal', config?: Record<string, any>) => {
+    console.log('startTaskWithMode', mode)
+    // 如果任务正在运行，则直接返回
     if (taskStatus === TaskStatus.RUNNING) return
+
+    // 设置初始状态
     setFinishedCount(0)
     setTaskStatus(TaskStatus.RUNNING)
     taskPool.clear()
-
     setProxyStates((prev) => prev.map(p => ({...p, status: undefined, speed: undefined})))
 
+    taskPool.on('progress', (({completed, total}) => {
+      setFinishedCount(completed)
+      if (completed === total) {
+        setTaskStatus(TaskStatus.FINISH)
+        taskPool.stop()
+      }
+    }))
+
+    switch (mode) {
+      case 'normal':
+        return normalTest()
+      case 'test_interpark_global_index':
+        return testInterparkGlobalIndex()
+      case 'test_interpark_global_queue':
+        return testInterparkGlobalQueue(config?.sku)
+      default:
+        return normalTest()
+    }
+  }
+
+  // 常规测试
+  const normalTest = async () => {
     for (let proxy of proxyStates) {
       const task = async () => {
         // 判断 target 是否以 http(s):// 开头
@@ -74,7 +103,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
         }
         const {invoke} = await import("@tauri-apps/api/tauri")
 
-        const result: { status: string, delay: number } = await invoke("test_proxy",{
+        const result: { status: string, delay: number } = await invoke("test_proxy", {
           socks5: protocol === 'socks5',
           proxy: proxy.host + ':' + proxy.port,
           addr: formatTarget(target),
@@ -90,15 +119,57 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       }
       await taskPool.addTask(task)
     }
-    taskPool.on('progress', (({completed, total}) => {
-      setFinishedCount(completed)
-      if (completed === total) {
-        setTaskStatus(TaskStatus.FINISH)
-        taskPool.stop()
-      }
-    }))
-    await taskPool.start()
+    taskPool.start()
+
   }
+
+  const testInterparkGlobalIndex = async () => {
+    for (let proxy of proxyStates) {
+      const task = async () => {
+        const {invoke} = await import("@tauri-apps/api/tauri")
+
+        const result: { status: string, delay: number } = await invoke("test_interpark_global_index", {
+          socks5: protocol === 'socks5',
+          proxy: proxy.host + ':' + proxy.port,
+          username: proxy.username,
+          password: proxy.password
+        })
+        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+          ...p,
+          status: result.status,
+          speed: result?.delay
+        } : p))
+        return result as any
+      }
+      await taskPool.addTask(task)
+    }
+    taskPool.start()
+  }
+
+  const testInterparkGlobalQueue = async (sku: string) => {
+    for (let proxy of proxyStates) {
+      const task = async () => {
+        const {invoke} = await import("@tauri-apps/api/tauri")
+
+        const result: { status: string, delay: number } = await invoke("test_interpark_global_queue", {
+          socks5: protocol === 'socks5',
+          proxy: proxy.host + ':' + proxy.port,
+          username: proxy.username,
+          password: proxy.password,
+          sku: sku
+        })
+        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+          ...p,
+          status: result.status,
+          speed: result?.delay
+        } : p))
+        return result as any
+      }
+      await taskPool.addTask(task)
+    }
+    taskPool.start()
+  }
+
 
   const stopTask = () => {
     taskPool.stop()
@@ -195,6 +266,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       setTarget: changeTarget,
       setProtocol: changeProtocol,
       setConcurrency: changeConcurrency,
+      startTaskWithMode: startTaskWithMode
     }}>
       {typeof window !== 'undefined' ? props.children : null}
     </ProxyTaskContext.Provider>
