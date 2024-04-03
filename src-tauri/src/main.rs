@@ -10,6 +10,8 @@ use tauri::Manager;
 
 mod nike;
 mod setup;
+mod global_interpark;
+mod utils;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestResult {
@@ -34,6 +36,35 @@ async fn test_nike(
     let proxy_str = get_proxy_url(proxy, username, password, socks5);
     let timeout = timeout.unwrap_or(30);
     nike::query_nike_web(proxy_str.as_str(), timeout).await
+}
+
+#[tauri::command]
+async fn test_interpark_global_queue(
+    proxy: String,
+    username: Option<String>,
+    password: Option<String>,
+    socks5: bool,
+    timeout: Option<u64>,
+    sku: String,
+) -> TestResult {
+    println!("{proxy} {:?} {:?}", username, password);
+    let proxy_str = get_proxy_url(proxy, username, password, socks5);
+    let timeout = timeout.unwrap_or(30);
+    global_interpark::to_create_session(&sku, proxy_str.as_str(), timeout).await
+}
+
+#[tauri::command]
+async fn test_interpark_global_index(
+    proxy: String,
+    username: Option<String>,
+    password: Option<String>,
+    socks5: bool,
+    timeout: Option<u64>,
+) -> TestResult {
+    println!("{proxy} {:?} {:?}", username, password);
+    let proxy_str = get_proxy_url(proxy, username, password, socks5);
+    let timeout = timeout.unwrap_or(30);
+    global_interpark::query_itp_index(proxy_str.as_str(), timeout).await
 }
 
 #[tauri::command]
@@ -113,7 +144,6 @@ fn get_proxy_url(
 }
 
 
-
 mod test {
     #[tokio::test]
     async fn test_run_proxy_test() {
@@ -128,7 +158,7 @@ mod test {
             false,
             None,
         )
-        .await;
+            .await;
         println!("{:?}", res);
     }
 
@@ -142,7 +172,7 @@ mod test {
             false,
             None,
         )
-        .await;
+            .await;
         println!("{:?}", res);
     }
 
