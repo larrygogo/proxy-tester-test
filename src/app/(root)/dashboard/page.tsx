@@ -61,7 +61,6 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
       const value = getValue?.() as number | undefined
       return <div className="text-right">{value ? `${value} ms` : '-'}</div>
     }
-
   }
 ]
 
@@ -130,9 +129,6 @@ export default function Page() {
           </Select>
           <div
             className="font-mono flex items-center w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-            <span className="text-muted-foreground mr-1 pointer-events-none">
-              http://
-            </span>
             <input value={target} className="w-full outline-none bg-transparent" placeholder="www.google.com"
                    onChange={e => setTarget?.(e.target.value ?? "")}/>
           </div>
@@ -290,9 +286,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-
         </div>
-
       </CardContent>
       <ProxyEditDialog
         value={proxyList?.join('\n')}

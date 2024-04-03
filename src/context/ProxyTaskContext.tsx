@@ -65,12 +65,12 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
 
     for (let proxy of proxyStates) {
       const task = async () => {
-        // 判断 target 是否以 http(s):// 开头
+        // 判断 target 是否以 http(s):// 开头，默认添加 https://
         const formatTarget = (target: string) => {
           if (target.startsWith('http://') || target.startsWith('https://')) {
             return target
           }
-          return 'http://' + target
+          return 'https://' + target
         }
         const {invoke} = await import("@tauri-apps/api/tauri")
 

@@ -32,7 +32,7 @@ export default function Page() {
                 <Info size={16} className="w-4 h-4"/>
               </TooltipTrigger>
               <TooltipContent>
-                同时测试代理的条数，并不是越高越高，默认 20
+                同时测试代理的条数，并不是越高越好，默认：20
               </TooltipContent>
             </Tooltip>
           </div>
