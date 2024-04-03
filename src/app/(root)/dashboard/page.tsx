@@ -110,7 +110,7 @@ export default function Page() {
       startTask?.();
       setShouldStartTask(false);
     }
-  }, [target, shouldStartTask, startTask]);
+  }, [target, shouldStartTask, startTask, taskStatus]);
 
   return (
     <Card className="flex flex-col shadow-sm overflow-hidden h-full">
