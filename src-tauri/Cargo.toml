@@ -25,7 +25,6 @@ trust-dns-resolver = "0.23.0"
 lazy_static = "1.4.0"
 window-vibrancy = "0.4.0"
 rand = "0.8.5"
-quick-js = "0.4.1"
 chrono = { version = "0.4.26", features = ["serde"] }
 
 [features]

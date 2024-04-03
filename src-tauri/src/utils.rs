@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-use std::fmt::Error;
 use rand::Rng;
-use quick_js::Context;
 
 pub fn cur_mils() -> i64 {
     chrono::Local::now().timestamp_millis()
@@ -25,10 +23,4 @@ pub fn cookie_obj_to_str(cookie_obj: &HashMap<String, String>) -> String {
         true => String::from(""),
         false => cookie_str[0..cookie_str.len() - 1].to_string(),
     }
-}
-
-pub fn load_script(js_code: &str) -> Result<Context, Error> {
-    let context = Context::new().unwrap();
-    let _ = context.eval(js_code).unwrap();
-    Ok(context)
 }
