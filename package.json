@@ -27,6 +27,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-table": "^8.11.8",
+    "@tanstack/react-virtual": "^3.2.0",
     "@tauri-apps/api": "^1.5.3",
     "@types/node": "18.15.7",
     "@types/react": "18.0.28",

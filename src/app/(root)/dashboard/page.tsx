@@ -1,5 +1,5 @@
 "use client"
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {Loader, Plus, Rocket, Settings} from "lucide-react";
 
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
@@ -9,25 +9,27 @@ import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
-import {ScrollArea} from "@/components/ui/scroll-area";
+import {ColumnDef, flexRender, getCoreRowModel, Row, useReactTable} from "@tanstack/react-table";
 import {ProxyProtocol, ProxyProtocolEnum, ProxyTaskContext, TaskStatus} from "@/context/ProxyTaskContext";
 import ProxyEditDialog from "@/components/proxy-edit-dialog";
 import {cn} from "@/lib/utils";
 import {ProxyDisplayInfo} from "@/types/proxy";
+import {useVirtualizer} from "@tanstack/react-virtual";
+
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
   {
     id: 'host',
     accessorKey: 'host',
     header: '服务器地址',
-    minSize: 200
+    maxSize: 200,
   },
   {
     id: 'port',
     accessorKey: 'port',
     header: '端口',
-    size: 50
+    size: 50,
+    maxSize: 100,
   },
   {
     accessorKey: 'username',
@@ -43,6 +45,7 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
     accessorKey: 'status',
     header: '状态',
     size: 60,
+    maxSize: 100,
     cell: ({getValue}) => {
       const value = getValue?.() as string | undefined
       if (!value) return <span>-</span>
@@ -57,6 +60,7 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
     accessorKey: 'speed',
     header: () => <div className="text-right">延迟</div>,
     size: 100,
+    maxSize: 100,
     cell: ({getValue}) => {
       const value = getValue?.() as number | undefined
       return <div className="text-right">{value ? `${value} ms` : '-'}</div>
@@ -85,11 +89,27 @@ export default function Page() {
     setTarget
   } = useContext(ProxyTaskContext)
 
+
   const table = useReactTable({
     data: proxyStates ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
 
+  })
+  const {rows} = table.getRowModel()
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    estimateSize: () => 50, //estimate row height for accurate scrollbar dragging
+    getScrollElement: () => tableContainerRef.current,
+    //measure dynamic row height, except in firefox because it measures table border height incorrectly
+    measureElement:
+      typeof window !== 'undefined' &&
+      navigator.userAgent.indexOf('Firefox') === -1
+        ? element => element?.getBoundingClientRect().height
+        : undefined,
+    overscan: 20,
   })
 
   const handleClick = async () => {
@@ -181,60 +201,79 @@ export default function Page() {
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
         <div className="flex flex-col h-full">
-          <ScrollArea className="flex-1 w-full h-full">
-            <table className="w-full caption-bottom text-sm">
-              <TableHeader className="sticky top-0 rounded bg-gray-50/50 backdrop-blur">
+          <div className="flex-1 flex-col w-full h-full relative overflow-auto" ref={tableContainerRef}>
+            <table className="grid w-full caption-bottom text-sm">
+              <TableHeader className="grid sticky top-0 z-10 bg-gray-50/50 backdrop-blur ">
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow
+                    className="flex w-full"
+                    key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead
+                          className="flex flex-1 items-center"
                           key={header.id}
                           style={{
-                            minWidth: header.column.columnDef.minSize,
-                            maxWidth: header.column.columnDef.maxSize,
                             width: header.column.columnDef.size,
-                          }}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            maxWidth: header.column.columnDef.maxSize,
+                            minWidth: header.column.columnDef.minSize
+                          }}
+                          onClick={() => {
+                            header.column.getToggleSortingHandler()
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                         </TableHead>
                       )
                     })}
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody className="font-mono">
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="truncate" style={{
-                          minWidth: cell.column.columnDef.size,
-                          maxWidth: cell.column.columnDef.size,
-                          width: cell.column.columnDef.size,
-                        }}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No results.
-                    </TableCell>
-                  </TableRow>
+              <TableBody
+                className="font-mono relative grid"
+                style={{
+                  height: `${rowVirtualizer.getTotalSize()}px`, //tells scrollbar how big the table is
+                }}>
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const row = rows[virtualRow.index] as Row<ProxyDisplayInfo>
+                    return (
+                      <TableRow
+                        className="flex absolute w-full"
+                        data-index={virtualRow.index} //needed for dynamic row height measurement
+                        ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
+                        key={row.id}
+                        style={{
+                          transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
+                        }}
+                      >
+                        {row.getVisibleCells().map(cell => {
+                          return (
+                            <TableCell
+                              className="truncate flex-1"
+                              key={cell.id}
+                              style={{
+                                width: cell.column.columnDef.size,
+                                maxWidth: cell.column.columnDef.maxSize,
+                                minWidth: cell.column.columnDef.minSize
+                              }}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          )
+                        })}
+                      </TableRow>
+                    )
+                  }
                 )}
               </TableBody>
             </table>
-          </ScrollArea>
+          </div>
           <div className="flex bg-gray-50 text-xs p-2">
             <div className="flex justify-between w-full">
               <div className="flex gap-2 items-center">
