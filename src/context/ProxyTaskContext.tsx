@@ -85,6 +85,8 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
         return testInterparkGlobalIndex()
       case 'test_interpark_global_queue':
         return testInterparkGlobalQueue(config?.sku)
+      case 'test_melon_global_index':
+        return testMelonGlobalIndex()
       default:
         return normalTest()
     }
@@ -157,6 +159,28 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           username: proxy.username,
           password: proxy.password,
           sku: sku
+        })
+        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+          ...p,
+          status: result.status,
+          speed: result?.delay
+        } : p))
+        return result as any
+      }
+      await taskPool.addTask(task)
+    }
+    taskPool.start()
+  }
+  const testMelonGlobalIndex = async () => {
+    for (let proxy of proxyStates) {
+      const task = async () => {
+        const {invoke} = await import("@tauri-apps/api/tauri")
+
+        const result: { status: string, delay: number } = await invoke("test_melon_global_index", {
+          socks5: protocol === 'socks5',
+          proxy: proxy.host + ':' + proxy.port,
+          username: proxy.username,
+          password: proxy.password,
         })
         setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
           ...p,

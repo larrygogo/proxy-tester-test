@@ -142,6 +142,14 @@ export default function Page() {
     }
   }
 
+  const handleTestMelon = async () => {
+    if (taskStatus === TaskStatus.RUNNING) {
+      stopTask?.()
+    } else {
+      startTaskWithMode?.('test_melon_global_index')
+    }
+  }
+
   useEffect(() => {
     if (target && taskStatus !== TaskStatus.RUNNING && shouldStartTask) {
       startTask?.();
@@ -203,6 +211,7 @@ export default function Page() {
               <DropdownMenuItem onSelect={() => {
                 setInterparkQueueDialogOpen(true)
               }}>Interpark 排队</DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleTestMelon}>Melon</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           </div>
