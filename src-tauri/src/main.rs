@@ -12,6 +12,7 @@ mod nike;
 mod setup;
 mod global_interpark;
 mod utils;
+mod global_melon;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestResult {
@@ -68,6 +69,20 @@ async fn test_interpark_global_index(
 }
 
 #[tauri::command]
+async fn test_melon_global_index(
+    proxy: String,
+    username: Option<String>,
+    password: Option<String>,
+    socks5: bool,
+    timeout: Option<u64>,
+) -> TestResult {
+    println!("melon global {proxy} {:?} {:?}", username, password);
+    let proxy_str = get_proxy_url(proxy, username, password, socks5);
+    let timeout = timeout.unwrap_or(30);
+    global_melon::query_melon_index(proxy_str.as_str(), timeout).await
+}
+
+#[tauri::command]
 async fn test_proxy(
     proxy: String,
     username: Option<String>,
@@ -116,7 +131,13 @@ fn main() {
     env_logger::init();
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test_proxy, test_interpark_global_index, test_interpark_global_queue, test_nike, close_splashscreen])
+        .invoke_handler(tauri::generate_handler![greet,
+            test_proxy,
+            test_interpark_global_index,
+            test_interpark_global_queue,
+            test_nike,
+            test_melon_global_index,
+            close_splashscreen])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
