@@ -58,6 +58,10 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.8",
-    "@types/uuid": "^9.0.1"
+    "@types/uuid": "^9.0.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-tailwindcss": "^3.15.1",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.13"
   }
 }

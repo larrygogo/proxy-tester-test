@@ -1,6 +1,6 @@
 "use client"
 import {useContext, useEffect, useRef, useState} from "react";
-import {Loader, Plus, Rocket, Settings} from "lucide-react";
+import {ChevronDown, HelpCircle, Loader, Plus, Rocket, Settings} from "lucide-react";
 
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -15,6 +15,14 @@ import ProxyEditDialog from "@/components/proxy-edit-dialog";
 import {cn} from "@/lib/utils";
 import {ProxyDisplayInfo} from "@/types/proxy";
 import {useVirtualizer} from "@tanstack/react-virtual";
+import {
+  DropdownMenu,
+  DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpark-queue-task-dialog";
 
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
@@ -76,6 +84,7 @@ const protocolOptions = Object.entries(ProxyProtocolEnum).map(([value, label]) =
 export default function Page() {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [shouldStartTask, setShouldStartTask] = useState(false)
+  const [interparkQueueDialogOpen, setInterparkQueueDialogOpen] = useState(false)
   const {
     taskStatus,
     startTask,
@@ -86,7 +95,8 @@ export default function Page() {
     protocol,
     setProtocol,
     target,
-    setTarget
+    setTarget,
+    startTaskWithMode,
   } = useContext(ProxyTaskContext)
 
 
@@ -109,7 +119,7 @@ export default function Page() {
       navigator.userAgent.indexOf('Firefox') === -1
         ? element => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 20,
+    overscan: 100,
   })
 
   const handleClick = async () => {
@@ -121,6 +131,14 @@ export default function Page() {
       stopTask?.()
     } else {
       setShouldStartTask(true)
+    }
+  }
+
+  const handleTestInterpark = async () => {
+    if (taskStatus === TaskStatus.RUNNING) {
+      stopTask?.()
+    } else {
+      startTaskWithMode?.('test_interpark_global_index')
     }
   }
 
@@ -152,9 +170,10 @@ export default function Page() {
             <input value={target} className="w-full outline-none bg-transparent" placeholder="www.google.com"
                    onChange={e => setTarget?.(e.target.value ?? "")}/>
           </div>
+          <div className="flex divide-x divide-gray-700">
           <Button
             color="primary"
-            className="items-center gap-1"
+            className="items-center gap-1 rounded-r-none"
             onClick={handleClick}>
             {taskStatus === TaskStatus.RUNNING ?
               <Loader className="w-4 h-4 animate-spin"/> :
@@ -164,8 +183,29 @@ export default function Page() {
               <span>停止</span> :
               <span>测试</span>
             }
-
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="rounded-l-none px-1 outline-none focus-visible:ring-0">
+                <ChevronDown size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="flex items-center gap-1">
+                <span>专业模式</span>
+                <Tooltip>
+                  <TooltipTrigger><HelpCircle size={16} /></TooltipTrigger>
+                  <TooltipContent side="bottom">对专门网站的特殊场景进行测试</TooltipContent>
+                </Tooltip>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={handleTestInterpark}>Interpark</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => {
+                setInterparkQueueDialogOpen(true)
+              }}>Interpark 排队</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          </div>
           <Separator orientation="vertical"/>
           <div className="flex gap-1">
             <Tooltip>
@@ -336,6 +376,7 @@ export default function Page() {
           return true
         }}
       />
+      <InterparkQueueTaskDialog open={interparkQueueDialogOpen} onOpenChange={setInterparkQueueDialogOpen} />
     </Card>
   )
 }
