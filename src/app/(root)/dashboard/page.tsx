@@ -179,41 +179,45 @@ export default function Page() {
                    onChange={e => setTarget?.(e.target.value ?? "")}/>
           </div>
           <div className="flex divide-x divide-gray-700">
-          <Button
-            color="primary"
-            className="items-center gap-1 rounded-r-none"
-            onClick={handleClick}>
-            {taskStatus === TaskStatus.RUNNING ?
-              <Loader className="w-4 h-4 animate-spin"/> :
-              <Rocket className="w-4 h-4"/>
-            }
-            {taskStatus === TaskStatus.RUNNING ?
-              <span>停止</span> :
-              <span>测试</span>
-            }
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="rounded-l-none px-1 outline-none focus-visible:ring-0">
-                <ChevronDown size={16} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="flex items-center gap-1">
-                <span>专业模式</span>
-                <Tooltip>
-                  <TooltipTrigger><HelpCircle size={16} /></TooltipTrigger>
-                  <TooltipContent side="bottom">对专门网站的特殊场景进行测试</TooltipContent>
-                </Tooltip>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={handleTestInterpark}>Interpark</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => {
-                setInterparkQueueDialogOpen(true)
-              }}>Interpark 排队</DropdownMenuItem>
-              <DropdownMenuItem onSelect={handleTestMelon}>Melon</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <Button
+              color="primary"
+              className="items-center gap-1 rounded-r-none"
+              onClick={handleClick}>
+              {taskStatus === TaskStatus.RUNNING ?
+                <Loader className="w-4 h-4 animate-spin"/> :
+                <Rocket className="w-4 h-4"/>
+              }
+              {taskStatus === TaskStatus.RUNNING ?
+                <span>停止</span> :
+                <span>测试</span>
+              }
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="rounded-l-none px-1 outline-none focus-visible:ring-0">
+                  <ChevronDown size={16}/>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel className="flex items-center gap-1">
+                  <span>专业模式</span>
+                  <Tooltip>
+                    <TooltipTrigger><HelpCircle size={16}/></TooltipTrigger>
+                    <TooltipContent side="bottom">对专门网站的特殊场景进行测试</TooltipContent>
+                  </Tooltip>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator/>
+                <DropdownMenuItem onClick={handleTestInterpark}>Interpark</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setInterparkQueueDialogOpen(true)
+                  }}
+                >
+                  Interpark 排队
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleTestMelon}>Melon</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <Separator orientation="vertical"/>
           <div className="flex gap-1">
@@ -385,7 +389,7 @@ export default function Page() {
           return true
         }}
       />
-      <InterparkQueueTaskDialog open={interparkQueueDialogOpen} onOpenChange={setInterparkQueueDialogOpen} />
+      <InterparkQueueTaskDialog open={interparkQueueDialogOpen} onOpenChange={setInterparkQueueDialogOpen}/>
     </Card>
   )
 }

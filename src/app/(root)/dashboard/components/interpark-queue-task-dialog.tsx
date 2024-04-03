@@ -1,6 +1,6 @@
 "use client"
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useForm} from "react-hook-form";
 import {Input} from "@/components/ui/input";
 import z from "zod";
@@ -22,7 +22,7 @@ export default function InterparkQueueTaskDialog(props: Props){
   const {open, onOpenChange} = props;
   const form = useForm({
     defaultValues: {
-      sku: ''
+      sku: '24003932'
     },
     resolver: zodResolver(schema)
   });
@@ -43,16 +43,20 @@ export default function InterparkQueueTaskDialog(props: Props){
         <Form {...form}>
           <form onSubmit={onSubmit}>
             <FormField
+              control={form.control}
               name="sku"
               render={({field}) => (
-                <FormItem>
-                  <Input {...field} placeholder="SKU" />
-                  <FormMessage />
-                </FormItem>
+                <FormControl>
+                  <FormItem>
+                    <FormLabel>SKU</FormLabel>
+                    <Input {...field} placeholder="SKU" />
+                    <FormMessage />
+                  </FormItem>
+                </FormControl>
               )}
             />
             <div className="flex justify-end gap-2 mt-6">
-              <Button variant="secondary" onClick={() => onOpenChange(false)}>取消</Button>
+              <Button variant="secondary" type="button" onClick={() => onOpenChange(false)}>取消</Button>
               <Button type="submit">提交</Button>
             </div>
           </form>

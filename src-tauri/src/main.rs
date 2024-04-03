@@ -48,7 +48,7 @@ async fn test_interpark_global_queue(
     timeout: Option<u64>,
     sku: String,
 ) -> TestResult {
-    println!("test_interpark_global_queue:{proxy} {:?} {:?}", username, password);
+    println!("test_interpark_global_queue:{proxy} {:?} {:?} {:?}", username, password, sku);
     let proxy_str = get_proxy_url(proxy, username, password, socks5);
     let timeout = timeout.unwrap_or(30);
     global_interpark::to_create_session(&sku, proxy_str.as_str(), timeout).await

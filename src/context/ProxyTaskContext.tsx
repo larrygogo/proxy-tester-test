@@ -269,7 +269,6 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       } else {
         await changeProtocol('http')
       }
-
     })()
 
   }, [changeConcurrency, changeProtocol, changeProxyList, changeTarget, store]);
