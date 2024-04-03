@@ -1,5 +1,5 @@
 "use client"
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Loader, Plus, Rocket, Settings} from "lucide-react";
 
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
@@ -14,31 +14,39 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {ProxyProtocol, ProxyProtocolEnum, ProxyTaskContext, TaskStatus} from "@/context/ProxyTaskContext";
 import ProxyEditDialog from "@/components/proxy-edit-dialog";
 import {cn} from "@/lib/utils";
+import {ProxyDisplayInfo} from "@/types/proxy";
 
-const columns: ColumnDef<any>[] = [
+const columns: ColumnDef<ProxyDisplayInfo>[] = [
   {
+    id: 'host',
     accessorKey: 'host',
     header: '服务器地址',
+    minSize: 200
   },
   {
+    id: 'port',
     accessorKey: 'port',
     header: '端口',
+    size: 50
   },
   {
     accessorKey: 'username',
     header: '用户名',
+    minSize: 200
   },
   {
     accessorKey: 'password',
     header: '密码',
+    minSize: 0
   },
   {
     accessorKey: 'status',
     header: '状态',
+    size: 60,
     cell: ({getValue}) => {
-      const value = getValue?.()
-      if(!value) return <span>-</span>
-      const isOk = (value as string).toUpperCase() === 'OK'
+      const value = getValue?.() as string | undefined
+      if (!value) return <span>-</span>
+      const isOk = value.toUpperCase() === 'OK'
       return <span className={cn(
         "uppercase",
         isOk ? 'text-green-500' : 'text-red-500'
@@ -47,11 +55,13 @@ const columns: ColumnDef<any>[] = [
   },
   {
     accessorKey: 'speed',
-    header: '延迟',
+    header: () => <div className="text-right">延迟</div>,
+    size: 100,
     cell: ({getValue}) => {
-      const value = getValue?.()
-      return <span>{value ? `${value} ms` : '-'}</span>
+      const value = getValue?.() as number | undefined
+      return <div className="text-right">{value ? `${value} ms` : '-'}</div>
     }
+
   }
 ]
 
@@ -62,7 +72,7 @@ const protocolOptions = Object.entries(ProxyProtocolEnum).map(([value, label]) =
 
 export default function Page() {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-
+  const [shouldStartTask, setShouldStartTask] = useState(false)
   const {
     taskStatus,
     startTask,
@@ -80,24 +90,33 @@ export default function Page() {
     data: proxyStates ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+
   })
 
   const handleClick = async () => {
+    if (!target) {
+      setTarget?.('www.google.com')
+    }
+
     if (taskStatus === TaskStatus.RUNNING) {
       stopTask?.()
     } else {
-      startTask?.()
+      setShouldStartTask(true)
     }
   }
+
+  useEffect(() => {
+    if (target && taskStatus !== TaskStatus.RUNNING && shouldStartTask) {
+      startTask?.();
+      setShouldStartTask(false);
+    }
+  }, [target, shouldStartTask, startTask]);
 
   return (
     <Card className="flex flex-col shadow-sm overflow-hidden h-full">
       <CardHeader className="p-4 bg-gray-50 h-16">
         <div className="flex gap-2">
-          <Select value={protocol} onValueChange={(v) => {
-            console.log(v)
-            setProtocol?.(v as ProxyProtocol)
-          }}>
+          <Select value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
             <SelectTrigger className="w-52">
               <SelectValue/>
             </SelectTrigger>
@@ -110,7 +129,7 @@ export default function Page() {
             </SelectContent>
           </Select>
           <div
-            className="flex items-center w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+            className="font-mono flex items-center w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
             <span className="text-muted-foreground mr-1 pointer-events-none">
               http://
             </span>
@@ -173,7 +192,13 @@ export default function Page() {
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead
+                          key={header.id}
+                          style={{
+                            minWidth: header.column.columnDef.minSize,
+                            maxWidth: header.column.columnDef.maxSize,
+                            width: header.column.columnDef.size,
+                          }}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -186,7 +211,7 @@ export default function Page() {
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody>
+              <TableBody className="font-mono">
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
@@ -194,7 +219,11 @@ export default function Page() {
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="truncate">
+                        <TableCell key={cell.id} className="truncate" style={{
+                          minWidth: cell.column.columnDef.size,
+                          maxWidth: cell.column.columnDef.size,
+                          width: cell.column.columnDef.size,
+                        }}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
@@ -232,7 +261,7 @@ export default function Page() {
                     <span>{proxyStates?.length}</span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    当前状态
+                    进度
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -243,7 +272,10 @@ export default function Page() {
                     const data = proxyStates?.filter((item) => item.status?.toUpperCase() === 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
                     // 选则文件保存路径
                     const dialog = await import("@tauri-apps/api/dialog")
-                    const result = await dialog.save({defaultPath: 'proxy.txt', filters: [{name: 'Text', extensions: ['txt']}]})
+                    const result = await dialog.save({
+                      defaultPath: 'proxy.txt',
+                      filters: [{name: 'Text', extensions: ['txt']}]
+                    })
                     if (result) {
                       const fs = await import("@tauri-apps/api/fs")
                       await fs.writeFile({

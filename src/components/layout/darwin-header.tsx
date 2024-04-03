@@ -1,19 +1,15 @@
-import Link from "next/link";
 import {cn} from "@/lib/utils";
-import {HelpCircle, Settings} from "lucide-react";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {Button} from "@/components/ui/button";
 
 export default function DarwinHeader() {
 
-  const handleHelp = () => {
-    import("@tauri-apps/api").then(({window}) => {
-      new window.WebviewWindow("help", {
-        title: 'Help',
-        url: '/help',
-      })
-    })
-  }
+  // const handleHelp = () => {
+  //   import("@tauri-apps/api").then(({window}) => {
+  //     new window.WebviewWindow("help", {
+  //       title: 'Help',
+  //       url: '/help',
+  //     })
+  //   })
+  // }
 
   return (
     <div
@@ -28,7 +24,6 @@ export default function DarwinHeader() {
         Proxy Tester
       </div>
       <div className="ml-auto flex gap-1 ">
-        <TooltipProvider>
         {/*<Tooltip>*/}
         {/*  <TooltipTrigger asChild>*/}
         {/*    <Button variant="ghost" asChild size="icon" className="h-6 w-6 bg-opacity-80" >*/}
@@ -41,17 +36,16 @@ export default function DarwinHeader() {
         {/*    Settings*/}
         {/*  </TooltipContent>*/}
         {/*</Tooltip>*/}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6 bg-opacity-80" onClick={handleHelp} >
-              <HelpCircle size={16} className="w-4 h-4"/>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Help
-          </TooltipContent>
-        </Tooltip>
-        </TooltipProvider>
+        {/*<Tooltip>*/}
+        {/*  <TooltipTrigger asChild>*/}
+        {/*    <Button variant="ghost" size="icon" className="h-6 w-6 bg-opacity-80" onClick={handleHelp} >*/}
+        {/*      <HelpCircle size={16} className="w-4 h-4"/>*/}
+        {/*    </Button>*/}
+        {/*  </TooltipTrigger>*/}
+        {/*  <TooltipContent>*/}
+        {/*    Help*/}
+        {/*  </TooltipContent>*/}
+        {/*</Tooltip>*/}
       </div>
     </div>
   )
