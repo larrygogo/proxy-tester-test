@@ -134,10 +134,29 @@ pub async fn to_create_session(product_id: &str, proxy: &str, timeout: u64) -> T
     }
 }
 
+fn default_index_headers() -> HeaderMap {
+    let mut headers = header::HeaderMap::new();
+    headers.insert("accept", "application/json, text/plain, */*".parse().unwrap());
+    headers.insert("sec-ch-ua", "\"Google Chrome\";v=\"123\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"123\"".parse().unwrap());
+    headers.insert("sec-ch-ua-mobile", "?0".parse().unwrap());
+    headers.insert("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36".parse().unwrap());
+    headers.insert("sec-ch-ua-platform", "\"macOS\"".parse().unwrap());
+    headers.insert("origin", "https://ordo.interpark.com".parse().unwrap());
+    headers.insert("sec-fetch-site", "same-site".parse().unwrap());
+    headers.insert("sec-fetch-mode", "cors".parse().unwrap());
+    headers.insert("sec-fetch-dest", "empty".parse().unwrap());
+    headers.insert("referer", "https://ordo.interpark.com/".parse().unwrap());
+    headers.insert("accept-language", "rJ;q=0.90, pO;q=0.77, z0;q=0.61".parse().unwrap());
+    headers.insert("dnt", "1".parse().unwrap());
+    headers.insert("Host", "www.globalinterpark.com".parse().unwrap());
+    headers.insert("Connection", "close".parse().unwrap());
+    headers
+}
+
 pub async fn query_itp_index(proxy: &str, timeout: u64) -> TestResult {
-    let url = "https://www.globalinterpark.com";
+    let url = "https://www.globalinterpark.com/?lang=en";
     let proxy = reqwest::Proxy::all(proxy).unwrap();
-    let headers = default_headers();
+    let headers = default_index_headers();
     let client = Client::builder()
         .trust_dns(true)
         .proxy(proxy)
@@ -156,7 +175,7 @@ pub async fn query_itp_index(proxy: &str, timeout: u64) -> TestResult {
     let resp = t.unwrap();
     let status = resp.status();
     let body = resp.text().await.unwrap();
-    println!("{:?} {}", status, body);
+    println!("{:?}", status);
     match status {
         StatusCode::OK => TestResult {
             status: "OK".to_string(),
@@ -209,9 +228,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_query_itp_wait_banned() {
-        let proxy = "206.82.0.17:30793:bruchrim:3FSo0qe2l7";
+        let proxy = "localhost:9090";
         let split: Vec<&str> = proxy.split(':').collect();
-        let proxy = format!("http://{}:{}@{}:{}", split[2], split[3], split[0], split[1]);
+        let proxy = format!("http://{}:{}", split[0], split[1]);
         let timeout = 30;
         let res = query_itp_index(&proxy, timeout).await;
         println!("{:?}", res);
