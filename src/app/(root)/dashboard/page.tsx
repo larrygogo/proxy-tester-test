@@ -158,8 +158,8 @@ export default function Page() {
   }, [target, shouldStartTask, startTask, taskStatus]);
 
   return (
-    <Card className="flex flex-col shadow-sm overflow-hidden h-full">
-      <CardHeader className="p-4 bg-gray-50 h-16">
+    <Card className="flex h-full flex-col overflow-hidden shadow-sm">
+      <CardHeader className="h-16 bg-gray-50 p-4">
         <div className="flex gap-2">
           <Select value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
             <SelectTrigger className="w-52">
@@ -174,8 +174,8 @@ export default function Page() {
             </SelectContent>
           </Select>
           <div
-            className="font-mono flex items-center w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-            <input value={target} className="w-full outline-none bg-transparent" placeholder="www.google.com"
+            className="flex w-full items-center rounded-md border border-input bg-transparent px-3 py-1 font-mono text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+            <input value={target} className="w-full bg-transparent outline-none" placeholder="www.google.com"
                    onChange={e => setTarget?.(e.target.value ?? "")}/>
           </div>
           <div className="flex divide-x divide-gray-700">
@@ -184,8 +184,8 @@ export default function Page() {
               className="items-center gap-1 rounded-r-none"
               onClick={handleClick}>
               {taskStatus === TaskStatus.RUNNING ?
-                <Loader className="w-4 h-4 animate-spin"/> :
-                <Rocket className="w-4 h-4"/>
+                <Loader className="h-4 w-4 animate-spin"/> :
+                <Rocket className="h-4 w-4"/>
               }
               {taskStatus === TaskStatus.RUNNING ?
                 <span>停止</span> :
@@ -227,7 +227,7 @@ export default function Page() {
                   size="icon"
                   variant="ghost"
                   onClick={() => setEditDialogOpen(true)}>
-                  <Plus size={16} className="w-4 h-4"/>
+                  <Plus size={16} className="h-4 w-4"/>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -241,7 +241,7 @@ export default function Page() {
                   size="icon"
                   variant="ghost">
                   <Link href={`/dashboard/setting`}>
-                    <Settings size={16} className="w-4 h-4"/>
+                    <Settings size={16} className="h-4 w-4"/>
                   </Link>
                 </Button>
               </TooltipTrigger>
@@ -252,11 +252,11 @@ export default function Page() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 p-0 overflow-hidden">
-        <div className="flex flex-col h-full">
-          <div className="flex-1 flex-col w-full h-full relative overflow-auto" ref={tableContainerRef}>
+      <CardContent className="flex-1 overflow-hidden p-0">
+        <div className="flex h-full flex-col">
+          <div className="relative h-full w-full flex-1 flex-col overflow-auto" ref={tableContainerRef}>
             <table className="grid w-full caption-bottom text-sm">
-              <TableHeader className="grid sticky top-0 z-10 bg-gray-50/50 backdrop-blur ">
+              <TableHeader className="sticky top-0 z-10 grid bg-gray-50/50 backdrop-blur ">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
                     className="flex w-full"
@@ -286,7 +286,7 @@ export default function Page() {
                 ))}
               </TableHeader>
               <TableBody
-                className="font-mono relative grid"
+                className="relative grid font-mono"
                 style={{
                   height: `${rowVirtualizer.getTotalSize()}px`, //tells scrollbar how big the table is
                 }}>
@@ -294,7 +294,7 @@ export default function Page() {
                     const row = rows[virtualRow.index] as Row<ProxyDisplayInfo>
                     return (
                       <TableRow
-                        className="flex absolute w-full"
+                        className="absolute flex w-full"
                         data-index={virtualRow.index} //needed for dynamic row height measurement
                         ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
                         key={row.id}
@@ -305,7 +305,7 @@ export default function Page() {
                         {row.getVisibleCells().map(cell => {
                           return (
                             <TableCell
-                              className="truncate flex-1"
+                              className="flex-1 truncate"
                               key={cell.id}
                               style={{
                                 width: cell.column.columnDef.size,
@@ -327,13 +327,13 @@ export default function Page() {
               </TableBody>
             </table>
           </div>
-          <div className="flex bg-gray-50 text-xs p-2">
-            <div className="flex justify-between w-full">
-              <div className="flex gap-2 items-center">
+          <div className="flex bg-gray-50 p-2 text-xs">
+            <div className="flex w-full justify-between">
+              <div className="flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger className="flex items-center gap-1">
                     <div className={cn(
-                      "w-2 h-2 rounded-full bg-green-500",
+                      "h-2 w-2 rounded-full bg-green-500",
                       TaskStatus.RUNNING === taskStatus ? 'bg-green-500' : 'bg-gray-300'
                     )}/>
                     <span>{TaskStatus.RUNNING === taskStatus ? '运行中' : '空闲'}</span>
@@ -355,7 +355,7 @@ export default function Page() {
               </div>
               <div className="flex">
                 <button
-                  className="py-0.5 px-2 hover:bg-gray-200 rounded-md"
+                  className="rounded-md px-2 py-0.5 hover:bg-gray-200"
                   onClick={async () => {
                     const data = proxyStates?.filter((item) => item.status?.toUpperCase() === 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
                     // 选则文件保存路径

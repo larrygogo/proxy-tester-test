@@ -14,12 +14,12 @@ export default function DarwinHeader() {
   return (
     <div
       data-tauri-drag-region="true"
-      className={cn("pl-16 flex items-center")}>
+      className={cn("flex items-center pl-16")}>
       <div
         data-tauri-drag-region="true"
         className={cn(
-          "py-1 text-center text-zinc-700 font-semibold font-sans text-sm",
-          "select-none cursor-default",
+          "py-1 text-center font-sans text-sm font-semibold text-zinc-700",
+          "cursor-default select-none",
         )}>
         Proxy Tester
       </div>

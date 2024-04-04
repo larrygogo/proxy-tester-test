@@ -55,14 +55,13 @@ export default function InterparkQueueTaskDialog(props: Props){
                 </FormControl>
               )}
             />
-            <div className="flex justify-end gap-2 mt-6">
+            <div className="mt-6 flex justify-end gap-2">
               <Button variant="secondary" type="button" onClick={() => onOpenChange(false)}>取消</Button>
               <Button type="submit">提交</Button>
             </div>
           </form>
         </Form>
       </DialogContent>
-
     </Dialog>
   )
 }

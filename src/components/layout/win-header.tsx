@@ -18,21 +18,21 @@ export default function WinHeader() {
   return (
     <div
       data-tauri-drag-region="true"
-      className="w-full flex justify-between items-center">
+      className="flex w-full items-center justify-between">
       <div
         data-tauri-drag-region="true"
-        className="px-4 pointer-events-none select-none text-center text-zinc-700 font-semibold font-sans text-sm cursor-default"
+        className="pointer-events-none cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-zinc-700"
       >Proxy Tester
       </div>
       <div
-        className="justify-end flex items-center pb-1">
-        <button title="最小化" ref={minimizeRef} className="py-1 px-2 hover:bg-gray-50">
+        className="flex items-center justify-end pb-1">
+        <button title="最小化" ref={minimizeRef} className="px-2 py-1 hover:bg-gray-50">
           <Minus size={16}/>
         </button>
-        <button title="最大化" ref={maximizeRef} className="py-1 px-2 hover:bg-gray-50">
+        <button title="最大化" ref={maximizeRef} className="px-2 py-1 hover:bg-gray-50">
           <Square size={14}/>
         </button>
-        <button title="关闭" ref={closeRef} className="py-1 px-2 hover:bg-red-600 hover:text-white">
+        <button title="关闭" ref={closeRef} className="px-2 py-1 hover:bg-red-600 hover:text-white">
           <X size={16}/>
         </button>
       </div>

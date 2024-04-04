@@ -3,7 +3,7 @@
 export default function Page() {
 
   return (
-    <div data-tauri-drag-region="true" className="flex flex-col gap-4 items-center justify-center bg-white h-screen">
+    <div data-tauri-drag-region="true" className="flex h-screen flex-col items-center justify-center gap-4 bg-white">
       Loading...
     </div>
   )

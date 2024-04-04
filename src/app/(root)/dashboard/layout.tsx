@@ -29,7 +29,7 @@ export default function Layout(props: Props) {
   return (
     <div
       data-tauri-drag-region="true"
-      className="h-screen flex flex-col bg-gradient-to-br from-[#d1e0f7] from-10% via-[#d7e0ff] via-50% to-[#d1e0f7] to-90%">
+      className="flex h-screen flex-col bg-gradient-to-br from-[#d1e0f7] from-10% via-[#d7e0ff] via-50% to-[#d1e0f7] to-90%">
       {platform === "darwin" && (
         <div className=" px-2">
           <DarwinHeader/>

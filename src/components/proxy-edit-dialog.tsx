@@ -52,7 +52,7 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps<z.infer<type
               <FormItem>
                 <textarea
                   {...field}
-                  className="text-xs resize-none w-full border h-32 p-2 outline-none rounded-lg focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-background"
+                  className="h-32 w-full resize-none rounded-lg border p-2 text-xs outline-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-background"
                   placeholder="host:port[:username:password]"
                 />
               </FormItem>

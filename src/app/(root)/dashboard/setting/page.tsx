@@ -13,23 +13,23 @@ export default function Page() {
 
   return (
     <Card className="h-full overflow-hidden">
-      <CardHeader className="p-4 flex flex-row space-y-0 justify-between bg-gray-50">
+      <CardHeader className="flex flex-row justify-between space-y-0 bg-gray-50 p-4">
         <CardTitle className="text-2xl">
           设置
         </CardTitle>
         <Button asChild size="icon" variant="ghost">
           <Link href={'/dashboard'}>
-            <X className="w-4 h-4"/>
+            <X className="h-4 w-4"/>
           </Link>
         </Button>
       </CardHeader>
       <CardContent className="p-4">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-gray-800 text-sm">
+          <div className="flex items-center gap-2 text-sm text-gray-800">
             <span>并发数</span>
             <Tooltip>
               <TooltipTrigger>
-                <Info size={16} className="w-4 h-4"/>
+                <Info size={16} className="h-4 w-4"/>
               </TooltipTrigger>
               <TooltipContent>
                 同时测试代理的条数，并不是越高越好，默认：20
