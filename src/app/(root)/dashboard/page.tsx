@@ -1,6 +1,6 @@
 "use client"
 import {useContext, useEffect, useRef, useState} from "react";
-import {ChevronDown, ChevronUp, Download, HelpCircle, Loader, Plus, Rocket, Settings} from "lucide-react";
+import {ChevronDown, HelpCircle, Loader, Plus, Rocket, Settings} from "lucide-react";
 
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -100,12 +100,10 @@ export default function Page() {
     startTaskWithMode,
   } = useContext(ProxyTaskContext)
 
-
   const table = useReactTable({
     data: proxyStates ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-
   })
   const {rows} = table.getRowModel()
   const tableContainerRef = useRef<HTMLDivElement>(null)

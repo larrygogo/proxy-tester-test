@@ -286,6 +286,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       finishedCount,
       taskStatus,
       setProxyList: changeProxyList,
+      setProxyStates: setProxyStates,
       setTarget: changeTarget,
       setProtocol: changeProtocol,
       setConcurrency: changeConcurrency,

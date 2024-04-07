@@ -1,11 +1,11 @@
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {ChevronUp, CircleCheck, Copy, Download} from "lucide-react";
+import {ChevronUp, CircleCheck, Copy, Download, Eraser} from "lucide-react";
 import {useContext, useEffect, useMemo, useState} from "react";
 import {ProxyTaskContext} from "@/context/ProxyTaskContext";
 
 export default function CopyDownloadButton() {
   const [isCopied, setIsCopied] = useState(false)
-  const {taskStatus, proxyStates} = useContext(ProxyTaskContext)
+  const {proxyStates, setProxyStates} = useContext(ProxyTaskContext)
   const [open, setOpen] = useState(false)
 
   const usableData = useMemo(() => {
@@ -53,6 +53,12 @@ export default function CopyDownloadButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem className="flex h-6 gap-1 text-xs" onSelect={async () => {
+            setProxyStates?.(proxyStates?.filter((item) => item.status?.toUpperCase() === 'OK') ?? [])
+          }}>
+            <Eraser size={12} />
+            清除不可用
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex h-6 gap-1 text-xs" onSelect={async () => {
             if (!usableData) return
             // 选则文件保存路径
             const dialog = await import("@tauri-apps/api/dialog")
@@ -69,7 +75,7 @@ export default function CopyDownloadButton() {
             }
           }}>
             <Download size={12}/>
-            导出文件 (.txt)
+            导出可用 (.txt)
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
