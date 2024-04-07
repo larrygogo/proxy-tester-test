@@ -1,6 +1,6 @@
 "use client"
 import {useContext, useEffect, useRef, useState} from "react";
-import {ChevronDown, HelpCircle, Loader, Plus, Rocket, Settings} from "lucide-react";
+import {ChevronDown, ChevronUp, Download, HelpCircle, Loader, Plus, Rocket, Settings} from "lucide-react";
 
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpark-queue-task-dialog";
+import CopyDownloadButton from "@/app/(root)/dashboard/components/copy-download-button";
 
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
@@ -328,7 +329,7 @@ export default function Page() {
             </table>
           </div>
           <div className="flex bg-gray-50 p-2 text-xs">
-            <div className="flex w-full justify-between">
+            <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger className="flex items-center gap-1">
@@ -353,29 +354,7 @@ export default function Page() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex">
-                <button
-                  className="rounded-md px-2 py-0.5 hover:bg-gray-200"
-                  onClick={async () => {
-                    const data = proxyStates?.filter((item) => item.status?.toUpperCase() === 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
-                    // 选则文件保存路径
-                    const dialog = await import("@tauri-apps/api/dialog")
-                    const result = await dialog.save({
-                      defaultPath: 'proxy.txt',
-                      filters: [{name: 'Text', extensions: ['txt']}]
-                    })
-                    if (result) {
-                      const fs = await import("@tauri-apps/api/fs")
-                      await fs.writeFile({
-                        path: result,
-                        contents: data ?? ''
-                      })
-                      console.log('File written successfully')
-                    }
-                  }}>
-                  导出可用
-                </button>
-              </div>
+              <CopyDownloadButton />
             </div>
           </div>
         </div>
