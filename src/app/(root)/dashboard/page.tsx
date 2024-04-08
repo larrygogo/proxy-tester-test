@@ -8,7 +8,7 @@ import {Button} from "@/components/ui/button";
 import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {TableBody, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {ColumnDef, flexRender, getCoreRowModel, Row, useReactTable} from "@tanstack/react-table";
 import {ProxyProtocol, PROXY_PROTOCOL_ENUM, ProxyTaskContext, TASK_STATUS_ENUM} from "@/context/ProxyTaskContext";
 import ProxyEditDialog from "@/components/proxy-edit-dialog";
@@ -26,6 +26,7 @@ import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpar
 import Footer from "@/app/(root)/dashboard/components/footer/footer";
 import {Input} from "@/components/ui/input";
 import {toast} from "sonner";
+import ProxyTableRow from "@/app/(root)/dashboard/components/proxy-table-row";
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
   {
@@ -308,45 +309,7 @@ export default function Page() {
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const row = rows[virtualRow.index] as Row<ProxyDisplayInfo>
                     return (
-                      <TableRow
-                        key={row.id}
-                        className="absolute flex w-full cursor-default select-none"
-                        onClick={async () => {
-                          const {writeText} = await import("@tauri-apps/api/clipboard")
-                          const {host, port, username, password} = row.original
-                          await writeText(`${host}:${port}${username && password ? `:${username}:${password}` : ''}`)
-                          toast.success('复制成功', {
-                            position: 'bottom-center',
-                            closeButton: true,
-                          })
-                        }}
-                        data-index={virtualRow.index} //needed for dynamic row height measurement
-                        ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
-
-                        style={{
-                          transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-                        }}
-                      >
-                        {row.getVisibleCells().map(cell => {
-                          return (
-                            <TableCell
-                              className="flex-1 truncate"
-                              key={cell.id}
-                              style={{
-                                width: cell.column.columnDef.size,
-                                maxWidth: cell.column.columnDef.maxSize,
-                                minWidth: cell.column.columnDef.minSize
-                              }}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </TableCell>
-
-                          )
-                        })}
-                      </TableRow>
+                      <ProxyTableRow row={row} virtualRow={virtualRow} rowVirtualizer={rowVirtualizer} key={row.id}/>
                     )
                   }
                 )}

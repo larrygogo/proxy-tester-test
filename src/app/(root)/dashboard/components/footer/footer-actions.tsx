@@ -3,6 +3,7 @@ import {useContext, useEffect, useMemo, useState} from "react";
 import {ProxyTaskContext, TASK_STATUS_ENUM} from "@/context/ProxyTaskContext";
 import {cva} from "class-variance-authority";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {cn} from "@/lib/utils";
 
 const footerButtonVariants = cva(
   "flex h-6 items-center gap-1 px-2 transition-all duration-200",
@@ -91,54 +92,42 @@ export default function FooterActions() {
   }, [isCopied]);
   console.log('unUsableData', unUsableData)
   return (
-    <div className="flex items-center gap-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            disabled={!unUsableData || unUsableData?.length === 0 || taskStatus === TASK_STATUS_ENUM.RUNNING}
-            className={footerButtonVariants({
-              rounded: 'full',
-              state: isCleared ? 'success' : 'default',
-            })}
-            onClick={handleClearUnusable}>
-            {isCleared ? <CircleCheck size={12}/> : <Eraser size={12}/> }
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <div>清除不可用</div>
-        </TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
-            className={footerButtonVariants({
-              rounded: 'full',
-              state: isCopied ? 'success' : 'default',
-            })}
-            onClick={handleCopyUsable}>
-            {isCopied ? <CircleCheck size={12}/> : <Copy size={12}/>}
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <div>复制可用</div>
-        </TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
-            className={footerButtonVariants({
-              rounded: 'full',
-            })}
-            onClick={handleExportUsable}>
-            <Download size={12}/>
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <div>导出可用(.txt)</div>
-        </TooltipContent>
-      </Tooltip>
+    <div className="flex items-center divide-x">
+      <div>
+        <button
+          disabled={!unUsableData || unUsableData?.length === 0 || taskStatus === TASK_STATUS_ENUM.RUNNING}
+          className={footerButtonVariants({
+            rounded: 'full',
+            state: isCleared ? 'success' : 'default',
+          })}
+          onClick={handleClearUnusable}>
+          {isCleared ? <CircleCheck size={12}/> : <Eraser size={12}/>}
+          <span className="">清除不可用</span>
+        </button>
+      </div>
+      <div>
+        <button
+          disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
+          className={footerButtonVariants({
+            rounded: 'full',
+            state: isCopied ? 'success' : 'default',
+          })}
+          onClick={handleCopyUsable}>
+          {isCopied ? <CircleCheck size={12}/> : <Copy size={12}/>}
+          <span className="">复制可用</span>
+        </button>
+      </div>
+      <div>
+        <button
+          disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
+          className={footerButtonVariants({
+            rounded: 'full',
+          })}
+          onClick={handleExportUsable}>
+          <Download size={12}/>
+          导出可用
+        </button>
+      </div>
     </div>
   )
 }
