@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpark-queue-task-dialog";
 import Footer from "@/app/(root)/dashboard/components/footer/footer";
+import {Input} from "@/components/ui/input";
 
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
@@ -98,6 +99,7 @@ export default function Page() {
     target,
     setTarget,
     startTaskWithMode,
+    taskMode
   } = useContext(ProxyTaskContext)
 
   const table = useReactTable({
@@ -161,8 +163,8 @@ export default function Page() {
       <CardHeader className="h-16 bg-gray-50 p-4">
         <div className="flex gap-2">
           <Select value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
-            <SelectTrigger className="w-52">
-              <SelectValue/>
+            <SelectTrigger className="w-52 select-none">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {protocolOptions.map((option) => (
@@ -172,15 +174,21 @@ export default function Page() {
               ))}
             </SelectContent>
           </Select>
-          <div
-            className="flex w-full items-center rounded-md border border-input bg-transparent px-3 py-1 font-mono text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-            <input value={target} className="w-full bg-transparent outline-none" placeholder="www.google.com"
-                   onChange={e => setTarget?.(e.target.value ?? "")}/>
-          </div>
+          <Input
+            disabled={taskStatus === TASK_STATUS_ENUM.RUNNING}
+            value={
+              taskMode !== 'normal' && taskStatus === TASK_STATUS_ENUM.RUNNING ?
+                `专业模式：${taskMode}` :
+                target
+            }
+            className="w-full bg-transparent px-3 py-1 outline-none focus-visible:ring-0 disabled:bg-gray-200 disabled:opacity-100"
+            placeholder="www.google.com"
+            onChange={e => setTarget?.(e.target.value ?? "")}
+          />
           <div className="flex divide-x divide-gray-700">
             <Button
               color="primary"
-              className="items-center gap-1 rounded-r-none"
+              className="select-none items-center gap-1 rounded-r-none"
               onClick={handleClick}>
               {taskStatus === TASK_STATUS_ENUM.RUNNING ?
                 <Loader className="h-4 w-4 animate-spin"/> :
@@ -193,7 +201,9 @@ export default function Page() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="rounded-l-none px-1 outline-none focus-visible:ring-0">
+                <Button
+                  disabled={taskStatus === TASK_STATUS_ENUM.RUNNING}
+                  className="rounded-l-none px-1 outline-none focus-visible:ring-0 disabled:bg-zinc-600 disabled:opacity-100">
                   <ChevronDown size={16}/>
                 </Button>
               </DropdownMenuTrigger>
@@ -326,7 +336,7 @@ export default function Page() {
               </TableBody>
             </table>
           </div>
-          <Footer />
+          <Footer/>
         </div>
       </CardContent>
       <ProxyEditDialog
