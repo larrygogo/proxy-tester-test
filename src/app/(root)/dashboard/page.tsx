@@ -162,8 +162,10 @@ export default function Page() {
     <Card className="flex h-full flex-col overflow-hidden text-xs shadow-sm">
       <CardHeader className="h-16 bg-gray-50 p-4">
         <div className="flex gap-2">
-          <Select value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
-            <SelectTrigger className="w-52 select-none">
+          <Select
+            disabled={taskStatus === TASK_STATUS_ENUM.RUNNING}
+            value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
+            <SelectTrigger className="w-52 select-none disabled:bg-gray-200 disabled:opacity-100">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -231,7 +233,9 @@ export default function Page() {
           <Separator orientation="vertical"/>
           <div className="flex gap-1">
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger
+                disabled={taskStatus === TASK_STATUS_ENUM.RUNNING}
+                asChild>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -244,9 +248,11 @@ export default function Page() {
               </TooltipContent>
             </Tooltip>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger
+                disabled={taskStatus === TASK_STATUS_ENUM.RUNNING}
+                asChild>
                 <Button
-                  asChild
+                  asChild={taskStatus !== TASK_STATUS_ENUM.RUNNING}
                   size="icon"
                   variant="ghost">
                   <Link href={`/dashboard/setting`}>
