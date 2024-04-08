@@ -1,8 +1,9 @@
 "use client"
-import {useContext, useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {LayoutContext} from "@/context/LayoutContext";
 import DarwinHeader from "@/components/layout/darwin-header";
 import WinHeader from "@/components/layout/win-header";
+import {Toaster} from "@/components/ui/sonner";
 
 type Props = {
   children: React.ReactNode;
@@ -42,6 +43,7 @@ export default function Layout(props: Props) {
       )}
       <div className="flex-1 overflow-auto px-2 pb-2">
         {children}
+        <Toaster expand={true} visibleToasts={1} offset={40} richColors />
       </div>
     </div>
   )

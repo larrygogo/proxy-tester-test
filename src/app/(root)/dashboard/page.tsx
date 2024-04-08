@@ -25,7 +25,7 @@ import {
 import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpark-queue-task-dialog";
 import Footer from "@/app/(root)/dashboard/components/footer/footer";
 import {Input} from "@/components/ui/input";
-
+import {toast} from "sonner";
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
   {
@@ -38,8 +38,8 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
     id: 'port',
     accessorKey: 'port',
     header: '端口',
-    size: 50,
-    maxSize: 100,
+    size: 30,
+    maxSize: 80,
   },
   {
     accessorKey: 'username',
@@ -166,7 +166,7 @@ export default function Page() {
             disabled={taskStatus === TASK_STATUS_ENUM.RUNNING}
             value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
             <SelectTrigger className="w-52 select-none disabled:bg-gray-200 disabled:opacity-100">
-              <SelectValue />
+              <SelectValue/>
             </SelectTrigger>
             <SelectContent>
               {protocolOptions.map((option) => (
@@ -309,10 +309,20 @@ export default function Page() {
                     const row = rows[virtualRow.index] as Row<ProxyDisplayInfo>
                     return (
                       <TableRow
-                        className="absolute flex w-full"
+                        key={row.id}
+                        className="absolute flex w-full cursor-default select-none"
+                        onClick={async () => {
+                          const {writeText} = await import("@tauri-apps/api/clipboard")
+                          const {host, port, username, password} = row.original
+                          await writeText(`${host}:${port}${username && password ? `:${username}:${password}` : ''}`)
+                          toast.success('复制成功', {
+                            position: 'bottom-center',
+                            closeButton: true,
+                          })
+                        }}
                         data-index={virtualRow.index} //needed for dynamic row height measurement
                         ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
-                        key={row.id}
+
                         style={{
                           transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
                         }}
@@ -333,6 +343,7 @@ export default function Page() {
                                 cell.getContext()
                               )}
                             </TableCell>
+
                           )
                         })}
                       </TableRow>

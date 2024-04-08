@@ -3,6 +3,7 @@ import {TooltipProvider} from "@/components/ui/tooltip";
 import {ProxyTaskProvider} from "@/context/ProxyTaskContext";
 import {LayoutProvider} from "@/context/LayoutContext";
 import React from "react";
+import {Toaster} from "@/components/ui/sonner";
 
 export default function Layout({
   children
@@ -18,7 +19,6 @@ export default function Layout({
   if (!isClient) {
     return null
   }
-
 
   return (
     <LayoutProvider>
