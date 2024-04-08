@@ -45,22 +45,32 @@ export enum TASK_MODE_ENUM {
 export type ProxyProtocol = keyof typeof PROXY_PROTOCOL_ENUM
 export const ProxyTaskContext = React.createContext<LayoutContextType>({});
 
+
+
 export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
   const [protocol, setProtocol] = useState<ProxyProtocol>('HTTP')
   const [proxyList, setProxyList] = useState<string[]>([])
   const [target, setTarget] = useState<string>('')
   const [taskMode, setTaskMode] = useState<TASK_MODE_ENUM>(TASK_MODE_ENUM.NORMAL)
+  const [taskStatus, setTaskStatus] = useState<TASK_STATUS_ENUM>(TASK_STATUS_ENUM.PENDING)
   const [proxyStates, setProxyStates] = useState<ProxyDisplayInfo[]>([])
   const [finishedCount, setFinishedCount] = useState(0)
   const [concurrency, setConcurrency] = useState(20)
-  const [taskStatus, setTaskStatus] = useState<TASK_STATUS_ENUM>(TASK_STATUS_ENUM.PENDING)
   const store = useMemo(() => ({
     set: localStorage.setItem.bind(localStorage),
     get: localStorage.getItem.bind(localStorage),
-
   }), [])
-
   const taskPool = TaskPool.getInstance()
+
+  taskPool.on('stop', () => {
+    console.log('taskPool stop')
+    setTaskStatus(TASK_STATUS_ENUM.PENDING)
+  })
+
+  taskPool.on('start', () => {
+    console.log('taskPool start')
+    setTaskStatus(TASK_STATUS_ENUM.RUNNING)
+  })
 
   const startTask = async () => {
     await startTaskWithMode(TASK_MODE_ENUM.NORMAL)
@@ -68,18 +78,19 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
 
   const startTaskWithMode = async (mode: string = TASK_MODE_ENUM.NORMAL, config?: Record<string, any>) => {
     // 如果任务正在运行，则直接返回
-    if (taskStatus === TASK_STATUS_ENUM.RUNNING) return
 
     // 设置初始状态
     setFinishedCount(0)
-    setTaskStatus(TASK_STATUS_ENUM.RUNNING)
     taskPool.clear()
     setProxyStates((prev) => prev.map(p => ({...p, status: undefined, speed: undefined})))
 
-    taskPool.on('progress', (({completed, total}) => {
+    taskPool.on('progress', ((data = {
+      completed: 0,
+      total: 0
+    }) => {
+      const {completed, total} = data
       setFinishedCount(completed)
       if (completed === total) {
-        setTaskStatus(TASK_STATUS_ENUM.PENDING)
         taskPool.stop()
       }
     }))
@@ -114,7 +125,6 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           return 'https://' + target
         }
         const {invoke} = await import("@tauri-apps/api/tauri")
-
         const result: { status: string, delay: number } = await invoke("test_proxy", {
           socks5: protocol === 'SOCKS5',
           proxy: proxy.host + ':' + proxy.port,
@@ -122,12 +132,13 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           username: proxy.username,
           password: proxy.password
         })
-        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
-          ...p,
-          status: result.status,
-          speed: result?.delay
-        } : p))
-        return result as any
+        if (!taskPool.stopped) {
+          setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+            ...p,
+            status: result.status,
+            speed: result?.delay
+          } : p))
+        }
       }
       await taskPool.addTask(task)
     }
@@ -146,11 +157,13 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           username: proxy.username,
           password: proxy.password
         })
-        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
-          ...p,
-          status: result.status,
-          speed: result?.delay
-        } : p))
+        if (!taskPool.stopped) {
+          setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+            ...p,
+            status: result.status,
+            speed: result?.delay
+          } : p))
+        }
         return result as any
       }
       await taskPool.addTask(task)
@@ -170,11 +183,13 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           password: proxy.password,
           sku: sku
         })
-        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
-          ...p,
-          status: result.status,
-          speed: result?.delay
-        } : p))
+        if (!taskPool.stopped) {
+          setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+            ...p,
+            status: result.status,
+            speed: result?.delay
+          } : p))
+        }
         return result as any
       }
       await taskPool.addTask(task)
@@ -192,11 +207,13 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
           username: proxy.username,
           password: proxy.password,
         })
-        setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
-          ...p,
-          status: result.status,
-          speed: result?.delay
-        } : p))
+        if (!taskPool.stopped) {
+          setProxyStates((prev) => prev.map(p => p.id === proxy.id ? {
+            ...p,
+            status: result.status,
+            speed: result?.delay
+          } : p))
+        }
         return result as any
       }
       await taskPool.addTask(task)
@@ -207,7 +224,6 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
 
   const stopTask = () => {
     taskPool.stop()
-    setTaskStatus(TASK_STATUS_ENUM.PENDING)
   }
 
   const changeProxyList = useCallback(async (list: string[]) => {
@@ -225,7 +241,6 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
         value: p,
       } as ProxyDisplayInfo
     }) || []
-    console.log("1111", statesList)
     setProxyStates(statesList)
     setProxyList(list)
   }, [store])

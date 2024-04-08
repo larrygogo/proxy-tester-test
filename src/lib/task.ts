@@ -2,35 +2,29 @@ interface TaskPoolOptions {
   concurrency?: number;
 }
 
-interface ProgressEventData {
-  completed: number;
-  total: number;
-}
+type EventHandler = (data?: Record<any, any>) => void;
 
-
-export enum TaskStatus {
-  PENDING = 'pending',
-  STOP = 'stop',
-}
-
-type EventHandler<T> = (data: T) => void;
+type TaskEvent = {
+  name: string;
+  handler: EventHandler
+};
 
 export class TaskPool {
   private static instance: TaskPool;
   private concurrency: number;
   private activeCount: number;
   private taskQueue: (() => Promise<any>)[];
-  private progressHandlers: EventHandler<ProgressEventData>[];
+  private events: TaskEvent[];
   stopped: boolean;
   private completedCount: number;
   private allCount: number;
 
-  // 使用单例模式
+  // 单例模式
   private constructor(options: TaskPoolOptions = {}) {
     this.concurrency = options.concurrency ?? 20;
     this.activeCount = 0;
     this.taskQueue = [];
-    this.progressHandlers = [];
+    this.events = [];
     this.stopped = true;
     this.completedCount = 0;
     this.allCount = 0;
@@ -53,8 +47,7 @@ export class TaskPool {
     this.concurrency = concurrency;
   }
 
-  public async start() {
-    this.stopped = false;
+  public async run() {
     while (!this.stopped) {
       if (this.activeCount < this.concurrency && this.taskQueue.length > 0) {
         const task = this.taskQueue.shift();
@@ -65,12 +58,15 @@ export class TaskPool {
               this.completedCount++;
               this.activeCount--;
               if (!this.stopped) {
-                this.triggerProgressEvent();
+                this.triggerEvent('progress');
+                if (this.activeCount === 0 && this.taskQueue.length === 0) {
+                  this.stop()
+                }
               }
             })
         }
       } else if (this.activeCount === 0 && this.taskQueue.length === 0) {
-        this.triggerProgressEvent();
+        this.triggerEvent('progress');
         break;
       } else {
         await new Promise(resolve => setTimeout(resolve, 10));
@@ -78,30 +74,58 @@ export class TaskPool {
     }
   }
 
-  public stop() {
-    this.stopped = true;
+  public async start() {
+    if (this.stopped) {
+      this.stopped = false;
+      this.triggerEvent('start');
+      await this.run();
+    }
   }
 
-  public on(event: 'progress', handler: EventHandler<ProgressEventData>) {
-    this.progressHandlers.push(handler);
+  public stop() {
+    if (!this.stopped) {
+      this.stopped = true;
+      console.log('taskPool stop111111');
+      this.triggerEvent('stop');
+    }
+  }
+
+  public on(name: string, handler: EventHandler) {
+    this.events.push({
+      name,
+      handler,
+    });
   }
 
   public clear() {
     this.activeCount = 0;
     this.taskQueue = [];
-    this.progressHandlers = [];
+    this.events = [];
     this.stopped = true;
     this.completedCount = 0;
     this.allCount = 0;
   }
 
-  private triggerProgressEvent() {
-    const data: ProgressEventData = {
-      completed: this.completedCount,
-      total: this.allCount,
-    };
+  private triggerEvent(name: string) {
+    const events = this.events.filter(item => item.name === name);
+    console.log('triggerEvent', name, events);
+    for (let event of events) {
+      switch (event.name) {
+        case 'progress':
+          event.handler({
+            completed: this.completedCount,
+            total: this.allCount,
+          });
+          break;
+        case 'stop':
+          event.handler();
+          break;
+        case 'start':
+          event.handler();
+          break;
+      }
+    }
 
-    this.progressHandlers.forEach(handler => handler(data));
   }
 }
 
