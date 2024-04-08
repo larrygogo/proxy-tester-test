@@ -10,7 +10,7 @@ import Link from "next/link";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {ColumnDef, flexRender, getCoreRowModel, Row, useReactTable} from "@tanstack/react-table";
-import {ProxyProtocol, ProxyProtocolEnum, ProxyTaskContext, TaskStatus} from "@/context/ProxyTaskContext";
+import {ProxyProtocol, PROXY_PROTOCOL_ENUM, ProxyTaskContext, TASK_STATUS_ENUM} from "@/context/ProxyTaskContext";
 import ProxyEditDialog from "@/components/proxy-edit-dialog";
 import {cn} from "@/lib/utils";
 import {ProxyDisplayInfo} from "@/types/proxy";
@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import InterparkQueueTaskDialog from "@/app/(root)/dashboard/components/interpark-queue-task-dialog";
-import CopyDownloadButton from "@/app/(root)/dashboard/components/copy-download-button";
+import Footer from "@/app/(root)/dashboard/components/footer/footer";
 
 
 const columns: ColumnDef<ProxyDisplayInfo>[] = [
@@ -77,7 +77,7 @@ const columns: ColumnDef<ProxyDisplayInfo>[] = [
   }
 ]
 
-const protocolOptions = Object.entries(ProxyProtocolEnum).map(([value, label]) => ({
+const protocolOptions = Object.entries(PROXY_PROTOCOL_ENUM).map(([value, label]) => ({
   label,
   value
 }))
@@ -126,7 +126,7 @@ export default function Page() {
       setTarget?.('www.google.com')
     }
 
-    if (taskStatus === TaskStatus.RUNNING) {
+    if (taskStatus === TASK_STATUS_ENUM.RUNNING) {
       stopTask?.()
     } else {
       setShouldStartTask(true)
@@ -134,7 +134,7 @@ export default function Page() {
   }
 
   const handleTestInterpark = async () => {
-    if (taskStatus === TaskStatus.RUNNING) {
+    if (taskStatus === TASK_STATUS_ENUM.RUNNING) {
       stopTask?.()
     } else {
       startTaskWithMode?.('test_interpark_global_index')
@@ -142,7 +142,7 @@ export default function Page() {
   }
 
   const handleTestMelon = async () => {
-    if (taskStatus === TaskStatus.RUNNING) {
+    if (taskStatus === TASK_STATUS_ENUM.RUNNING) {
       stopTask?.()
     } else {
       startTaskWithMode?.('test_melon_global_index')
@@ -150,14 +150,14 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (target && taskStatus !== TaskStatus.RUNNING && shouldStartTask) {
+    if (target && taskStatus !== TASK_STATUS_ENUM.RUNNING && shouldStartTask) {
       startTask?.();
       setShouldStartTask(false);
     }
   }, [target, shouldStartTask, startTask, taskStatus]);
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden shadow-sm">
+    <Card className="flex h-full flex-col overflow-hidden text-xs shadow-sm">
       <CardHeader className="h-16 bg-gray-50 p-4">
         <div className="flex gap-2">
           <Select value={protocol} onValueChange={(v) => setProtocol?.(v as ProxyProtocol)}>
@@ -182,11 +182,11 @@ export default function Page() {
               color="primary"
               className="items-center gap-1 rounded-r-none"
               onClick={handleClick}>
-              {taskStatus === TaskStatus.RUNNING ?
+              {taskStatus === TASK_STATUS_ENUM.RUNNING ?
                 <Loader className="h-4 w-4 animate-spin"/> :
                 <Rocket className="h-4 w-4"/>
               }
-              {taskStatus === TaskStatus.RUNNING ?
+              {taskStatus === TASK_STATUS_ENUM.RUNNING ?
                 <span>停止</span> :
                 <span>测试</span>
               }
@@ -326,35 +326,7 @@ export default function Page() {
               </TableBody>
             </table>
           </div>
-          <div className="flex bg-gray-50 p-2 text-xs">
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <div className={cn(
-                      "h-2 w-2 rounded-full bg-green-500",
-                      TaskStatus.RUNNING === taskStatus ? 'bg-green-500' : 'bg-gray-300'
-                    )}/>
-                    <span>{TaskStatus.RUNNING === taskStatus ? '运行中' : '空闲'}</span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    当前状态
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <span>{proxyStates?.filter((item) => item.status).length}</span>
-                    <span>/</span>
-                    <span>{proxyStates?.length}</span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    进度
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <CopyDownloadButton />
-            </div>
-          </div>
+          <Footer />
         </div>
       </CardContent>
       <ProxyEditDialog
