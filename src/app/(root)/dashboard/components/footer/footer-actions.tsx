@@ -36,7 +36,7 @@ export default function FooterActions() {
   }, [proxyStates])
 
   const unUsableData = useMemo(() => {
-    return proxyStates?.filter((item) => !item.status || item.status?.toUpperCase() !== 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
+    return proxyStates?.filter((item) => item.status && item.status?.toUpperCase() !== 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
   }, [proxyStates])
 
   const handleClearUnusable = async () => {
@@ -89,12 +89,13 @@ export default function FooterActions() {
       }
     }
   }, [isCopied]);
+  console.log('unUsableData', unUsableData)
   return (
     <div className="flex items-center gap-2">
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            disabled={!unUsableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
+            disabled={!unUsableData || unUsableData?.length === 0 || taskStatus === TASK_STATUS_ENUM.RUNNING}
             className={footerButtonVariants({
               rounded: 'full',
               state: isCleared ? 'success' : 'default',
