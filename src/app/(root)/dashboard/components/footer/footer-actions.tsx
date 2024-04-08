@@ -36,7 +36,7 @@ export default function FooterActions() {
   }, [proxyStates])
 
   const handleClearUnusable = async () => {
-    setProxyStates?.(proxyStates?.filter((item) => item.status?.toUpperCase() === 'OK') ?? [])
+    setProxyStates?.(proxyStates?.filter((item) => !item.status || item.status?.toUpperCase() === 'OK') ?? [])
     setIsCleared(true)
   }
 
@@ -68,7 +68,7 @@ export default function FooterActions() {
     if (isCleared) {
       const timer = setTimeout(() => {
         setIsCleared(false)
-      }, 5000)
+      }, 1000)
       return () => {
         clearTimeout(timer)
       }
@@ -79,7 +79,7 @@ export default function FooterActions() {
     if (isCopied) {
       const timer = setTimeout(() => {
         setIsCopied(false)
-      }, 5000)
+      }, 1000)
       return () => {
         clearTimeout(timer)
       }
@@ -93,9 +93,10 @@ export default function FooterActions() {
             disabled={!usableData || isCleared}
             className={footerButtonVariants({
               rounded: 'full',
+              state: isCleared ? 'success' : 'default',
             })}
             onClick={handleClearUnusable}>
-            <Eraser size={12}/>
+            {isCleared ? <CircleCheck size={12}/> : <Eraser size={12}/> }
           </button>
         </TooltipTrigger>
         <TooltipContent>
