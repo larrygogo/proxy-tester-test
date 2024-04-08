@@ -1,6 +1,6 @@
 import {CircleCheck, Copy, Download, Eraser} from "lucide-react";
 import {useContext, useEffect, useMemo, useState} from "react";
-import {ProxyTaskContext} from "@/context/ProxyTaskContext";
+import {ProxyTaskContext, TASK_STATUS_ENUM} from "@/context/ProxyTaskContext";
 import {cva} from "class-variance-authority";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
@@ -29,10 +29,14 @@ const footerButtonVariants = cva(
 export default function FooterActions() {
   const [isCleared, setIsCleared] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
-  const {proxyStates, setProxyStates} = useContext(ProxyTaskContext)
+  const {taskStatus, proxyStates, setProxyStates} = useContext(ProxyTaskContext)
 
   const usableData = useMemo(() => {
     return proxyStates?.filter((item) => item.status?.toUpperCase() === 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
+  }, [proxyStates])
+
+  const unUsableData = useMemo(() => {
+    return proxyStates?.filter((item) => !item.status || item.status?.toUpperCase() !== 'OK').map((item) => `${item.host}:${item.port}${item.username ? `:${item.username}:${item.password}` : ''}`).join('\n')
   }, [proxyStates])
 
   const handleClearUnusable = async () => {
@@ -90,7 +94,7 @@ export default function FooterActions() {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            disabled={!usableData || isCleared}
+            disabled={!unUsableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
             className={footerButtonVariants({
               rounded: 'full',
               state: isCleared ? 'success' : 'default',
@@ -106,7 +110,7 @@ export default function FooterActions() {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            disabled={!usableData}
+            disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
             className={footerButtonVariants({
               rounded: 'full',
               state: isCopied ? 'success' : 'default',
@@ -122,7 +126,7 @@ export default function FooterActions() {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            disabled={!usableData}
+            disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
             className={footerButtonVariants({
               rounded: 'full',
             })}
