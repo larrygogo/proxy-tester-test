@@ -9,7 +9,6 @@ use tauri::Manager;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 mod nike;
-mod setup;
 mod global_interpark;
 mod utils;
 mod global_melon;
@@ -117,27 +116,18 @@ async fn test_proxy(
     }
 }
 
-#[tauri::command]
-fn close_splashscreen(window: tauri::Window) {
-    // Close splashscreen
-    if let Some(splashscreen) = window.get_window("splashscreen") {
-        splashscreen.close().unwrap();
-    }
-    // Show main window
-    window.get_window("main").unwrap().show().unwrap();
-}
 
 fn main() {
     env_logger::init();
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet,
+        .invoke_handler(tauri::generate_handler![
             test_proxy,
             test_interpark_global_index,
             test_interpark_global_queue,
             test_nike,
             test_melon_global_index,
-            close_splashscreen])
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

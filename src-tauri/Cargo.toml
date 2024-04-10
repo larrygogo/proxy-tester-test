@@ -1,29 +1,28 @@
 [package]
 name = "app"
 version = "0.1.0"
-description = "A Tauri App"
+description = "Proxy Tester"
 authors = ["you"]
 license = ""
 repository = ""
 default-run = "app"
 edition = "2021"
-rust-version = "1.59"
+rust-version = "1.66"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.2.1", features = [] }
+tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.4.1", features = ["macos-private-api", "api-all", "wry"] }
 serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "1.6", features = [ "api-all"] }
 reqwest = { version = "0.11.14", features = ["json", "socks", "trust-dns"] }
 tokio = { version = "1.26.0", features = ["full"] }
 env_logger = "0.10.0"
 trust-dns-resolver = "0.23.0"
 lazy_static = "1.4.0"
-window-vibrancy = "0.4.0"
 rand = "0.8.5"
 chrono = { version = "0.4.26", features = ["serde"] }
 

@@ -1,39 +1,62 @@
-import {Minus, Square, X} from "lucide-react";
-import {createRef, useEffect} from "react";
+import { window } from "@tauri-apps/api"
+import { Minus, Square, X } from "lucide-react"
+import { createRef, useEffect } from "react"
 
 export default function WinHeader() {
-  const minimizeRef =createRef<HTMLButtonElement>();
-  const maximizeRef =createRef<HTMLButtonElement>();
-  const closeRef =createRef<HTMLButtonElement>();
+  const minimizeRef = createRef<HTMLButtonElement>()
+  const maximizeRef = createRef<HTMLButtonElement>()
+  const closeRef = createRef<HTMLButtonElement>()
 
   useEffect(() => {
-    (async() => {
-      const {window} = await import("@tauri-apps/api")
-      minimizeRef.current?.addEventListener('click', () => window.appWindow.minimize())
-      maximizeRef.current?.addEventListener('click', () => window.appWindow.toggleMaximize())
-      closeRef.current?.addEventListener('click', () => window.appWindow.close())
-    })()
-  }, [closeRef, maximizeRef, minimizeRef]);
+    minimizeRef.current?.addEventListener(
+      "click",
+      () => void window.appWindow.minimize(),
+    )
+    maximizeRef.current?.addEventListener(
+      "click",
+      () => void window.appWindow.toggleMaximize(),
+    )
+    closeRef.current?.addEventListener(
+      "click",
+      () => void window.appWindow.close(),
+    )
+  }, [closeRef, maximizeRef, minimizeRef])
 
   return (
     <div
       data-tauri-drag-region="true"
-      className="flex w-full items-center justify-between">
+      className="flex w-full items-center justify-between"
+    >
       <div
         data-tauri-drag-region="true"
         className="pointer-events-none cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-zinc-700"
-      >Proxy Tester
+      >
+        Proxy Tester
       </div>
-      <div
-        className="flex items-center justify-end pb-1">
-        <button title="最小化" ref={minimizeRef} className="px-2 py-1 hover:bg-gray-50">
-          <Minus size={16}/>
+      <div className="flex items-center justify-end pb-1">
+        <button
+          type="button"
+          title="最小化"
+          ref={minimizeRef}
+          className="px-2 py-1 hover:bg-gray-50"
+        >
+          <Minus size={16} />
         </button>
-        <button title="最大化" ref={maximizeRef} className="px-2 py-1 hover:bg-gray-50">
-          <Square size={14}/>
+        <button
+          type="button"
+          title="最大化"
+          ref={maximizeRef}
+          className="px-2 py-1 hover:bg-gray-50"
+        >
+          <Square size={14} />
         </button>
-        <button title="关闭" ref={closeRef} className="px-2 py-1 hover:bg-red-600 hover:text-white">
-          <X size={16}/>
+        <button
+          type="button"
+          title="关闭"
+          ref={closeRef}
+          className="px-2 py-1 hover:bg-red-600 hover:text-white"
+        >
+          <X size={16} />
         </button>
       </div>
     </div>

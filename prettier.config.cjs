@@ -28,8 +28,7 @@ module.exports = {
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
   importOrderMergeDuplicateImports: true,
   importOrderCombineTypeAndValueImports: true,
-  tailwindAttributes: ["tw"],
-  tailwindFunctions: ["cva"],
+  tailwindFunctions: ["cva", "cn", "clsx"],
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss",
