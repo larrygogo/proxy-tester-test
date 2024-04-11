@@ -146,7 +146,9 @@ export default function Page() {
             disabled={isRunning}
             value={
               taskMode !== TASK_MODE_ENUM.NORMAL && isRunning
-                ? `专业模式：${taskMode ?? ""}`
+                ? `${t("home.task.professionalMode", {
+                    defaultValue: "Professional Mode",
+                  })}：${taskMode ?? ""}`
                 : target
             }
             className="w-full bg-transparent px-3 py-1 outline-none focus-visible:ring-0 disabled:bg-gray-200 disabled:opacity-100 disabled:cursor-default disabled:select-none disabled:text-gray-700"
@@ -181,29 +183,39 @@ export default function Page() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel className="flex items-center gap-1">
-                  <span>专业模式</span>
+                  <Trans i18nKey="home.task.professionalMode">
+                    Professional Mode
+                  </Trans>
                   <Tooltip>
                     <TooltipTrigger>
                       <HelpCircle size={16} />
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
-                      对专门网站的特殊场景进行测试
+                      <Trans i18nKey="home.task.professionalMode.tooltip">
+                        Test specific scenarios for specialized websites
+                      </Trans>
                     </TooltipContent>
                   </Tooltip>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleTestInterpark}>
-                  Interpark
+                  <Trans i18nKey="home.task.professionalMode.interpark">
+                    Interpark
+                  </Trans>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
                     setInterparkQueueDialogOpen(true)
                   }}
                 >
-                  Interpark 排队
+                  <Trans i18nKey="home.task.professionalMode.interparkQueue">
+                    Interpark Queue
+                  </Trans>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleTestMelon}>
-                  Melon
+                  <Trans i18nKey="home.task.professionalMode.melon">
+                    Melon
+                  </Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
