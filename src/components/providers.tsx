@@ -1,4 +1,3 @@
-"use client"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ProxyTaskProvider } from "@/context/ProxyTaskContext"
 import type React from "react"

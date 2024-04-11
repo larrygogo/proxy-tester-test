@@ -6,6 +6,7 @@ import "@/styles/globals.css"
 
 import Layout from "@/components/layout/layout"
 import Providers from "@/components/providers"
+import { TailwindIndicator } from "@/components/tailwind-indicator"
 import Routes from "./routes"
 
 const container = document.getElementById("root")
@@ -18,6 +19,7 @@ ReactDOM.createRoot(container).render(
       <Providers>
         <Layout>
           <Routes />
+          <TailwindIndicator />
         </Layout>
       </Providers>
     </BrowserRouter>
