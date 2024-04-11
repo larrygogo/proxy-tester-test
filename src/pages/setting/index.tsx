@@ -24,7 +24,6 @@ export default function Page() {
   const { concurrency, setConcurrency } = useContext(ProxyTaskContext)
   const platformInfo = usePlatformInfo()
   const {
-    t,
     i18n: { changeLanguage, language },
   } = useTranslation()
 
