@@ -19,8 +19,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: "var(--font-sans)",
-        mono: "var(--font-mono)",
+        sans: "Inter, system-ui, sans-serif",
+        mono: '"JetBrains Mono", monospace',
       },
       colors: {
         border: "hsl(var(--border))",

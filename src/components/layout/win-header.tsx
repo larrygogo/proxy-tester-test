@@ -1,8 +1,8 @@
-import { window } from "@tauri-apps/api"
+import { appWindow } from "@tauri-apps/api/window"
 import { Minus, Square, X } from "lucide-react"
 import { createRef, useEffect } from "react"
 
-export default function WinHeader() {
+export function WinHeader() {
   const minimizeRef = createRef<HTMLButtonElement>()
   const maximizeRef = createRef<HTMLButtonElement>()
   const closeRef = createRef<HTMLButtonElement>()
@@ -10,16 +10,13 @@ export default function WinHeader() {
   useEffect(() => {
     minimizeRef.current?.addEventListener(
       "click",
-      () => void window.appWindow.minimize(),
+      () => void appWindow.minimize(),
     )
     maximizeRef.current?.addEventListener(
       "click",
-      () => void window.appWindow.toggleMaximize(),
+      () => void appWindow.toggleMaximize(),
     )
-    closeRef.current?.addEventListener(
-      "click",
-      () => void window.appWindow.close(),
-    )
+    closeRef.current?.addEventListener("click", () => void appWindow.close())
   }, [closeRef, maximizeRef, minimizeRef])
 
   return (

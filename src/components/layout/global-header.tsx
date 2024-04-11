@@ -1,5 +1,5 @@
 import DarwinHeader from "@/components/layout/darwin-header"
-import WinHeader from "@/components/layout/win-header"
+import { WinHeader } from "@/components/layout/win-header"
 import { type Platform, platform as getPlatform } from "@tauri-apps/api/os"
 import React, { useEffect, useState } from "react"
 

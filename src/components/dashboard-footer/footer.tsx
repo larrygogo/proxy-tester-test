@@ -1,3 +1,4 @@
+import FooterActions from "@/components/dashboard-footer/footer-actions"
 import {
   Tooltip,
   TooltipContent,
@@ -6,13 +7,7 @@ import {
 import { ProxyTaskContext, TASK_STATUS_ENUM } from "@/context/ProxyTaskContext"
 import { cn } from "@/lib/utils"
 import { BadgeCheck, BadgeX, ListMinus } from "lucide-react"
-import dynamic from "next/dynamic"
 import { useContext } from "react"
-
-const FooterActions = dynamic(
-  () => import("@/components/dashboard-footer/footer-actions"),
-  { ssr: false },
-)
 
 export default function Footer() {
   const { taskStatus, proxyStates } = useContext(ProxyTaskContext)

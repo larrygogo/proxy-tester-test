@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/tooltip"
 import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { Info, X } from "lucide-react"
-import Link from "next/link"
 import { useContext } from "react"
+import { Link } from "react-router-dom"
 
 export default function Page() {
   const { concurrency, setConcurrency } = useContext(ProxyTaskContext)
@@ -19,7 +19,7 @@ export default function Page() {
       <CardHeader className="flex flex-row justify-between space-y-0 bg-gray-50 p-4">
         <CardTitle className="text-2xl">设置</CardTitle>
         <Button asChild size="icon" variant="ghost">
-          <Link href={"/"}>
+          <Link to={"/"}>
             <X className="h-4 w-4" />
           </Link>
         </Button>

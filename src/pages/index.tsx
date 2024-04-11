@@ -23,7 +23,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import Link from "next/link"
 
 import ProxyEditDialog from "@/components/proxy-edit-dialog"
 import {
@@ -47,6 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { Link } from "react-router-dom"
 
 const protocolOptions = Object.entries(PROXY_PROTOCOL_ENUM).map(
   ([value, label]) => ({
@@ -226,7 +226,7 @@ export default function Page() {
                   size="icon"
                   variant="ghost"
                 >
-                  <Link href={"/setting"}>
+                  <Link to={"/setting"}>
                     <Settings size={16} className="size-4" />
                   </Link>
                 </Button>
