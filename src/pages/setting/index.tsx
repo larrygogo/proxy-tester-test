@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import {
   Tooltip,
@@ -10,16 +17,23 @@ import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { usePlatformInfo } from "@/hooks/use-platform-info"
 import { Info, X } from "lucide-react"
 import { useContext } from "react"
+import { Trans, useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 export default function Page() {
   const { concurrency, setConcurrency } = useContext(ProxyTaskContext)
   const platformInfo = usePlatformInfo()
+  const {
+    t,
+    i18n: { changeLanguage, language },
+  } = useTranslation()
 
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <CardHeader className="flex flex-row justify-between space-y-0 bg-gray-50 p-4">
-        <CardTitle className="text-2xl">设置</CardTitle>
+        <CardTitle className="text-2xl">
+          <Trans i18nKey="setting.title">Setting</Trans>
+        </CardTitle>
         <Button asChild size="icon" variant="ghost">
           <Link to={"/"}>
             <X className="h-4 w-4" />
@@ -28,16 +42,18 @@ export default function Page() {
       </CardHeader>
       <CardContent className="flex-1 p-4">
         <div className="h-full flex flex-col justify-between gap-4">
-          <div>
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2 text-sm text-gray-800">
-                <span>并发数</span>
+                <Trans i18nKey="setting.concurrency">Concurrency</Trans>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info size={16} className="h-4 w-4" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    同时测试代理的条数，并不是越高越好，默认：20
+                    <Trans i18nKey="setting.concurrency.tooltip">
+                      The count of concurrency to task (Default: 20)
+                    </Trans>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -54,10 +70,32 @@ export default function Page() {
                 <div className="w-12 text-center text-sm">{concurrency}</div>
               </div>
             </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-sm text-gray-800">
+                <Trans i18nKey="setting.language">Language</Trans>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={language}
+                  onValueChange={(v) => {
+                    changeLanguage(v)
+                    localStorage.setItem("setting.locale", v)
+                  }}
+                >
+                  <SelectTrigger className="max-w-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="zh">简体中文</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-sm text-gray-800">
-              <span>关于</span>
+              <Trans i18nKey="setting.about">About</Trans>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <div className="flex gap-1 text-sm">

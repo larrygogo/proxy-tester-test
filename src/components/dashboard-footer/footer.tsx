@@ -8,6 +8,7 @@ import { ProxyTaskContext, TASK_STATUS_ENUM } from "@/context/ProxyTaskContext"
 import { cn } from "@/lib/utils"
 import { BadgeCheck, BadgeX, ListMinus } from "lucide-react"
 import { useContext } from "react"
+import { Trans } from "react-i18next"
 
 export default function Footer() {
   const { taskStatus, proxyStates } = useContext(ProxyTaskContext)
@@ -34,10 +35,16 @@ export default function Footer() {
                 />
               </div>
               <span>
-                {TASK_STATUS_ENUM.RUNNING === taskStatus ? "运行" : "空闲"}
+                {TASK_STATUS_ENUM.RUNNING === taskStatus ? (
+                  <Trans i18nKey="home.task.status.running">Running</Trans>
+                ) : (
+                  <Trans i18nKey="home.task.status.pending">Pending</Trans>
+                )}
               </span>
             </TooltipTrigger>
-            <TooltipContent>当前状态</TooltipContent>
+            <TooltipContent>
+              <Trans i18nKey="home.task.status.tooltip">Task status</Trans>
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger>
@@ -48,7 +55,9 @@ export default function Footer() {
                 </span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>待执行</TooltipContent>
+            <TooltipContent>
+              <Trans i18nKey="home.task.statistic.undone">Undone count</Trans>
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger>
@@ -64,7 +73,9 @@ export default function Footer() {
                 </span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>可用数量</TooltipContent>
+            <TooltipContent>
+              <Trans i18nKey="home.task.statistic.usable">Usable count</Trans>
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger>
@@ -80,7 +91,11 @@ export default function Footer() {
                 </span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>不可用数量</TooltipContent>
+            <TooltipContent>
+              <Trans i18nKey="home.task.statistic.unusable">
+                Unusable count
+              </Trans>
+            </TooltipContent>
           </Tooltip>
         </div>
         <FooterActions />

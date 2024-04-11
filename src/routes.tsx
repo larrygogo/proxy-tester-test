@@ -2,7 +2,7 @@ import { useLayoutEffect } from "react"
 import type { RouteObject } from "react-router-dom"
 import { useLocation, useRoutes } from "react-router-dom"
 
-import HomePage from "@/pages/index"
+import HomePage from "@/pages/home"
 import SettingPage from "@/pages/setting"
 
 const routes: RouteObject[] = [

@@ -172,7 +172,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
                 ? {
                     ...p,
                     status: result.status,
-                    speed: result.delay,
+                    delay: result.delay,
                   }
                 : p,
             ),
@@ -203,7 +203,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
                 ? {
                     ...p,
                     status: result.status,
-                    speed: result.delay,
+                    delay: result.delay,
                   }
                 : p,
             ),
@@ -236,7 +236,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
                 ? {
                     ...p,
                     status: result.status,
-                    speed: result.delay,
+                    delay: result.delay,
                   }
                 : p,
             ),
@@ -267,7 +267,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
                 ? {
                     ...p,
                     status: result.status,
-                    speed: result.delay,
+                    delay: result.delay,
                   }
                 : p,
             ),

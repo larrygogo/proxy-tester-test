@@ -3,6 +3,7 @@ import { fs, clipboard, dialog, notification } from "@tauri-apps/api"
 import { cva } from "class-variance-authority"
 import { CircleCheck, Copy, Download, Eraser } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
+import { Trans, useTranslation } from "react-i18next"
 
 const footerButtonVariants = cva(
   "flex h-6 items-center gap-1 px-2 transition-all duration-200",
@@ -28,6 +29,7 @@ const footerButtonVariants = cva(
 )
 
 export default function FooterActions() {
+  const { t } = useTranslation()
   const [isCleared, setIsCleared] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const { taskStatus, proxyStates, setProxyStates } =
@@ -95,8 +97,13 @@ export default function FooterActions() {
       }
       if (permissionGranted) {
         notification.sendNotification({
-          title: "导出成功",
-          body: "已成功导出可用代理",
+          title: t("home.task.list.exportUsable.notification.title", {
+            defaultValue: "Export Usable",
+          }),
+          body: t("home.task.list.exportUsable.notification.body", {
+            defaultValue: "The usable proxies has been exported.",
+            count: usableData.split("\n").length,
+          }),
         })
       }
     }
@@ -141,7 +148,7 @@ export default function FooterActions() {
           onClick={handleClearUnusable}
         >
           {isCleared ? <CircleCheck size={12} /> : <Eraser size={12} />}
-          <span className="">清除不可用</span>
+          <Trans i18nKey="home.task.list.clearUnusable">Clear Unusable</Trans>
         </button>
       </div>
       <div>
@@ -155,7 +162,7 @@ export default function FooterActions() {
           onClick={handleCopyUsable}
         >
           {isCopied ? <CircleCheck size={12} /> : <Copy size={12} />}
-          <span className="">复制可用</span>
+          <Trans i18nKey="home.task.list.copyUsable">Copy Usable</Trans>
         </button>
       </div>
       <div>
@@ -168,7 +175,7 @@ export default function FooterActions() {
           onClick={() => void handleExportUsable()}
         >
           <Download size={12} />
-          导出可用
+          <Trans i18nKey="home.task.list.exportUsable">Export Usable</Trans>
         </button>
       </div>
     </div>

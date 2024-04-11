@@ -15,62 +15,7 @@ import {
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useRef } from "react"
-
-const columns: ColumnDef<ProxyDisplayInfo>[] = [
-  {
-    id: "host",
-    accessorKey: "host",
-    header: "服务器地址",
-    maxSize: 200,
-  },
-  {
-    id: "port",
-    accessorKey: "port",
-    header: "端口",
-    size: 30,
-    maxSize: 80,
-  },
-  {
-    accessorKey: "username",
-    header: "用户名",
-    minSize: 200,
-  },
-  {
-    accessorKey: "password",
-    header: "密码",
-    minSize: 0,
-  },
-  {
-    accessorKey: "status",
-    header: "状态",
-    size: 60,
-    maxSize: 100,
-    cell: ({ getValue }) => {
-      const value = getValue() as string | undefined
-      if (!value) return <span>-</span>
-      const isOk = value.toUpperCase() === "OK"
-      return (
-        <span
-          className={cn("uppercase", isOk ? "text-green-500" : "text-red-500")}
-        >
-          {isOk ? "正常" : String(value)}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: "speed",
-    header: () => <div className="text-right">延迟</div>,
-    size: 100,
-    maxSize: 100,
-    cell: ({ getValue }) => {
-      const value = getValue() as number | undefined
-      return (
-        <div className="text-right">{value ? `${String(value)} ms` : "-"}</div>
-      )
-    },
-  },
-]
+import { Trans, useTranslation } from "react-i18next"
 
 interface Props {
   proxyStates: ProxyDisplayInfo[]
@@ -78,6 +23,84 @@ interface Props {
 
 export default function ProxyTable(props: Props) {
   const { proxyStates } = props
+  const { t } = useTranslation()
+
+  const columns: ColumnDef<ProxyDisplayInfo>[] = [
+    {
+      id: "host",
+      accessorKey: "host",
+      header: t("home.proxyTable.columns.host", {
+        defaultValue: "Host",
+      }),
+      maxSize: 200,
+    },
+    {
+      id: "port",
+      accessorKey: "port",
+      header: t("home.proxyTable.columns.port", {
+        defaultValue: "Port",
+      }),
+      size: 30,
+      maxSize: 80,
+    },
+    {
+      accessorKey: "username",
+      header: t("home.proxyTable.columns.username", {
+        defaultValue: "Username",
+      }),
+      minSize: 200,
+    },
+    {
+      accessorKey: "password",
+      header: t("home.proxyTable.columns.password", {
+        defaultValue: "Password",
+      }),
+      minSize: 0,
+    },
+    {
+      accessorKey: "status",
+      header: t("home.proxyTable.columns.status", {
+        defaultValue: "Status",
+      }),
+      size: 60,
+      maxSize: 100,
+      cell: ({ getValue }) => {
+        const value = getValue() as string | undefined
+        if (!value) return <span>-</span>
+        const isOk = value.toUpperCase() === "OK"
+        return (
+          <span
+            className={cn(
+              "uppercase",
+              isOk ? "text-green-500" : "text-red-500",
+            )}
+          >
+            {isOk ? (
+              <Trans i18nKey="home.task.proxy.status.ok">OK</Trans>
+            ) : (
+              String(value)
+            )}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "delay",
+      header: t("home.proxyTable.columns.delay", {
+        defaultValue: "Delay",
+      }),
+      size: 100,
+      maxSize: 100,
+      cell: ({ getValue }) => {
+        const value = getValue() as number | undefined
+        return (
+          <div className="text-right">
+            {value ? `${String(value)} ms` : "-"}
+          </div>
+        )
+      },
+    },
+  ]
 
   const table = useReactTable({
     data: proxyStates,

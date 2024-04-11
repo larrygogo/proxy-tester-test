@@ -7,6 +7,7 @@ import "@/styles/globals.css"
 import Layout from "@/components/layout/layout"
 import Providers from "@/components/providers"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
+import "./i18n.ts"
 import Routes from "./routes"
 
 const container = document.getElementById("root")

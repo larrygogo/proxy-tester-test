@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { Trans, useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 const protocolOptions = Object.entries(PROXY_PROTOCOL_ENUM).map(
@@ -56,6 +57,7 @@ const protocolOptions = Object.entries(PROXY_PROTOCOL_ENUM).map(
 )
 
 export default function Page() {
+  const { t } = useTranslation()
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [shouldStartTask, setShouldStartTask] = useState(false)
   const [interparkQueueDialogOpen, setInterparkQueueDialogOpen] =
@@ -148,7 +150,7 @@ export default function Page() {
                 : target
             }
             className="w-full bg-transparent px-3 py-1 outline-none focus-visible:ring-0 disabled:bg-gray-200 disabled:opacity-100 disabled:cursor-default disabled:select-none disabled:text-gray-700"
-            placeholder="www.google.com"
+            placeholder={t("home.task.target")}
             onChange={(e) => setTarget?.(e.target.value)}
           />
           <div className="flex divide-x divide-gray-700">
@@ -162,7 +164,11 @@ export default function Page() {
               ) : (
                 <Rocket className="size-4" />
               )}
-              {isRunning ? <span>停止</span> : <span>测试</span>}
+              {isRunning ? (
+                <Trans i18nKey="home.task.stop">Stop</Trans>
+              ) : (
+                <Trans i18nKey="home.task.start">Test</Trans>
+              )}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -216,7 +222,11 @@ export default function Page() {
                   <Plus size={16} className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>添加代理</TooltipContent>
+              <TooltipContent>
+                <Trans i18nKey="home.editProxyDialog.tooltip">
+                  Edit Proxy List
+                </Trans>
+              </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -231,7 +241,9 @@ export default function Page() {
                   </Link>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>设置</TooltipContent>
+              <TooltipContent>
+                <Trans i18nKey="home.setting.tooltip">Setting</Trans>
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>

@@ -11,7 +11,7 @@ export interface ProxyInfo {
 
 // 合并
 export type ProxyDisplayInfo = ProxyInfo & {
-  speed?: number
+  delay?: number
   status?: string
 }
 
