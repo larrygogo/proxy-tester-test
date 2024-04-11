@@ -10,7 +10,7 @@
     "tauri": "tauri",
     "build": "tauri build",
     "lint": "biome check src/",
-    "prepare": "husky install"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@floating-ui/react": "^0.25.1",
