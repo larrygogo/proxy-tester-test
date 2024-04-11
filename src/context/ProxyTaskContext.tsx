@@ -104,7 +104,7 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
     setFinishedCount(0)
     taskPool.clear()
     setProxyStates((prev) =>
-      prev.map((p) => ({ ...p, status: undefined, speed: undefined })),
+      prev.map((p) => ({ ...p, status: undefined, delay: undefined })),
     )
 
     taskPool.on(
