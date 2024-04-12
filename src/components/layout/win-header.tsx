@@ -26,7 +26,7 @@ export function WinHeader() {
     >
       <div
         data-tauri-drag-region="true"
-        className="pointer-events-none cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-zinc-700"
+        className="pointer-events-none cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-[#0F2B46]"
       >
         Proxy Tester
       </div>

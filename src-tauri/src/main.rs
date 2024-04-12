@@ -5,7 +5,7 @@ use std::time::{Duration, SystemTime};
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use tauri::Manager;
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 mod nike;
@@ -17,11 +17,6 @@ mod global_melon;
 pub struct TestResult {
     pub status: String,
     pub delay: Option<u64>,
-}
-
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]

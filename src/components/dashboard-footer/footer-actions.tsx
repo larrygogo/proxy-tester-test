@@ -130,7 +130,6 @@ export default function FooterActions() {
       }
     }
   }, [isCopied])
-  console.log("unUsableData", unUsableData)
   return (
     <div className="flex items-center divide-x">
       <div>

@@ -1,7 +1,7 @@
 use std::time::Duration;
 use reqwest::{Client, header, StatusCode};
 use reqwest::header::HeaderMap;
-use crate::global_interpark::{query_itp_index, to_create_session};
+
 use crate::TestResult;
 
 fn default_headers() -> HeaderMap {
@@ -21,7 +21,6 @@ fn default_headers() -> HeaderMap {
     headers.insert("Accept-Language", "zh-CN,zh;q=0.9".parse().unwrap());
     headers.insert("Accept-Encoding", "gzip, deflate, br, zstd".parse().unwrap());
     headers.insert("dnt", "1".parse().unwrap());
-    ;
     headers
 }
 

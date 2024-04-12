@@ -21,7 +21,7 @@ ReactDOM.createRoot(container).render(
       <Providers>
         <Layout>
           <Routes />
-          <TailwindIndicator />˚
+          <TailwindIndicator />
         </Layout>
       </Providers>
     </BrowserRouter>

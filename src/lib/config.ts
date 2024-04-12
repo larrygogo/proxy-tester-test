@@ -1,5 +1,5 @@
 import { readTextFile, writeFile } from "@tauri-apps/api/fs"
-import { appConfigDir } from "@tauri-apps/api/path"
+import { appConfigDir, resolve } from "@tauri-apps/api/path"
 
 export type Language = "en" | "zh"
 
@@ -20,7 +20,10 @@ export class Config {
   }
 
   async init() {
-    this.configPath = `${await appConfigDir()}config.json`
+    const configDir = await appConfigDir()
+    this.configPath = await resolve(configDir, "config.json")
+    // 判断是否存在文件夹
+
     console.log("this.configPath", this.configPath)
     try {
       const config = await readTextFile(this.configPath)
@@ -38,7 +41,7 @@ export class Config {
       }
       await this.save()
     } catch (e) {
-      console.log("Config file not found, creating a new one")
+      console.error(e)
       this.config = DEFAULT_APP_CONFIG
       await this.save()
     }

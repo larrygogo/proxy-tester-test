@@ -9,7 +9,7 @@ export default function DarwinHeader() {
       <div
         data-tauri-drag-region="true"
         className={cn(
-          "cursor-default select-none py-1 text-center font-sans text-sm font-bold text-zinc-700",
+          "cursor-default select-none py-1 text-center font-sans text-sm font-bold text-[#0F2B46]",
         )}
       >
         Proxy Tester

@@ -42,7 +42,9 @@ export default function ProxyTableRow(props: Props) {
     <TableRow
       key={row.id}
       className={cn(
-        "absolute flex w-full cursor-default select-none after:block after:absolute after:content-[''] after:w-full after:z-[-1] after:bg-green-200",
+        "absolute flex w-full cursor-default select-none",
+        "after:block after:absolute after:content-[''] after:w-full after:h-full after:z-[-1] after:bg-green-100 after:transition-background after:duration-300 after:ease-in-out",
+        isCopied ? "after:w-full" : "after:w-0",
       )}
       onClick={handleCopy}
       data-index={virtualRow.index} //needed for dynamic row height measurement
@@ -53,12 +55,6 @@ export default function ProxyTableRow(props: Props) {
         transform: `translateY(${String(virtualRow.start)}px)`, //this should always be a `style` as it changes on scroll
       }}
     >
-      <div
-        className={cn(
-          "absolute -z-10 h-full w-0 bg-green-200 transition-all duration-200",
-          isCopied && "w-full",
-        )}
-      />
       {row.getVisibleCells().map((cell) => {
         return (
           <TableCell

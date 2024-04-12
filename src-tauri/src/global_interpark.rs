@@ -174,7 +174,7 @@ pub async fn query_itp_index(proxy: &str, timeout: u64) -> TestResult {
     }
     let resp = t.unwrap();
     let status = resp.status();
-    let body = resp.text().await.unwrap();
+    let _body = resp.text().await.unwrap();
     println!("{:?}", status);
     match status {
         StatusCode::OK => TestResult {

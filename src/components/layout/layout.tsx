@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       data-tauri-drag-region={true}
       suppressHydrationWarning
       className={cn(
-        "flex h-screen text-md flex-col font-sans bg-gradient-to-br from-[#d1e0f7] from-10% via-[#d7e0ff] via-50% to-[#d1e0f7] to-90%",
+        "flex h-screen text-md flex-col font-sans bg-gradient-to-br from-[#0F2B4622] from-10% via-[#0F2B4655] via-20% to-[#0F2B4622] to-90%",
         // fontMono.variable,
       )}
     >
