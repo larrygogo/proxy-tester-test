@@ -8,11 +8,28 @@
   },
   "package": {
     "productName": "Proxy Tester",
-    "version": "0.0.18"
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "os": {
+        "all": true
+      },
+      "notification": {
+        "all": true
+      },
+      "fs": {
+        "scope": ["$APPDATA/*"],
+        "readFile": true,
+        "writeFile": true,
+        "exists": true
+      },
+      "path": {
+        "all": true
+      },
+      "window": {
+        "startDragging": true
+      }
     },
     "bundle": {
       "active": true,
@@ -29,7 +46,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.build",
+      "identifier": "com.reverse-game.proxy-tester",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

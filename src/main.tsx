@@ -15,12 +15,13 @@ if (!container) {
   throw new Error("No container found")
 }
 ReactDOM.createRoot(container).render(
+  // @ts-ignore
   <React.StrictMode>
     <BrowserRouter>
       <Providers>
         <Layout>
           <Routes />
-          <TailwindIndicator />
+          <TailwindIndicator />˚
         </Layout>
       </Providers>
     </BrowserRouter>

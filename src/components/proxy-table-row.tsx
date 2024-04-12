@@ -41,7 +41,9 @@ export default function ProxyTableRow(props: Props) {
   return (
     <TableRow
       key={row.id}
-      className={cn("absolute flex w-full cursor-default select-none")}
+      className={cn(
+        "absolute flex w-full cursor-default select-none after:block after:absolute after:content-[''] after:w-full after:z-[-1] after:bg-green-200",
+      )}
       onClick={handleCopy}
       data-index={virtualRow.index} //needed for dynamic row height measurement
       ref={(node) => {

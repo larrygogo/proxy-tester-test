@@ -1,7 +1,7 @@
+import { resolve } from "node:path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import viteWebfontDownload from "vite-plugin-webfont-dl"
-
 export default defineConfig({
   plugins: [
     react(),
@@ -42,7 +42,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // 为了在项目中使用绝对导入，我们需要为 src 目录创建一个别名
-      "@": require("node:path").resolve(__dirname, "src"),
+      "@": resolve(__dirname, "src"),
     },
   },
 })
