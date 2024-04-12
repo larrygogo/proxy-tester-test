@@ -11,8 +11,8 @@ import { Form, FormField, FormItem } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { Trans } from "react-i18next"
 import { z } from "zod"
-import {Trans} from "react-i18next";
 
 const proxyStringEditSchema = z.object({
   proxyListString: z.string(),
@@ -51,9 +51,7 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey="home.editProxyDialog.title">
-              Edit Proxy List
-            </Trans>
+            <Trans i18nKey="home.editProxyDialog.title">Edit Proxy List</Trans>
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -78,15 +76,11 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps) {
             <DialogFooter>
               <DialogClose asChild>
                 <Button variant="secondary">
-                  <Trans i18nKey="home.editProxyDialog.cancel">
-                    Cancel
-                  </Trans>
+                  <Trans i18nKey="home.editProxyDialog.cancel">Cancel</Trans>
                 </Button>
               </DialogClose>
               <Button type="submit">
-                <Trans i18nKey="home.editProxyDialog.confirm">
-                  Save
-                </Trans>
+                <Trans i18nKey="home.editProxyDialog.confirm">Save</Trans>
               </Button>
             </DialogFooter>
           </form>

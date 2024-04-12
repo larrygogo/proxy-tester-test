@@ -10,7 +10,8 @@
     "tauri": "tauri",
     "build": "tauri build",
     "lint": "biome check src/",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "biome format src/"
   },
   "dependencies": {
     "@floating-ui/react": "^0.25.1",

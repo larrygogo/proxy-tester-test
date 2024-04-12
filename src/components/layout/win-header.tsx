@@ -1,6 +1,6 @@
 import { appWindow } from "@tauri-apps/api/window"
 import { Minus, Square, X } from "lucide-react"
-import {createRef, useEffect, useMemo, useState} from "react"
+import { createRef, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export function WinHeader() {
@@ -10,32 +10,32 @@ export function WinHeader() {
 
   const [isMaximized, setIsMaximized] = useState(false)
 
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
   useEffect(() => {
-    minimizeRef.current?.addEventListener(
-      "click",
-      () => void appWindow.minimize(),
-    )
-    maximizeRef.current?.addEventListener(
-      "click",
-      () => {
-        if (isMaximized) {
-          void appWindow.unmaximize()
-        } else {
-          void appWindow.maximize()
-        }
-        setIsMaximized(!isMaximized)
-      },
-    )
-    closeRef.current?.addEventListener("click", () => void appWindow.close())
-  }, [closeRef, maximizeRef, minimizeRef])
+    const handleMinimize = () => void appWindow.minimize()
+    const handleChangeMaximize = () => {
+      if (isMaximized) {
+        setIsMaximized(false)
+        void appWindow.unmaximize()
+      } else {
+        setIsMaximized(true)
+        void appWindow.maximize()
+      }
+    }
 
-  useEffect(() => {
-    (async () => {
-      setIsMaximized(await appWindow.isMaximized())
-    })()
-  }, [])
+    const handleClose = () => void appWindow.close()
+
+    minimizeRef.current?.addEventListener("click", handleMinimize)
+    maximizeRef.current?.addEventListener("click", handleChangeMaximize)
+    closeRef.current?.addEventListener("click", handleClose)
+
+    return () => {
+      minimizeRef.current?.removeEventListener("click", handleMinimize)
+      maximizeRef.current?.removeEventListener("click", handleChangeMaximize)
+      closeRef.current?.removeEventListener("click", handleClose)
+    }
+  }, [closeRef, isMaximized, maximizeRef, minimizeRef])
 
   return (
     <div
