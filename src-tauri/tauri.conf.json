@@ -29,8 +29,7 @@
         "all": true
       },
       "window": {
-        "startDragging": true,
-        "setResizable": true
+        "all": true
       },
       "clipboard": {
         "all": true
@@ -74,7 +73,7 @@
     },
     "windows": [
       {
-        "decorations": true,
+        "decorations": false,
         "fullscreen": false,
         "resizable": true,
         "hiddenTitle": true,

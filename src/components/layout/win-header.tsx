@@ -1,11 +1,16 @@
 import { appWindow } from "@tauri-apps/api/window"
 import { Minus, Square, X } from "lucide-react"
-import { createRef, useEffect } from "react"
+import {createRef, useEffect, useMemo, useState} from "react"
+import { useTranslation } from "react-i18next"
 
 export function WinHeader() {
   const minimizeRef = createRef<HTMLButtonElement>()
   const maximizeRef = createRef<HTMLButtonElement>()
   const closeRef = createRef<HTMLButtonElement>()
+
+  const [isMaximized, setIsMaximized] = useState(false)
+
+  const {t} = useTranslation()
 
   useEffect(() => {
     minimizeRef.current?.addEventListener(
@@ -14,10 +19,23 @@ export function WinHeader() {
     )
     maximizeRef.current?.addEventListener(
       "click",
-      () => void appWindow.toggleMaximize(),
+      () => {
+        if (isMaximized) {
+          void appWindow.unmaximize()
+        } else {
+          void appWindow.maximize()
+        }
+        setIsMaximized(!isMaximized)
+      },
     )
     closeRef.current?.addEventListener("click", () => void appWindow.close())
   }, [closeRef, maximizeRef, minimizeRef])
+
+  useEffect(() => {
+    (async () => {
+      setIsMaximized(await appWindow.isMaximized())
+    })()
+  }, [])
 
   return (
     <div
@@ -26,32 +44,32 @@ export function WinHeader() {
     >
       <div
         data-tauri-drag-region="true"
-        className="pointer-events-none cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-[#0F2B46]"
+        className="pointer-events-none py-2 cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-[#0F2B46]"
       >
         Proxy Tester
       </div>
       <div className="flex items-center justify-end pb-1">
         <button
           type="button"
-          title="最小化"
+          title={t("app.minimize")}
           ref={minimizeRef}
-          className="px-2 py-1 hover:bg-gray-50"
+          className="p-2 hover:bg-gray-50"
         >
           <Minus size={16} />
         </button>
         <button
           type="button"
-          title="最大化"
+          title={isMaximized ? t("app.unmaximize") : t("app.maximize")}
           ref={maximizeRef}
-          className="px-2 py-1 hover:bg-gray-50"
+          className="p-2 hover:bg-gray-50"
         >
           <Square size={14} />
         </button>
         <button
           type="button"
-          title="关闭"
+          title={t("app.close")}
           ref={closeRef}
-          className="px-2 py-1 hover:bg-red-600 hover:text-white"
+          className="p-2 hover:bg-red-600 hover:text-white"
         >
           <X size={16} />
         </button>

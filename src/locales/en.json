@@ -20,6 +20,9 @@
   "home.task.list.exportUsable.notification.body": "Exported {{count}} usable proxies",
   "home.task.target": "www.google.com",
   "home.editProxyDialog.tooltip": "Edit Proxy List",
+  "home.editProxyDialog.title": "Edit Proxy List",
+  "home.editProxyDialog.confirm": "Save",
+  "home.editProxyDialog.cancel": "Cancel",
   "home.setting.tooltip": "Setting",
   "home.proxyTable.columns.host": "Host",
   "home.proxyTable.columns.port": "Port",
@@ -31,5 +34,9 @@
   "setting.concurrency": "Concurrency",
   "setting.concurrency.tooltip": "The count of concurrency to task (Default: 20)",
   "setting.language": "Language",
-  "setting.about": "About"
+  "setting.about": "About",
+  "app.close": "Close",
+  "app.minimize": "Minimize",
+  "app.maximize": "Maximize",
+  "app.unmaximize": "Unmaximize"
 }

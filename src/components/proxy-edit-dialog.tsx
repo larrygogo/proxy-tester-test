@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import {Trans} from "react-i18next";
 
 const proxyStringEditSchema = z.object({
   proxyListString: z.string(),
@@ -49,7 +50,11 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>编辑代理</DialogTitle>
+          <DialogTitle>
+            <Trans i18nKey="home.editProxyDialog.title">
+              Edit Proxy List
+            </Trans>
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -72,9 +77,17 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps) {
             />
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="secondary">取消</Button>
+                <Button variant="secondary">
+                  <Trans i18nKey="home.editProxyDialog.cancel">
+                    Cancel
+                  </Trans>
+                </Button>
               </DialogClose>
-              <Button type="submit">保存</Button>
+              <Button type="submit">
+                <Trans i18nKey="home.editProxyDialog.confirm">
+                  Save
+                </Trans>
+              </Button>
             </DialogFooter>
           </form>
         </Form>

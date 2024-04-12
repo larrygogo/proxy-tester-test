@@ -20,6 +20,9 @@
   "home.task.list.exportUsable.notification.body": "已成功导出{{count}}条可用代理",
   "home.task.target": "www.google.com",
   "home.editProxyDialog.tooltip": "编辑代理",
+  "home.editProxyDialog.title": "编辑代理",
+  "home.editProxyDialog.confirm": "保存",
+  "home.editProxyDialog.cancel": "取消",
   "home.setting.tooltip": "设置",
   "home.proxyTable.columns.host": "服务器地址",
   "home.proxyTable.columns.port": "端口",
@@ -31,5 +34,9 @@
   "setting.concurrency": "并发数",
   "setting.concurrency.tooltip": "同时测试代理的条数，并不是越高越好，默认：20",
   "setting.language": "语言",
-  "setting.about": "关于"
+  "setting.about": "关于",
+  "app.close": "关闭",
+  "app.minimize": "最小化",
+  "app.maximize": "最大化",
+  "app.unmaximize": "还原"
 }

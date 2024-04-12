@@ -14,6 +14,6 @@ i18n.use(initReactI18next).init({
       translation: { ...enJSON },
     },
   },
-  lng: Config.get("language") ?? "en",
+  lng: localStorage.getItem("setting.locale") || "en", // "en" | "zh
   fallbackLng: "en",
 })

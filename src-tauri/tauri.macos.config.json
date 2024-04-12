@@ -1,0 +1,22 @@
+{
+  "package": {
+    "productName": "Proxy Tester",
+    "version": "../package.json"
+  },
+  "tauri": {
+    "windows": [
+      {
+        "decorations": true,
+        "fullscreen": false,
+        "resizable": true,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
+        "url": "/",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600
+      }
+    ]
+  }
+}
