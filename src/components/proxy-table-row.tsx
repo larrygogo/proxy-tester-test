@@ -42,7 +42,7 @@ export default function ProxyTableRow(props: Props) {
     <TableRow
       key={row.id}
       className={cn(
-        "absolute flex w-full cursor-default select-none",
+        "absolute flex w-full cursor-default select-none even:bg-gray-100",
         "after:block after:absolute after:content-[''] after:w-full after:h-full after:z-[-1] after:bg-green-100 after:transition-background after:duration-300 after:ease-in-out",
         isCopied ? "after:w-full" : "after:w-0",
       )}
@@ -58,7 +58,7 @@ export default function ProxyTableRow(props: Props) {
       {row.getVisibleCells().map((cell) => {
         return (
           <TableCell
-            className="flex-1 truncate bg-transparent"
+            className={cn("flex-1 truncate bg-transparent")}
             key={cell.id}
             style={{
               width: cell.column.columnDef.size,

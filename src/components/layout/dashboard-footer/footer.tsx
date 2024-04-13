@@ -1,4 +1,4 @@
-import FooterActions from "@/components/dashboard-footer/footer-actions"
+import FooterActions from "@/components/layout/dashboard-footer/footer-actions"
 import {
   Tooltip,
   TooltipContent,

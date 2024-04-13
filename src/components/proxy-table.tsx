@@ -25,6 +25,8 @@ export default function ProxyTable(props: Props) {
   const { proxyStates } = props
   const { t } = useTranslation()
 
+  const isEmpty = proxyStates.length === 0
+
   const columns: ColumnDef<ProxyDisplayInfo>[] = [
     {
       id: "host",
@@ -127,7 +129,12 @@ export default function ProxyTable(props: Props) {
       className="relative size-full flex-1 flex-col overflow-auto"
       ref={tableContainerRef}
     >
-      <table className="relative w-full flex flex-col caption-bottom text-sm overflow-clip">
+      <table
+        className={cn(
+          "relative w-full flex flex-col caption-bottom text-sm overflow-clip",
+          isEmpty ? "h-full" : "h-auto",
+        )}
+      >
         <TableHeader className="sticky top-0 w-full z-10 grid bg-gray-50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow className="flex w-full" key={headerGroup.id}>
@@ -155,10 +162,17 @@ export default function ProxyTable(props: Props) {
             </TableRow>
           ))}
         </TableHeader>
+
         <TableBody
-          className="relative grid font-mono"
+          className={cn(
+            "relative grid font-mono",
+            isEmpty &&
+              "flex items-center justify-center h-full bg-gradient-to-b from-white from-[36px] via-[36px] via-gray-100 to-gray-100 to-[72px] bg-[length:72px_72px]",
+          )}
           style={{
-            height: `${String(rowVirtualizer.getTotalSize())}px`, //tells scrollbar how big the table is
+            height: isEmpty
+              ? "100%"
+              : `${String(rowVirtualizer.getTotalSize())}px`, //tells scrollbar how big the table is
           }}
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {

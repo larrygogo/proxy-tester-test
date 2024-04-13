@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    @apply h-screen overflow-clip font-sans;
+    @apply h-screen overflow-clip font-sans select-none;
 }
 
 @layer base {

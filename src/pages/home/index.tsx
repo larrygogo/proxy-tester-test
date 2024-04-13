@@ -33,8 +33,8 @@ import {
   TASK_STATUS_ENUM,
 } from "@/context/ProxyTaskContext"
 
-import Footer from "@/components/dashboard-footer/footer"
 import InterparkQueueTaskDialog from "@/components/interpark-queue-task-dialog"
+import Footer from "@/components/layout/dashboard-footer/footer"
 import ProxyTable from "@/components/proxy-table"
 import {
   DropdownMenu,
