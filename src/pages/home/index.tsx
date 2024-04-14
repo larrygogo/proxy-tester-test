@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { nanoid } from "nanoid"
 import { Trans, useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -66,6 +67,7 @@ export default function Page() {
     taskStatus,
     startTask,
     proxyStates,
+    setProxyStates,
     stopTask,
     proxyList,
     setProxyList,
@@ -83,6 +85,17 @@ export default function Page() {
   )
 
   const handleClick = () => {
+    // 每次开始都需要给所有的proxy重置ID
+    if (proxyStates) {
+      console.log("reset proxy id", proxyStates)
+      setProxyStates?.(
+        proxyStates.map((proxy) => ({
+          ...proxy,
+          id: nanoid(),
+        })),
+      )
+    }
+
     if (!target) {
       setTarget?.("www.google.com")
     }

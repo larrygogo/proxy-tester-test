@@ -87,7 +87,7 @@ export class TaskPool {
   public stop() {
     if (!this.stopped) {
       this.stopped = true
-      console.log("taskPool stop111111")
+      console.log("taskPool stop")
       this.triggerEvent("stop")
     }
   }
