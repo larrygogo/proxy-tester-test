@@ -39,6 +39,7 @@
   "setting.concurrency.tooltip": "The count of concurrency to task (Default: 20)",
   "setting.language": "Language",
   "setting.about": "About",
+  "setting.close": "Close",
   "app.close": "Close",
   "app.minimize": "Minimize",
   "app.maximize": "Maximize",

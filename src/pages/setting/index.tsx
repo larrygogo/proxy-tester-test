@@ -29,15 +29,22 @@ export default function Page() {
 
   return (
     <Card className="flex flex-col h-full overflow-hidden">
-      <CardHeader className="flex flex-row justify-between space-y-0 bg-gray-50 p-4">
+      <CardHeader className="flex flex-row justify-between space-y-0 bg-gray-50 p-4 border-b">
         <CardTitle className="text-2xl">
           <Trans i18nKey="setting.title">Setting</Trans>
         </CardTitle>
-        <Button asChild size="icon" variant="ghost">
-          <Link to={"/"}>
-            <X className="h-4 w-4" />
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button asChild variant="ghost" size="icon">
+              <Link to="/">
+                <X size={16} />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <Trans i18nKey="setting.close">Close</Trans>
+          </TooltipContent>
+        </Tooltip>
       </CardHeader>
       <CardContent className="flex-1 p-4">
         <div className="h-full flex flex-col justify-between gap-4">

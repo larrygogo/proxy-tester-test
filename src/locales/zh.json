@@ -39,6 +39,7 @@
   "setting.concurrency.tooltip": "同时测试代理的条数，并不是越高越好，默认：20",
   "setting.language": "语言",
   "setting.about": "关于",
+  "setting.close": "关闭",
   "app.close": "关闭",
   "app.minimize": "最小化",
   "app.maximize": "最大化",
