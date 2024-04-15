@@ -18,6 +18,7 @@ import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useContext } from "react"
 import { useForm } from "react-hook-form"
+import { Trans, useTranslation } from "react-i18next"
 import z from "zod"
 
 interface Props {
@@ -31,6 +32,7 @@ const schema = z.object({
 
 export default function InterparkQueueTaskDialog(props: Props) {
   const { open, onOpenChange } = props
+  const { t } = useTranslation()
   const form = useForm({
     defaultValues: {
       sku: "24003932",
@@ -49,7 +51,11 @@ export default function InterparkQueueTaskDialog(props: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>填写必要参数</DialogTitle>
+          <DialogTitle>
+            <Trans i18nKey="home.task.interparkQueue.configDialog.title">
+              Interpark Global Queue Task Config
+            </Trans>
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -63,8 +69,20 @@ export default function InterparkQueueTaskDialog(props: Props) {
               render={({ field }) => (
                 <FormControl>
                   <FormItem>
-                    <FormLabel>SKU</FormLabel>
-                    <Input {...field} placeholder="SKU" />
+                    <FormLabel>
+                      <Trans i18nKey="home.task.interparkQueue.configDialog.sku">
+                        SKU
+                      </Trans>
+                    </FormLabel>
+                    <Input
+                      {...field}
+                      placeholder={t(
+                        "home.task.interparkQueue.configDialog.sku",
+                        {
+                          defaultValue: "SKU",
+                        },
+                      )}
+                    />
                     <FormMessage />
                   </FormItem>
                 </FormControl>
@@ -78,9 +96,15 @@ export default function InterparkQueueTaskDialog(props: Props) {
                   onOpenChange(false)
                 }}
               >
-                取消
+                <Trans i18nKey="home.task.interparkQueue.configDialog.cancel">
+                  Cancel
+                </Trans>
               </Button>
-              <Button type="submit">提交</Button>
+              <Button type="submit">
+                <Trans i18nKey="home.task.interparkQueue.configDialog.confirm">
+                  Confirm
+                </Trans>
+              </Button>
             </div>
           </form>
         </Form>
