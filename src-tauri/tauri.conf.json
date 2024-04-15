@@ -33,6 +33,12 @@
       },
       "dialog": {
         "all": true
+      },
+      "process": {
+        "all": true
+      },
+      "shell": {
+        "all": true
       }
     },
     "bundle": {
@@ -66,7 +72,10 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "dialog": false,
+      "endpoints": ["https://dev.ipoasis.io/proxy-tester-test/install.json"],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQyNDcyM0E2MzJGNDE0MTYKUldRV0ZQUXlwaU5IMHJhdFcrdFo5UDlNNEh4K0xsK2h6Tm81R253ZjFoTUlXREZCc09vRmV5bEkK"
     },
     "windows": [
       {

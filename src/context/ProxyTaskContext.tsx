@@ -1,4 +1,3 @@
-"use client"
 import { TaskPool } from "@/lib/task"
 import type { ProxyDisplayInfo } from "@/types/proxy"
 import { invoke } from "@tauri-apps/api/tauri"
