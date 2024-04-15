@@ -83,8 +83,8 @@ export default function Page() {
               <div className="flex items-center gap-2">
                 <Select
                   value={language}
-                  onValueChange={(v) => {
-                    changeLanguage(v)
+                  onValueChange={async (v) => {
+                    await changeLanguage(v)
                     localStorage.setItem("setting.locale", v)
                   }}
                 >

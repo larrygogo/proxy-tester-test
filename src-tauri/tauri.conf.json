@@ -19,11 +19,8 @@
         "all": true
       },
       "fs": {
-        "scope": ["$APPDATA/*"],
-        "readFile": true,
-        "writeFile": true,
-        "exists": true,
-        "createDir": true
+        "all": true,
+        "scope": ["*/**"]
       },
       "path": {
         "all": true
@@ -47,7 +44,7 @@
       },
       "externalBin": [],
       "icon": ["icons/icon.png", "icons/icon.icns", "icons/icon.ico"],
-      "identifier": "com.reverse-game.proxy-tester",
+      "identifier": "ProxyTester",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
