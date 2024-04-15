@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    @apply h-screen overflow-clip font-sans select-none;
+    @apply h-screen overflow-clip font-sans select-none cursor-default;
 }
 
 @layer base {
