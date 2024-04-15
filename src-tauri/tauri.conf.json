@@ -66,7 +66,12 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "dialog": true,
+      "endpoints": [
+        "https://larrygogo.github.io/proxy-tester-test/install.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU0RUVENzVGN0Q0QzhCQjQKUldTMGkweDlYOWZ1NU9mN0NkM0NEMWtIell0L24vYlNtK1g1R1FXcFI0RXZ3ekhBVEtZeTd3L0UK"
     },
     "windows": [
       {
