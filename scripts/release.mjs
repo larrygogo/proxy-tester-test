@@ -8,8 +8,11 @@ const require = createRequire(import.meta.url)
 
 async function release() {
   const flag = process.argv[2] ?? "patch"
+  const type = process.argv[3] ?? "release"
   const packageJson = require("../package.json")
   let [a, b, c] = packageJson.version.split(".").map(Number)
+
+  const validType = ["release", "beta", "alpha"]
 
   if (flag === "major") {
     // 主版本
@@ -28,7 +31,14 @@ async function release() {
     process.exit(1)
   }
 
-  const nextVersion = `${a}.${b}.${c}`
+  if (!validType.includes(type)) {
+    console.log(`Invalid type "${type}"`)
+    process.exit(1)
+  }
+
+  const typeSuffix = type === "release" ? "" : `-${type}`
+
+  const nextVersion = `${a}.${b}.${c}${typeSuffix}`
   packageJson.version = nextVersion
 
   const nextTag = `v${nextVersion}`

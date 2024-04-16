@@ -1,10 +1,13 @@
+import { Updater } from "@/components/updater-dialog"
+import { useUpdate } from "@/hooks/use-update"
 import { cn } from "@/lib/utils"
 
 export default function DarwinHeader() {
+  const update = useUpdate()
   return (
     <div
       data-tauri-drag-region="true"
-      className={cn("flex items-center pl-16")}
+      className={cn("flex items-center gap-2 pl-16")}
     >
       <div
         data-tauri-drag-region="true"
@@ -14,6 +17,7 @@ export default function DarwinHeader() {
       >
         Proxy Tester
       </div>
+      {update.isAvailable && <Updater update={update} />}
     </div>
   )
 }

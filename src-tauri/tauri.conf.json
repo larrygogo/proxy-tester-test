@@ -33,6 +33,12 @@
       },
       "dialog": {
         "all": true
+      },
+      "process": {
+        "all": true
+      },
+      "shell": {
+        "all": true
       }
     },
     "bundle": {
@@ -67,7 +73,7 @@
     },
     "updater": {
       "active": true,
-      "dialog": true,
+      "dialog": false,
       "endpoints": [
         "https://larrygogo.github.io/proxy-tester-test/install.json"
       ],
