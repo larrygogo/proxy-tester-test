@@ -1,5 +1,3 @@
-// scripts/updater.mjs
-
 import fs from "node:fs"
 import { context, getOctokit } from "@actions/github"
 import fetch from "node-fetch"
@@ -56,16 +54,19 @@ async function updater() {
   }
 
   const setAsset = async (asset, reg, platforms) => {
-    let sig = ""
-    if (/.sig$/.test(asset.name)) {
-      sig = await getSignature(asset.browser_download_url)
-    }
+    const sigReg = /.sig$/
+
     for (const platform of platforms) {
       if (reg.test(asset.name)) {
         // 设置平台签名，检测应用更新需要验证签名
-        updateData.platforms[platform].signature = sig
-        // 设置下载链接
-        updateData.platforms[platform].url = asset.browser_download_url
+        if (sigReg.test(asset.name)) {
+          updateData.platforms[platform].signature = await getSignature(
+            asset.browser_download_url,
+          )
+        } else {
+          // 设置下载链接
+          updateData.platforms[platform].url = asset.browser_download_url
+        }
       }
     }
   }
