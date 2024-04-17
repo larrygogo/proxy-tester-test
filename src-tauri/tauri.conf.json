@@ -49,7 +49,15 @@
         "depends": []
       },
       "externalBin": [],
-      "icon": ["icons/icon.png", "icons/icon.icns", "icons/icon.ico"],
+      "icon": [
+        "icons/icon.png",
+        "icons/icon.icns",
+        "icons/icon.ico",
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2.png",
+        "icons/StoreLogo.png"
+      ],
       "identifier": "ProxyTester",
       "longDescription": "",
       "macOS": {
@@ -74,7 +82,7 @@
     "updater": {
       "active": true,
       "dialog": false,
-      "endpoints": ["https://dev.ipoasis.io/proxy-tester-test/install.json"],
+      "endpoints": ["https://reversegame.github.io/proxy-tester/install.json"],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQyNDcyM0E2MzJGNDE0MTYKUldRV0ZQUXlwaU5IMHJhdFcrdFo5UDlNNEh4K0xsK2h6Tm81R253ZjFoTUlXREZCc09vRmV5bEkK"
     },
     "windows": [
