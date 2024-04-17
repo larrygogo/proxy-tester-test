@@ -8,8 +8,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Form, FormField, FormItem } from "@/components/ui/form"
+import { ProxyTaskContext } from "@/context/ProxyTaskContext"
+import { proxyListAtom } from "@/lib/jotai"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect } from "react"
+import { useAtom } from "jotai"
+import { nanoid } from "nanoid"
+import { useContext, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { Trans } from "react-i18next"
 import { z } from "zod"
@@ -21,30 +25,45 @@ const proxyStringEditSchema = z.object({
 interface ProxyEditDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  value?: string
-  onFinish?: (value: string) => boolean
 }
 
 export default function ProxyEditDialog(props: ProxyEditDialogProps) {
-  const { open, onOpenChange, onFinish } = props
+  const { open, onOpenChange } = props
+  const [proxyList, setProxyList] = useAtom(proxyListAtom)
+  const { setProxyStates } = useContext(ProxyTaskContext)
 
   const form = useForm({
     defaultValues: {
-      proxyListString: props.value,
+      proxyListString: "",
     },
     resolver: zodResolver(proxyStringEditSchema),
   })
 
-  useEffect(() => {
-    form.reset({ proxyListString: props.value })
-  }, [form, props.value])
-
-  const onSubmit = form.handleSubmit((values) => {
-    const close = onFinish?.(values.proxyListString ?? "")
-    if (close) {
-      onOpenChange(false)
-    }
+  const handleSubmit = form.handleSubmit(async (data) => {
+    const proxyList = data.proxyListString
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+    setProxyList(proxyList)
+    setProxyStates?.(
+      proxyList.map((proxy) => {
+        const [host, port, username, password] = proxy.split(":")
+        return {
+          id: nanoid(),
+          host,
+          port: Number(port),
+          username,
+          password,
+          value: proxy,
+        }
+      }),
+    )
+    onOpenChange(false)
   })
+
+  useEffect(() => {
+    form.setValue("proxyListString", proxyList.join("\n"))
+  }, [form, proxyList])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -55,12 +74,7 @@ export default function ProxyEditDialog(props: ProxyEditDialogProps) {
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={(data) => {
-              void onSubmit(data).then()
-            }}
-          >
+          <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
             <FormField
               name="proxyListString"
               render={({ field }) => (

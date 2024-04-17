@@ -29,8 +29,8 @@ export const useUpdate = (): UpdateInfo => {
         const { shouldUpdate, manifest } = await checkUpdate()
         setManifest(manifest)
         setIsAvailable(shouldUpdate)
-      } catch (error) {
-        console.error(error)
+      } catch (e) {
+        console.error(e)
       }
 
       return unlisten

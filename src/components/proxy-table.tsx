@@ -6,7 +6,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import type { ProxyDisplayInfo } from "@/types/proxy"
+import type { ProxyStateInfo } from "@/types/proxy"
 import {
   type ColumnDef,
   flexRender,
@@ -18,7 +18,7 @@ import { useRef } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 interface Props {
-  proxyStates: ProxyDisplayInfo[]
+  proxyStates: ProxyStateInfo[]
 }
 
 export default function ProxyTable(props: Props) {
@@ -27,7 +27,7 @@ export default function ProxyTable(props: Props) {
 
   const isEmpty = proxyStates.length === 0
 
-  const columns: ColumnDef<ProxyDisplayInfo>[] = [
+  const columns: ColumnDef<ProxyStateInfo>[] = [
     {
       id: "host",
       accessorKey: "host",
@@ -114,19 +114,21 @@ export default function ProxyTable(props: Props) {
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 36, //estimate row height for accurate scrollbar dragging
+    estimateSize: () => 38, //estimate row height for accurate scrollbar dragging
     getScrollElement: () => tableContainerRef.current,
     //measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
       typeof window !== "undefined" && !navigator.userAgent.includes("Firefox")
         ? (element) => element.getBoundingClientRect().height
         : undefined,
-    overscan: 10,
+    overscan: 5,
   })
 
   return (
     <div
-      className="relative size-full flex-1 flex-col overflow-auto"
+      className={cn(
+        "relative size-full flex-1 flex-col overflow-auto bg-transparent",
+      )}
       ref={tableContainerRef}
     >
       <table
@@ -168,6 +170,7 @@ export default function ProxyTable(props: Props) {
             "relative grid font-mono",
             isEmpty &&
               "flex items-center justify-center h-full bg-gradient-to-b from-white from-[36px] via-[36px] via-gray-100 to-gray-100 to-[72px] bg-[length:72px_72px]",
+            "bg-transparent",
           )}
           style={{
             height: isEmpty

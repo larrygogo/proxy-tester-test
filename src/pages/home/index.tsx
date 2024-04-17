@@ -6,7 +6,7 @@ import {
   Rocket,
   Settings,
 } from "lucide-react"
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -29,8 +29,6 @@ import {
   PROXY_PROTOCOL_ENUM,
   type ProxyProtocol,
   ProxyTaskContext,
-  TASK_MODE_ENUM,
-  TASK_STATUS_ENUM,
 } from "@/context/ProxyTaskContext"
 
 import InterparkQueueTaskDialog from "@/components/interpark-queue-task-dialog"
@@ -45,7 +43,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { protocolAtom, targetAtom } from "@/lib/jotai"
 import { cn } from "@/lib/utils"
+import { useAtom } from "jotai"
 import { nanoid } from "nanoid"
 import { Trans, useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -60,75 +60,73 @@ const protocolOptions = Object.entries(PROXY_PROTOCOL_ENUM).map(
 export default function Page() {
   const { t } = useTranslation()
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [shouldStartTask, setShouldStartTask] = useState(false)
+  const [protocol, setProtocol] = useAtom(protocolAtom)
+  const [target, setTarget] = useAtom(targetAtom)
   const [interparkQueueDialogOpen, setInterparkQueueDialogOpen] =
     useState(false)
   const {
-    taskStatus,
-    startTask,
+    isRunning,
     proxyStates,
     setProxyStates,
-    stopTask,
-    proxyList,
-    setProxyList,
-    protocol,
-    setProtocol,
-    target,
-    setTarget,
     startTaskWithMode,
+    stopTask,
     taskMode,
   } = useContext(ProxyTaskContext)
 
-  const isRunning = useMemo(
-    () => taskStatus === TASK_STATUS_ENUM.RUNNING,
-    [taskStatus],
-  )
-
   const handleClick = () => {
-    // 每次开始都需要给所有的proxy重置ID
-    if (proxyStates) {
-      console.log("reset proxy id", proxyStates)
-      setProxyStates?.(
-        proxyStates.map((proxy) => ({
-          ...proxy,
-          id: nanoid(),
-        })),
-      )
-    }
-
-    if (!target) {
-      setTarget?.("www.google.com")
-    }
-
     if (isRunning) {
       stopTask?.()
     } else {
-      setShouldStartTask(true)
+      const targetURL = target || "www.google.com"
+      setTarget(targetURL)
+      const newProxyStates =
+        proxyStates?.map((proxy) => ({
+          ...proxy,
+          id: nanoid(),
+          status: undefined,
+          delay: undefined,
+        })) ?? []
+      setProxyStates?.(newProxyStates)
+      startTaskWithMode?.({
+        mode: "normal",
+        states: newProxyStates,
+        target: targetURL,
+        protocol,
+      })
     }
   }
 
   const handleTestInterpark = () => {
-    if (isRunning) {
-      stopTask?.()
-    } else {
-      void startTaskWithMode?.("test_interpark_global_index").then()
-    }
+    const newProxyStates =
+      proxyStates?.map((proxy) => ({
+        ...proxy,
+        id: nanoid(),
+        status: undefined,
+        delay: undefined,
+      })) ?? []
+    setProxyStates?.(newProxyStates)
+    startTaskWithMode?.({
+      mode: "test_interpark_global_index",
+      protocol,
+      states: newProxyStates,
+    })
   }
 
   const handleTestMelon = () => {
-    if (isRunning) {
-      stopTask?.()
-    } else {
-      void startTaskWithMode?.("test_melon_global_index").then()
-    }
+    const newProxyStates =
+      proxyStates?.map((proxy) => ({
+        ...proxy,
+        id: nanoid(),
+        status: undefined,
+        delay: undefined,
+      })) ?? []
+    setProxyStates?.(newProxyStates)
+    startTaskWithMode?.({
+      mode: "test_melon_global_index",
+      protocol,
+      states: newProxyStates,
+    })
   }
-
-  useEffect(() => {
-    if (target && taskStatus !== TASK_STATUS_ENUM.RUNNING && shouldStartTask) {
-      void startTask?.().then()
-      setShouldStartTask(false)
-    }
-  }, [target, shouldStartTask, startTask, taskStatus])
 
   return (
     <Card className="flex-1 flex h-full flex-col overflow-hidden text-xs shadow-sm">
@@ -158,7 +156,7 @@ export default function Page() {
           <Input
             disabled={isRunning}
             value={
-              taskMode !== TASK_MODE_ENUM.NORMAL && isRunning
+              taskMode !== "normal" && isRunning
                 ? `${t("home.task.professionalMode", {
                     defaultValue: "Professional Mode",
                   })}：${taskMode ?? ""}`
@@ -279,18 +277,29 @@ export default function Page() {
           <Footer />
         </div>
       </CardContent>
-      <ProxyEditDialog
-        value={proxyList?.join("\n")}
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
-        onFinish={(v) => {
-          setProxyList?.(v.split("\n").filter(Boolean))
-          return true
-        }}
-      />
+      <ProxyEditDialog open={editDialogOpen} onOpenChange={setEditDialogOpen} />
       <InterparkQueueTaskDialog
         open={interparkQueueDialogOpen}
         onOpenChange={setInterparkQueueDialogOpen}
+        onFinish={({ sku }) => {
+          const newProxyStates =
+            proxyStates?.map((state) => ({
+              ...state,
+              id: nanoid(),
+              status: undefined,
+              delay: undefined,
+            })) ?? []
+          setProxyStates?.(newProxyStates)
+          startTaskWithMode?.({
+            mode: "test_interpark_global_queue",
+            states: newProxyStates,
+            protocol,
+            config: {
+              sku,
+            },
+          })
+          return true
+        }}
       />
     </Card>
   )

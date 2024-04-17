@@ -22,15 +22,8 @@ jobs:
         id: get_version
         shell: bash
         run: |
-          echo "using version tag ${github.ref}"
-          if [[ $GITHUB_REF == *alpha* ]]; then
-              echo "::set-output name=version_type::alpha"
-          elif [[ $GITHUB_REF == *beta* ]]; then
-              echo "::set-output name=version_type::beta"
-          else
-              echo "::set-output name=version_type::stable"
-          fi
-          echo ::set-output name=version::"${github.ref}"
+          echo "using version tag ${GITHUB_REF:10}"
+          echo ::set-output name=version::"${GITHUB_REF:10}"
 
       - name: Create Release (创建发布)
         id: create_release
@@ -38,11 +31,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: '${{ github.ref }}'
-          release_name: 'ProxyTester ${{ github.ref }}'
+          tag_name: '${{ steps.get_version.outputs.VERSION }}'
+          release_name: 'ProxyTester ${{ steps.get_version.outputs.VERSION }}'
           body: 'See the assets to download this version and install.'
-          draft: '{{ steps.get_version.outputs.version_type == "alpha" || steps.get_version.outputs.version_type == "beta" }}'
-          prerelease: '{{ steps.get_version.outputs.version_type == "alpha" || steps.get_version.outputs.version_type == "beta" }}'
 
   build-tauri:
     needs: create-release

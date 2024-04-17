@@ -14,9 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useContext } from "react"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import z from "zod"
@@ -24,6 +22,9 @@ import z from "zod"
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onFinish?: (values: {
+    sku: string
+  }) => boolean
 }
 
 const schema = z.object({
@@ -40,11 +41,9 @@ export default function InterparkQueueTaskDialog(props: Props) {
     resolver: zodResolver(schema),
   })
 
-  const { startTaskWithMode } = useContext(ProxyTaskContext)
-
   const onSubmit = form.handleSubmit(async (values: z.infer<typeof schema>) => {
-    await startTaskWithMode?.("test_interpark_global_queue", values)
-    onOpenChange(false)
+    const close = props.onFinish?.(values)
+    onOpenChange(!close)
   })
 
   return (

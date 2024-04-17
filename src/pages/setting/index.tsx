@@ -13,15 +13,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { usePlatformInfo } from "@/hooks/use-platform-info"
+import { concurrencyAtom } from "@/lib/jotai"
+import { useAtom } from "jotai"
 import { Info, X } from "lucide-react"
-import { useContext } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 export default function Page() {
-  const { concurrency, setConcurrency } = useContext(ProxyTaskContext)
+  const [concurrency, setConcurrency] = useAtom(concurrencyAtom)
   const platformInfo = usePlatformInfo()
   const {
     i18n: { changeLanguage, language },

@@ -1,36 +1,29 @@
-import { TaskPool } from "@/lib/task"
-import type { ProxyDisplayInfo } from "@/types/proxy"
-import { invoke } from "@tauri-apps/api/tauri"
+import {
+  testInterparkGlobalIndexInvoke,
+  testInterparkGlobalQueueInvoke,
+  testMelonGlobalIndexInvoke,
+  testProxyInvoke,
+} from "@/lib/invoke"
+import { concurrencyAtom, proxyListAtom, proxyStatesAtom } from "@/lib/jotai"
+import { Queue } from "@/lib/queue"
+import type { ProxyStateInfo } from "@/types/proxy"
+import { useAtom, useAtomValue } from "jotai"
 import { nanoid } from "nanoid"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 interface LayoutContextType {
-  taskPool?: TaskPool
-  startTask?: () => Promise<void>
+  isRunning: boolean
+  proxyStates?: ProxyStateInfo[]
+  setProxyStates?: React.Dispatch<React.SetStateAction<ProxyStateInfo[]>>
+  startTaskWithMode?: (options: {
+    mode: string
+    states: ProxyStateInfo[]
+    protocol: ProxyProtocol
+    target?: string
+    config?: Record<string, unknown>
+  }) => void
   stopTask?: () => void
-  concurrency?: number
-  proxyList?: string[]
-  protocol?: ProxyProtocol
-  target?: string
-  proxyStates?: ProxyDisplayInfo[]
-  finishedCount?: number
-  taskStatus?: TASK_STATUS_ENUM
-  setProxyList?: (proxyList: string[]) => void
-  setProtocol?: (protocol: ProxyProtocol) => void
-  setTarget?: (target: string) => void
-  setProxyStates?: (proxyStates: ProxyDisplayInfo[]) => void
-  setFinishedCount?: (finishedCount: number) => void
-  setConcurrency?: (concurrency: number) => void
-  startTaskWithMode?: (
-    mode: string,
-    data?: Record<string, unknown>,
-  ) => Promise<void>
-  taskMode?: TASK_MODE_ENUM
-}
-
-export enum TASK_STATUS_ENUM {
-  RUNNING = "running",
-  PENDING = "pending",
+  taskMode?: TaskMode
 }
 
 export enum PROXY_PROTOCOL_ENUM {
@@ -38,349 +31,258 @@ export enum PROXY_PROTOCOL_ENUM {
   SOCKS5 = "SOCKS5",
 }
 
-export enum TASK_MODE_ENUM {
-  NORMAL = "normal",
-  TEST_INTERPARK_GLOBAL_INDEX = "test_interpark_global_index",
-  TEST_INTERPARK_GLOBAL_QUEUE = "test_interpark_global_queue",
-  TEST_MELON_GLOBAL_INDEX = "test_melon_global_index",
-}
+export type TaskMode =
+  | "normal"
+  | "test_interpark_global_index"
+  | "test_interpark_global_queue"
+  | "test_melon_global_index"
 
 export type ProxyProtocol = keyof typeof PROXY_PROTOCOL_ENUM
-export const ProxyTaskContext = React.createContext<LayoutContextType>({})
+export const ProxyTaskContext = React.createContext<LayoutContextType>({
+  isRunning: false,
+})
 
 export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
-  const [protocol, setProtocol] = useState<ProxyProtocol>("HTTP")
-  const [proxyList, setProxyList] = useState<string[]>([])
-  const [target, setTarget] = useState<string>("")
-  const [taskMode, setTaskMode] = useState<TASK_MODE_ENUM>(
-    TASK_MODE_ENUM.NORMAL,
-  )
-  const [taskStatus, setTaskStatus] = useState<TASK_STATUS_ENUM>(
-    TASK_STATUS_ENUM.PENDING,
-  )
-  const [proxyStates, setProxyStates] = useState<ProxyDisplayInfo[]>([])
-  const [finishedCount, setFinishedCount] = useState(0)
-  const [concurrency, setConcurrency] = useState(20)
-  const store = useMemo(() => {
-    if (typeof window === "undefined") return null
-    return {
-      set: localStorage.setItem.bind(localStorage),
-      get: localStorage.getItem.bind(localStorage),
-    }
-  }, [])
-  const taskPool = TaskPool.getInstance()
+  /** Queue State */
+  const [queue, setQueue] = useState<Queue>()
+  const [isRunning, setIsRunning] = useState(false)
 
-  taskPool.on("stop", () => {
-    console.log("taskPool stop")
-    setTaskStatus(TASK_STATUS_ENUM.PENDING)
-  })
+  /** Task State */
+  const [mode, setMode] = useState<TaskMode>("normal")
+  const [proxyStates, setProxyStates] = useAtom(proxyStatesAtom)
+  const proxyList = useAtomValue(proxyListAtom)
+  const concurrency = useAtomValue(concurrencyAtom)
 
-  taskPool.on("start", () => {
-    console.log("taskPool start")
-    setTaskStatus(TASK_STATUS_ENUM.RUNNING)
-  })
+  const startTaskWithMode = (options: {
+    mode: string
+    states: ProxyStateInfo[]
+    protocol: ProxyProtocol
+    target?: string
+    config?: Record<string, unknown>
+  }) => {
+    const {
+      mode,
+      states,
+      target = "www.google.com",
+      protocol = "HTTP",
+      config,
+    } = options
 
-  const startTask = async () => {
-    if (taskStatus === TASK_STATUS_ENUM.RUNNING) {
+    if (states.length === 0) {
       return
     }
 
-    if (!target || !proxyList.length || !concurrency || !protocol) {
-      return
+    const queue = new Queue({
+      concurrency,
+    })
+    setQueue(queue)
+
+    queue.onStart = () => {
+      setIsRunning(true)
     }
 
-    setTaskStatus(TASK_STATUS_ENUM.RUNNING)
-    await startTaskWithMode(TASK_MODE_ENUM.NORMAL)
-  }
+    queue.onStop = () => {
+      setIsRunning(false)
+    }
 
-  const startTaskWithMode = (
-    mode: string = TASK_MODE_ENUM.NORMAL,
-    config?: Record<string, unknown>,
-  ) => {
-    // 如果任务正在运行，则直接返回
-
-    // 设置初始状态
-    setFinishedCount(0)
-    taskPool.clear()
-    setProxyStates((prev) =>
-      prev.map((p) => ({ ...p, status: undefined, delay: undefined })),
-    )
-
-    taskPool.on(
-      "progress",
-      (
-        data = {
-          completed: 0,
-          total: 0,
-        },
-      ) => {
-        const { completed, total } = data as {
-          completed: number
-          total: number
-        }
-        setFinishedCount(completed)
-        if (completed === total) {
-          taskPool.stop()
-        }
-      },
-    )
     switch (mode) {
       case "normal":
-        setTaskMode(TASK_MODE_ENUM.NORMAL)
-        return normalTest()
+        setMode("normal")
+        return normalTest({ queue, target, protocol, states })
       case "test_interpark_global_index":
-        setTaskMode(TASK_MODE_ENUM.TEST_INTERPARK_GLOBAL_INDEX)
-        return testInterparkGlobalIndex()
+        setMode("test_interpark_global_index")
+        return testInterparkGlobalIndex({ queue, protocol, states })
       case "test_interpark_global_queue":
-        setTaskMode(TASK_MODE_ENUM.TEST_INTERPARK_GLOBAL_QUEUE)
-        return testInterparkGlobalQueue(config?.sku as string)
+        setMode("test_interpark_global_queue")
+        return testInterparkGlobalQueue({
+          queue,
+          protocol,
+          sku: config?.sku as string,
+          states,
+        })
       case "test_melon_global_index":
-        setTaskMode(TASK_MODE_ENUM.TEST_MELON_GLOBAL_INDEX)
-        return testMelonGlobalIndex()
+        setMode("test_melon_global_index")
+        return testMelonGlobalIndex({ queue, protocol, states })
       default:
-        setTaskMode(TASK_MODE_ENUM.NORMAL)
-        return normalTest()
+        setMode("normal")
+        return normalTest({ queue, target, protocol, states })
     }
   }
 
   // 常规测试
-  const normalTest = async () => {
-    for (const proxy of proxyStates) {
+  const normalTest = async (args: {
+    queue: Queue
+    target: string
+    protocol: ProxyProtocol
+    states: ProxyStateInfo[]
+  }) => {
+    const { queue, target, protocol, states } = args
+    for (const proxy of states) {
       const task = async () => {
-        // 判断 target 是否以 http(s):// 开头，默认添加 https://
-        const formatTarget = (target: string) => {
-          if (target.startsWith("http://") || target.startsWith("https://")) {
-            return target
-          }
-          return `https://${target}`
-        }
-        const result: { status: string; delay: number } = await invoke(
-          "test_proxy",
-          {
-            socks5: protocol === "SOCKS5",
-            proxy: `${proxy.host}:${proxy.port.toString()}`,
-            addr: formatTarget(target),
-            username: proxy.username,
-            password: proxy.password,
-          },
-        )
-        if (!taskPool.stopped) {
-          setProxyStates((prev) =>
-            prev.map((p) =>
-              p.id === proxy.id
-                ? {
-                    ...p,
-                    status: result.status,
-                    delay: result.delay,
-                  }
-                : p,
-            ),
+        const res = await testProxyInvoke({
+          socks5: protocol === "SOCKS5",
+          proxy: `${proxy.host}:${proxy.port.toString()}`,
+          addr: formatTarget(target),
+          username: proxy.username,
+          password: proxy.password,
+        })
+        if (queue.stopped) return
+        setProxyStates((s) => {
+          return s.map((p) =>
+            p.id === proxy.id
+              ? {
+                  ...p,
+                  status: res.status,
+                  delay: res.delay,
+                }
+              : p,
           )
-        }
+        })
       }
-      taskPool.addTask(task)
+      queue.addTask(task)
     }
-    await taskPool.start()
+    await queue.start()
   }
 
-  const testInterparkGlobalIndex = async () => {
-    for (const proxy of proxyStates) {
+  const testInterparkGlobalIndex = async (args: {
+    queue: Queue
+    protocol: ProxyProtocol
+    states: ProxyStateInfo[]
+  }) => {
+    const { queue, protocol, states } = args
+    for (const proxy of states) {
       const task = async () => {
-        const result: { status: string; delay: number } = await invoke(
-          "test_interpark_global_index",
-          {
-            socks5: protocol === "SOCKS5",
-            proxy: `${proxy.host}:${proxy.port.toString()}`,
-            username: proxy.username,
-            password: proxy.password,
-          },
+        const res = await testInterparkGlobalIndexInvoke({
+          socks5: protocol === "SOCKS5",
+          proxy: `${proxy.host}:${proxy.port.toString()}`,
+          username: proxy.username,
+          password: proxy.password,
+        })
+        if (queue.stopped) return
+        setProxyStates((s) =>
+          s.map((p) =>
+            p.id === proxy.id
+              ? {
+                  ...p,
+                  status: res.status,
+                  delay: res.delay,
+                }
+              : p,
+          ),
         )
-        if (!taskPool.stopped) {
-          setProxyStates((prev) =>
-            prev.map((p) =>
-              p.id === proxy.id
-                ? {
-                    ...p,
-                    status: result.status,
-                    delay: result.delay,
-                  }
-                : p,
-            ),
-          )
-        }
-        return result
       }
-      taskPool.addTask(task)
+      queue.addTask(task)
     }
-    await taskPool.start()
+    await queue.start()
   }
 
-  const testInterparkGlobalQueue = async (sku: string) => {
-    for (const proxy of proxyStates) {
+  const testInterparkGlobalQueue = async (args: {
+    queue: Queue
+    protocol: ProxyProtocol
+    sku: string
+    states: ProxyStateInfo[]
+  }) => {
+    const { queue, protocol, sku, states } = args
+    for (const proxy of states) {
       const task = async () => {
-        const result: { status: string; delay: number } = await invoke(
-          "test_interpark_global_queue",
-          {
-            socks5: protocol === "SOCKS5",
-            proxy: `${proxy.host}:${proxy.port.toString()}`,
-            username: proxy.username,
-            password: proxy.password,
-            sku: sku,
-          },
+        const res = await testInterparkGlobalQueueInvoke({
+          socks5: protocol === "SOCKS5",
+          proxy: `${proxy.host}:${proxy.port.toString()}`,
+          username: proxy.username,
+          password: proxy.password,
+          sku,
+        })
+        if (queue.stopped) return
+        setProxyStates((s) =>
+          s.map((p) =>
+            p.id === proxy.id
+              ? {
+                  ...p,
+                  status: res.status,
+                  delay: res.delay,
+                }
+              : p,
+          ),
         )
-        if (!taskPool.stopped) {
-          setProxyStates((prev) =>
-            prev.map((p) =>
-              p.id === proxy.id
-                ? {
-                    ...p,
-                    status: result.status,
-                    delay: result.delay,
-                  }
-                : p,
-            ),
-          )
-        }
-        return result
       }
-      taskPool.addTask(task)
+      queue.addTask(task)
     }
-    await taskPool.start()
+    await queue.start()
   }
-  const testMelonGlobalIndex = async () => {
-    for (const proxy of proxyStates) {
+  const testMelonGlobalIndex = async (args: {
+    queue: Queue
+    protocol: ProxyProtocol
+    states: ProxyStateInfo[]
+  }) => {
+    const { queue, protocol, states } = args
+    for (const proxy of states) {
       const task = async () => {
-        const result: { status: string; delay: number } = await invoke(
-          "test_melon_global_index",
-          {
-            socks5: protocol === "SOCKS5",
-            proxy: `${proxy.host}:${proxy.port.toString()}`,
-            username: proxy.username,
-            password: proxy.password,
-          },
+        const res = await testMelonGlobalIndexInvoke({
+          socks5: protocol === "SOCKS5",
+          proxy: `${proxy.host}:${proxy.port.toString()}`,
+          username: proxy.username,
+          password: proxy.password,
+        })
+        if (queue.stopped) return
+        setProxyStates((s) =>
+          s.map((p) =>
+            p.id === proxy.id
+              ? {
+                  ...p,
+                  status: res.status,
+                  delay: res.delay,
+                }
+              : p,
+          ),
         )
-        if (!taskPool.stopped) {
-          setProxyStates((prev) =>
-            prev.map((p) =>
-              p.id === proxy.id
-                ? {
-                    ...p,
-                    status: result.status,
-                    delay: result.delay,
-                  }
-                : p,
-            ),
-          )
-        }
-        return result
       }
-      taskPool.addTask(task)
+      queue.addTask(task)
     }
-    await taskPool.start()
+    await queue.start()
   }
 
   const stopTask = () => {
-    taskPool.stop()
+    setIsRunning(false)
+    queue?.stop()
   }
 
-  const changeProxyList = useCallback(
-    (list: string[]) => {
-      if (!store) return
-      store.set("proxy.list", JSON.stringify(list))
-
-      const statesList = list.map((p) => {
-        const [host, port, username, password] = p.split(":")
-        return {
-          id: nanoid(),
-          host,
-          port: Number(port),
-          username,
-          password,
-          value: p,
-        } as ProxyDisplayInfo
-      })
-      setProxyStates(statesList)
-      setProxyList(list)
-    },
-    [store],
-  )
-
-  const changeTarget = useCallback(
-    (target: string) => {
-      if (!store) return
-      store.set("proxy.target", JSON.stringify(target))
-      setTarget(target)
-    },
-    [store],
-  )
-
-  const changeProtocol = useCallback(
-    (protocol: ProxyProtocol) => {
-      if (!store) return
-      store.set("proxy.protocol", JSON.stringify(protocol))
-      setProtocol(protocol)
-    },
-    [store],
-  )
-
-  const changeConcurrency = useCallback(
-    (concurrency: number) => {
-      if (!store) return
-      store.set("task.concurrency", concurrency.toString())
-      setConcurrency(concurrency)
-      taskPool.setConcurrency(concurrency)
-    },
-    [store, taskPool],
-  )
-
   useEffect(() => {
-    // 加载 Proxy List 缓存
-    const proxyListStoreData = Array.from(
-      JSON.parse(store?.get("proxy.list") ?? "[]") as string[],
-    )
-    changeProxyList(proxyListStoreData)
-    // 加载 Task 并发数缓存
-    const taskConcurrency = Number(
-      JSON.parse(store?.get("task.concurrency") ?? "20"),
-    )
-    changeConcurrency(taskConcurrency)
-
-    // 加载 Target 缓存
-    const targetStoreData = String(
-      JSON.parse(store?.get("proxy.target") ?? '""'),
-    )
-    changeTarget(targetStoreData)
-
-    // 加载 Protocol 缓存
-    const protocolStoreData = String(
-      JSON.parse(store?.get("proxy.protocol") ?? '"HTTP"'),
-    )
-    changeProtocol(protocolStoreData as ProxyProtocol)
-  }, [changeConcurrency, changeProtocol, changeProxyList, changeTarget, store])
+    if (!proxyStates) {
+      setProxyStates(
+        proxyList.map((proxy) => {
+          const [host, port, username, password] = proxy.split(":")
+          return {
+            id: nanoid(),
+            host,
+            port: Number(port),
+            username,
+            password,
+            value: proxy,
+          }
+        }) ?? [],
+      )
+    }
+  }, [proxyList, proxyStates, setProxyStates])
 
   return (
     <ProxyTaskContext.Provider
       value={{
-        taskPool,
-        startTask,
-        stopTask: stopTask,
-        proxyList,
-        concurrency,
-        target,
-        protocol,
+        isRunning,
         proxyStates,
-        finishedCount,
-        taskStatus,
-        setProxyList: changeProxyList,
         setProxyStates: setProxyStates,
-        setTarget: changeTarget,
-        setProtocol: changeProtocol,
-        setConcurrency: changeConcurrency,
         startTaskWithMode,
-        taskMode,
+        taskMode: mode,
+        stopTask,
       }}
     >
       {typeof window !== "undefined" ? props.children : null}
     </ProxyTaskContext.Provider>
   )
+}
+
+const formatTarget = (target: string) => {
+  if (/^http(s)?:\/\//.test(target)) {
+    return target
+  }
+  return `https://${target}`
 }

@@ -1,4 +1,4 @@
-import { ProxyTaskContext, TASK_STATUS_ENUM } from "@/context/ProxyTaskContext"
+import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { fs, clipboard, dialog, notification } from "@tauri-apps/api"
 import { cva } from "class-variance-authority"
 import { CircleCheck, Copy, Download, Eraser } from "lucide-react"
@@ -32,7 +32,7 @@ export default function FooterActions() {
   const { t } = useTranslation()
   const [isCleared, setIsCleared] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
-  const { taskStatus, proxyStates, setProxyStates } =
+  const { isRunning, proxyStates, setProxyStates } =
     useContext(ProxyTaskContext)
 
   const usableData = useMemo(() => {
@@ -65,9 +65,10 @@ export default function FooterActions() {
 
   const handleClearUnusable = () => {
     setProxyStates?.(
-      proxyStates?.filter(
-        (item) => !item.status || item.status.toUpperCase() === "OK",
-      ) ?? [],
+      (s) =>
+        s?.filter(
+          (item) => !item.status || item.status.toUpperCase() === "OK",
+        ) ?? [],
     )
     setIsCleared(true)
   }
@@ -135,11 +136,7 @@ export default function FooterActions() {
       <div>
         <button
           type="button"
-          disabled={
-            !unUsableData ||
-            unUsableData.length === 0 ||
-            taskStatus === TASK_STATUS_ENUM.RUNNING
-          }
+          disabled={!unUsableData || unUsableData.length === 0 || isRunning}
           className={footerButtonVariants({
             rounded: "full",
             state: isCleared ? "success" : "default",
@@ -153,7 +150,7 @@ export default function FooterActions() {
       <div>
         <button
           type="button"
-          disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
+          disabled={!usableData || isRunning}
           className={footerButtonVariants({
             rounded: "full",
             state: isCopied ? "success" : "default",
@@ -167,7 +164,7 @@ export default function FooterActions() {
       <div>
         <button
           type="button"
-          disabled={!usableData || taskStatus === TASK_STATUS_ENUM.RUNNING}
+          disabled={!usableData || isRunning}
           className={footerButtonVariants({
             rounded: "full",
           })}

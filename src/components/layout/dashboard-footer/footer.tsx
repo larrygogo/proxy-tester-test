@@ -4,15 +4,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ProxyTaskContext, TASK_STATUS_ENUM } from "@/context/ProxyTaskContext"
+import { ProxyTaskContext } from "@/context/ProxyTaskContext"
 import { cn } from "@/lib/utils"
 import { BadgeCheck, BadgeX, ListMinus } from "lucide-react"
 import { useContext } from "react"
 import { Trans } from "react-i18next"
 
 export default function Footer() {
-  const { taskStatus, proxyStates } = useContext(ProxyTaskContext)
-  const isRunning = TASK_STATUS_ENUM.RUNNING === taskStatus
+  const { isRunning, proxyStates } = useContext(ProxyTaskContext)
 
   return (
     <footer className="flex select-none border-t bg-gray-100 p-2">
@@ -35,7 +34,7 @@ export default function Footer() {
                 />
               </div>
               <span>
-                {TASK_STATUS_ENUM.RUNNING === taskStatus ? (
+                {isRunning ? (
                   <Trans i18nKey="home.task.status.running">Running</Trans>
                 ) : (
                   <Trans i18nKey="home.task.status.pending">Pending</Trans>
