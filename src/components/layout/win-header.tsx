@@ -1,3 +1,5 @@
+import { Updater } from "@/components/updater"
+import { useUpdate } from "@/hooks/use-update"
 import { appWindow } from "@tauri-apps/api/window"
 import { Minus, Square, X } from "lucide-react"
 import { createRef, useEffect, useState } from "react"
@@ -9,6 +11,7 @@ export function WinHeader() {
   const closeRef = createRef<HTMLButtonElement>()
   const [isMaximized, setIsMaximized] = useState(false)
   const { t } = useTranslation()
+  const update = useUpdate()
 
   useEffect(() => {
     const handleMinimize = () => void appWindow.minimize()
@@ -39,7 +42,7 @@ export function WinHeader() {
   return (
     <div
       data-tauri-drag-region="true"
-      className="relative flex w-full justify-between"
+      className="relative flex items-center w-full justify-between"
     >
       <div className="absolute top-0 w-full h-[6px] z-10 cursor-ns-resize" />
       <div
@@ -48,6 +51,7 @@ export function WinHeader() {
       >
         Proxy Tester
       </div>
+      {update.isAvailable && <Updater update={update} />}
       <div className="flex justify-end">
         <button
           type="button"
