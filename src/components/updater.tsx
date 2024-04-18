@@ -10,7 +10,7 @@ import { installUpdate } from "@tauri-apps/api/updater"
 import { Download, LoaderCircle, RefreshCcw } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { Trans } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import { Button } from "./ui/button"
 import {
   Dialog,
@@ -30,6 +30,7 @@ export const Updater = ({
   const [error, setError] = useState<string>("")
   const [errorDialogOpen, setErrorDialogOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     console.log("update status", update)
@@ -65,7 +66,9 @@ export const Updater = ({
           <TooltipTrigger onClick={() => setDialogOpen(true)}>
             <Badge className="flex gap-1 bg-gradient-to-br from-slate-600 to-slate-800 shadow-none rounded-full hover:from-slate-600 hover:to-slate-500">
               <Download size={12} strokeWidth={3} />
-              <Trans i18nKey="update.tooltip">New Version</Trans>
+              {t("update.tooltip", {
+                defaultValue: "New Version",
+              })}
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
