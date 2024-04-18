@@ -45,19 +45,21 @@ export function WinHeader() {
       className="relative flex items-center w-full justify-between"
     >
       <div className="absolute top-0 w-full h-[6px] z-10 cursor-ns-resize" />
-      <div
-        data-tauri-drag-region="true"
-        className="pointer-events-none pb-2 mt-2 cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-[#0F2B46]"
-      >
-        Proxy Tester
+      <div className="flex items-center">
+        <div
+          data-tauri-drag-region="true"
+          className="pointer-events-none pb-2 mt-2 cursor-default select-none px-4 text-center font-sans text-sm font-semibold text-[#0F2B46]"
+        >
+          Proxy Tester
+        </div>
+        {update.isAvailable && <Updater update={update} />}
       </div>
-      {update.isAvailable && <Updater update={update} />}
       <div className="flex justify-end">
         <button
           type="button"
           title={t("app.minimize")}
           ref={minimizeRef}
-          className="py-2 px-3 hover:bg-gray-400"
+          className="h-9 px-3 hover:bg-gray-400"
         >
           <Minus size={16} />
         </button>
@@ -65,7 +67,7 @@ export function WinHeader() {
           type="button"
           title={isMaximized ? t("app.unmaximize") : t("app.maximize")}
           ref={maximizeRef}
-          className="py-2 px-3 hover:bg-gray-400"
+          className="h-9 px-3 hover:bg-gray-400"
         >
           <Square size={14} />
         </button>
@@ -73,7 +75,7 @@ export function WinHeader() {
           type="button"
           title={t("app.close")}
           ref={closeRef}
-          className="py-2 px-3 hover:bg-red-600 hover:text-white"
+          className="h-9 px-3 hover:bg-red-600 hover:text-white"
         >
           <X size={16} />
         </button>
