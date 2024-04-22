@@ -42,7 +42,7 @@ jobs:
       matrix:
         platform: [macOS]
 
-    runs-on: [${{ matrix.platform }}]
+    runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout code (检出代码)
         uses: actions/checkout@v4
