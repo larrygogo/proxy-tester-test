@@ -77,6 +77,20 @@ async fn test_melon_global_index(
 }
 
 #[tauri::command]
+async fn test_melon_global_payment(
+    proxy: String,
+    username: Option<String>,
+    password: Option<String>,
+    socks5: bool,
+    timeout: Option<u64>,
+) -> TestResult {
+    println!("melon global payment {proxy} {:?} {:?}", username, password);
+    let proxy_str = get_proxy_url(proxy, username, password, socks5);
+    let timeout = timeout.unwrap_or(5);
+    global_melon::query_melon_payment(proxy_str.as_str(), timeout).await
+}
+
+#[tauri::command]
 async fn test_proxy(
     proxy: String,
     username: Option<String>,
@@ -122,6 +136,7 @@ fn main() {
             test_interpark_global_queue,
             test_nike,
             test_melon_global_index,
+            test_melon_global_payment,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

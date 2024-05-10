@@ -62,6 +62,34 @@ pub async fn query_melon_index(proxy: &str, timeout: u64) -> TestResult {
     }
 }
 
+pub async fn query_melon_payment(proxy: &str, timeout: u64) -> TestResult {
+    let url = "https://3ds-pub-coe.netcetera-payment.ch";
+    let proxy = reqwest::Proxy::all(proxy).unwrap();
+    let headers = default_headers();
+    let client = Client::builder()
+        .trust_dns(true)
+        .proxy(proxy)
+        .timeout(Duration::from_secs(timeout))
+        .default_headers(headers)
+        .build()
+        .unwrap();
+    let start = std::time::SystemTime::now();
+    let t = client.get(url).send().await;
+    if t.is_err() {
+        return TestResult {
+            status: "TIMEOUT".to_string(),
+            delay: None,
+        };
+    }
+    let resp = t.unwrap();
+    let status = resp.status();
+    println!("{:?}", status);
+    TestResult {
+        status: "OK".to_string(),
+        delay: Some(start.elapsed().unwrap().as_millis() as u64),
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
