@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/tauri"
+import {invoke} from "@tauri-apps/api/tauri"
 
 export function testProxyInvoke(args: {
   socks5: boolean
@@ -48,4 +48,16 @@ export function testMelonGlobalIndexInvoke(args: {
   delay: number
 }> {
   return invoke("test_melon_global_index", args)
+}
+
+export function testMelonGlobalPaymentInvoke(args: {
+  socks5: boolean
+  proxy: string
+  username?: string
+  password?: string
+}): Promise<{
+  status: string
+  delay: number
+}> {
+  return invoke("test_melon_global_payment", args)
 }

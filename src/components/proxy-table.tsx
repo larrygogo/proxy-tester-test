@@ -1,21 +1,11 @@
 import ProxyTableRow from "@/components/proxy-table-row"
-import {
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
-import type { ProxyStateInfo } from "@/types/proxy"
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { useVirtualizer } from "@tanstack/react-virtual"
-import { useRef } from "react"
-import { Trans, useTranslation } from "react-i18next"
+import {TableBody, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
+import {cn} from "@/lib/utils"
+import type {ProxyStateInfo} from "@/types/proxy"
+import {type ColumnDef, flexRender, getCoreRowModel, useReactTable,} from "@tanstack/react-table"
+import {useVirtualizer} from "@tanstack/react-virtual"
+import {useRef} from "react"
+import {Trans, useTranslation} from "react-i18next"
 
 interface Props {
   proxyStates: ProxyStateInfo[]
@@ -69,7 +59,7 @@ export default function ProxyTable(props: Props) {
       cell: ({ getValue }) => {
         const value = getValue() as string | undefined
         if (!value) return <span>-</span>
-        const isOk = value.toUpperCase() === "OK"
+        const isOk = value?.toUpperCase() === "OK"
         return (
           <span
             className={cn(

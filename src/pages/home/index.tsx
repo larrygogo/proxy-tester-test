@@ -1,35 +1,14 @@
-import {
-  ChevronDown,
-  HelpCircle,
-  Loader,
-  Plus,
-  Rocket,
-  Settings,
-} from "lucide-react"
-import { useContext, useState } from "react"
+import {ChevronDown, HelpCircle, Loader, Plus, Rocket, Settings,} from "lucide-react"
+import {useContext, useState} from "react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardHeader} from "@/components/ui/card"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
+import {Separator} from "@/components/ui/separator"
+import {Tooltip, TooltipContent, TooltipTrigger,} from "@/components/ui/tooltip"
 
 import ProxyEditDialog from "@/components/proxy-edit-dialog"
-import {
-  PROXY_PROTOCOL_ENUM,
-  type ProxyProtocol,
-  ProxyTaskContext,
-} from "@/context/ProxyTaskContext"
+import {PROXY_PROTOCOL_ENUM, type ProxyProtocol, ProxyTaskContext,} from "@/context/ProxyTaskContext"
 
 import InterparkQueueTaskDialog from "@/components/interpark-queue-task-dialog"
 import Footer from "@/components/layout/dashboard-footer/footer"
@@ -42,13 +21,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { protocolAtom, targetAtom } from "@/lib/jotai"
-import { cn } from "@/lib/utils"
-import { useAtom } from "jotai"
-import { nanoid } from "nanoid"
-import { Trans, useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import {Input} from "@/components/ui/input"
+import {protocolAtom, targetAtom} from "@/lib/jotai"
+import {cn} from "@/lib/utils"
+import {useAtom} from "jotai"
+import {nanoid} from "nanoid"
+import {Trans, useTranslation} from "react-i18next"
+import {Link} from "react-router-dom"
 
 const protocolOptions = Object.entries(PROXY_PROTOCOL_ENUM).map(
   ([value, label]) => ({
@@ -123,6 +102,22 @@ export default function Page() {
     setProxyStates?.(newProxyStates)
     startTaskWithMode?.({
       mode: "test_melon_global_index",
+      protocol,
+      states: newProxyStates,
+    })
+  }
+
+  const handleTestMelonPayment = () => {
+    const newProxyStates =
+      proxyStates?.map((proxy) => ({
+        ...proxy,
+        id: nanoid(),
+        status: undefined,
+        delay: undefined,
+      })) ?? []
+    setProxyStates?.(newProxyStates)
+    startTaskWithMode?.({
+      mode: "test_melon_global_payment",
       protocol,
       states: newProxyStates,
     })
@@ -226,6 +221,11 @@ export default function Page() {
                 <DropdownMenuItem onClick={handleTestMelon}>
                   <Trans i18nKey="home.task.professionalMode.melon">
                     Melon
+                  </Trans>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleTestMelonPayment}>
+                  <Trans i18nKey="home.task.professionalMode.melonPayment">
+                    Melon Payment
                   </Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -2,14 +2,15 @@ import {
   testInterparkGlobalIndexInvoke,
   testInterparkGlobalQueueInvoke,
   testMelonGlobalIndexInvoke,
+  testMelonGlobalPaymentInvoke,
   testProxyInvoke,
 } from "@/lib/invoke"
-import { concurrencyAtom, proxyListAtom, proxyStatesAtom } from "@/lib/jotai"
-import { Queue } from "@/lib/queue"
-import type { ProxyStateInfo } from "@/types/proxy"
-import { useAtom, useAtomValue } from "jotai"
-import { nanoid } from "nanoid"
-import React, { useEffect, useState } from "react"
+import {concurrencyAtom, proxyListAtom, proxyStatesAtom} from "@/lib/jotai"
+import {Queue} from "@/lib/queue"
+import type {ProxyStateInfo} from "@/types/proxy"
+import {useAtom, useAtomValue} from "jotai"
+import {nanoid} from "nanoid"
+import React, {useEffect, useState} from "react"
 
 interface LayoutContextType {
   isRunning: boolean
@@ -36,6 +37,7 @@ export type TaskMode =
   | "test_interpark_global_index"
   | "test_interpark_global_queue"
   | "test_melon_global_index"
+  | "test_melon_global_payment"
 
 export type ProxyProtocol = keyof typeof PROXY_PROTOCOL_ENUM
 export const ProxyTaskContext = React.createContext<LayoutContextType>({
@@ -103,6 +105,9 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
       case "test_melon_global_index":
         setMode("test_melon_global_index")
         return testMelonGlobalIndex({ queue, protocol, states })
+      case "test_melon_global_payment":
+        setMode("test_melon_global_payment")
+        return testMelonGlobalPayment({ queue, protocol, states })
       default:
         setMode("normal")
         return normalTest({ queue, target, protocol, states })
@@ -232,6 +237,38 @@ export const ProxyTaskProvider = (props: { children: React.ReactNode }) => {
                   status: res.status,
                   delay: res.delay,
                 }
+              : p,
+          ),
+        )
+      }
+      queue.addTask(task)
+    }
+    await queue.start()
+  }
+
+  const testMelonGlobalPayment = async (args: {
+    queue: Queue
+    protocol: ProxyProtocol
+    states: ProxyStateInfo[]
+  }) => {
+    const { queue, protocol, states } = args
+    for (const proxy of states) {
+      const task = async () => {
+        const res = await testMelonGlobalPaymentInvoke({
+          socks5: protocol === "SOCKS5",
+          proxy: `${proxy.host}:${proxy.port.toString()}`,
+          username: proxy.username,
+          password: proxy.password,
+        })
+        if (queue.stopped) return
+        setProxyStates((s) =>
+          s.map((p) =>
+            p.id === proxy.id
+              ? {
+                ...p,
+                status: res.status,
+                delay: res.delay,
+              }
               : p,
           ),
         )
