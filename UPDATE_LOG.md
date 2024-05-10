@@ -1,3 +1,7 @@
+## v0.0.23
+- 专业模式新增 melon global payment
+- 修改 InterPark queue 默认 sku
+
 ## v0.0.22
 - 修复window不显示自动更新的问题
 - 取消linux版本
