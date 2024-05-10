@@ -10,6 +10,7 @@ on:
 jobs:
   # 创建 release 版本
   create-release:
+    permissions: write-all
     runs-on: [ self-hosted, linux ]
     outputs:
       RELEASE_UPLOAD_ID: ${{ steps.create_release.outputs.id }}
