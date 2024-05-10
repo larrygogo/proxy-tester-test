@@ -1,22 +1,10 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Trans, useTranslation } from "react-i18next"
+import {Button} from "@/components/ui/button"
+import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
+import {Input} from "@/components/ui/input"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
+import {Trans, useTranslation} from "react-i18next"
 import z from "zod"
 
 interface Props {
@@ -36,7 +24,7 @@ export default function InterparkQueueTaskDialog(props: Props) {
   const { t } = useTranslation()
   const form = useForm({
     defaultValues: {
-      sku: "24003932",
+      sku: "24004632",
     },
     resolver: zodResolver(schema),
   })
