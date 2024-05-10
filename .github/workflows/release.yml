@@ -11,8 +11,7 @@ jobs:
   # 创建 release 版本
   create-release:
     permissions: write-all
-    name: Create Release
-    runs-on: Linux
+    runs-on: [ self-hosted, linux ]
     outputs:
       RELEASE_UPLOAD_ID: ${{ steps.create_release.outputs.id }}
 
@@ -26,7 +25,6 @@ jobs:
         run: |
           echo "using version tag ${GITHUB_REF:10}"
           echo "VERSION=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
-          
 
       - name: Create Release (创建发布)
         id: create_release
@@ -43,18 +41,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macOS, rust-windows]
+        platform: [ macOS, rust-windows ]
 
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout code (检出代码)
         uses: actions/checkout@v4
 
-#      - name: install System dependencies (安装系统依赖, 仅限于 ubuntu)
-#        if: matrix.platform == 'ubuntu-latest'
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      #      - name: install System dependencies (安装系统依赖, 仅限于 ubuntu)
+      #        if: matrix.platform == 'ubuntu-latest'
+      #        run: |
+      #          sudo apt-get update
+      #          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
 
       - name: Setup Rust (设置 Rust 版本)
         uses: dtolnay/rust-toolchain@stable
@@ -65,14 +63,10 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: Setup node (设置 node 版本和缓存)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v2
         with:
           node-version: 20
-          cache: 'yarn'
-
-      - name: use node (使用 node)
-        run: export PATH=$(yarn global bin):$PATH
-
+      #          cache: 'yarn'
 
       - name: Install frontend dependencies (安装前端依赖)
         run: yarn install
@@ -89,8 +83,8 @@ jobs:
 
   # 生成静态资源并将其推送到 github pages
   updater:
-    runs-on: Linux
-    needs: [create-release, build-tauri]
+    runs-on: [ self-hosted, linux ]
+    needs: [ create-release, build-tauri ]
 
     steps:
       - name: Checkout code
