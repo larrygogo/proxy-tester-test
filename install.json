@@ -1,0 +1,35 @@
+{
+  "version": "v0.0.23",
+  "notes": "- interpark tester更新\n- melon payment 更新",
+  "pub_date": "2024-05-10T11:20:27.780Z",
+  "platforms": {
+    "win64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRV0ZQUXlwaU5IMG1vdTlOcTdUNC9zNmZ2bVFDNVZGMCtFRmxidXQxendBdUpuNnZuV3NUb0NFZGQ1VmZvdzBveGFzcS9ITjhtS0pEazd2SENVWi9qUmZUUXFGSzZaOFFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1MzM5ODg1CWZpbGU6UHJveHkgVGVzdGVyXzAuMC4yM194NjRfZW4tVVMubXNpLnppcApqbE9BVUUzYXM1VHNYY0c1alhWR2d2VlNZSFZVdVNuT3NMV0JNUEh6N3dkN1hGYXFhalh6QnJGeHpLQWNyRFFraW9TNkZsMVZBa0ZJdGR4bkZZdGZDQT09Cg==",
+      "url": "https://github.com/larrygogo/proxy-tester-test/releases/download/v0.0.23/Proxy.Tester_0.0.23_x64_en-US.msi.zip"
+    },
+    "linux": {
+      "signature": "",
+      "url": ""
+    },
+    "darwin": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRV0ZQUXlwaU5IMGhhbU9TNEpaMFpDWTJvM0xoeTF6ZFdFNm1IRDVrMGx4VTlaSDAwUzJ3WkNzc1pnRTRHeTFwOEtNOXdhejEvOGNGYSs0eDdQSlpEWFNjbXJrWHAzeEFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1MzM5MjM4CWZpbGU6UHJveHkgVGVzdGVyLmFwcC50YXIuZ3oKZU4rdUtybE16enJmTEU4MlpyV0ZwZFdpeGIyeDBsbnBQOUlVOTR3VEx4OWVwcWtiM1p6dWttOGZDaHEwUU15cnBZSWd3QnJzL0tyRFNxZFRvdUN6Qnc9PQo=",
+      "url": "https://github.com/larrygogo/proxy-tester-test/releases/download/v0.0.23/Proxy.Tester_aarch64.app.tar.gz"
+    },
+    "darwin-aarch64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRV0ZQUXlwaU5IMGhhbU9TNEpaMFpDWTJvM0xoeTF6ZFdFNm1IRDVrMGx4VTlaSDAwUzJ3WkNzc1pnRTRHeTFwOEtNOXdhejEvOGNGYSs0eDdQSlpEWFNjbXJrWHAzeEFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1MzM5MjM4CWZpbGU6UHJveHkgVGVzdGVyLmFwcC50YXIuZ3oKZU4rdUtybE16enJmTEU4MlpyV0ZwZFdpeGIyeDBsbnBQOUlVOTR3VEx4OWVwcWtiM1p6dWttOGZDaHEwUU15cnBZSWd3QnJzL0tyRFNxZFRvdUN6Qnc9PQo=",
+      "url": "https://github.com/larrygogo/proxy-tester-test/releases/download/v0.0.23/Proxy.Tester_aarch64.app.tar.gz"
+    },
+    "darwin-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRV0ZQUXlwaU5IMGhhbU9TNEpaMFpDWTJvM0xoeTF6ZFdFNm1IRDVrMGx4VTlaSDAwUzJ3WkNzc1pnRTRHeTFwOEtNOXdhejEvOGNGYSs0eDdQSlpEWFNjbXJrWHAzeEFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1MzM5MjM4CWZpbGU6UHJveHkgVGVzdGVyLmFwcC50YXIuZ3oKZU4rdUtybE16enJmTEU4MlpyV0ZwZFdpeGIyeDBsbnBQOUlVOTR3VEx4OWVwcWtiM1p6dWttOGZDaHEwUU15cnBZSWd3QnJzL0tyRFNxZFRvdUN6Qnc9PQo=",
+      "url": "https://github.com/larrygogo/proxy-tester-test/releases/download/v0.0.23/Proxy.Tester_aarch64.app.tar.gz"
+    },
+    "linux-x86_64": {
+      "signature": "",
+      "url": ""
+    },
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRV0ZQUXlwaU5IMG1vdTlOcTdUNC9zNmZ2bVFDNVZGMCtFRmxidXQxendBdUpuNnZuV3NUb0NFZGQ1VmZvdzBveGFzcS9ITjhtS0pEazd2SENVWi9qUmZUUXFGSzZaOFFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1MzM5ODg1CWZpbGU6UHJveHkgVGVzdGVyXzAuMC4yM194NjRfZW4tVVMubXNpLnppcApqbE9BVUUzYXM1VHNYY0c1alhWR2d2VlNZSFZVdVNuT3NMV0JNUEh6N3dkN1hGYXFhalh6QnJGeHpLQWNyRFFraW9TNkZsMVZBa0ZJdGR4bkZZdGZDQT09Cg==",
+      "url": "https://github.com/larrygogo/proxy-tester-test/releases/download/v0.0.23/Proxy.Tester_0.0.23_x64_en-US.msi.zip"
+    }
+  }
+}
